@@ -2,12 +2,12 @@
   <div>
     <!-- {{ inputProperties }} -->
     <div v-for="(inputProperty, name, index) in inputProperties" :key="index">
-      {{ inputProperty }}
+      <!-- {{ inputProperty }} -->
     </div>
     <div
       v-for="(inputProperty, name, index) in inputProperties"
       :key="index"
-      class="q-mt-lg"
+      class="q-my-lg n-fields-input"
     >
       <FieldsInputForObject
         v-if="
@@ -39,13 +39,19 @@
       <!-- Remark: 2021 Jul 27 Removed .native modifier from
 @[isBase64(inputProperty)].native.capture.prevent  -->
       <div v-else>
-        <p>Test</p>
+        <!-- Generic input fields -->
+        <!-- Some notes: 
+        The model-value's logic is to hide long base64 string so it will not freeze browser 
+        The autogrow will force all other type as "textarea", so only use it for actual 'textarea'
+        The error is to check if the element is empty, and inside required list, then rise error
+        -->
         <q-input
           outlined
           hide-bottom-space
+          bottom-slots
           input-style="max-height:120px"
-          type="textarea"
-          autogrow
+          :type="getInputDataType(inputProperty)"
+          :autogrow="getInputDataType(inputProperty) === 'textarea'"
           :label="getInputFieldLabel(inputProperty, index)"
           :model-value="inputProperty.maskedValue || inputProperty.example"
           :error-message="'Field required'"
@@ -57,7 +63,7 @@
           @update:modelValue="
             (val) => {
               inputProperty.maskedValue
-                ? editingHeavyContentAlert()
+                ? editingHeavyContentNotify(stopEditingNotifyMessage.base64str)
                 : updateInputPropertyExampleValue(inputProperty, val);
             }
           "
@@ -151,6 +157,8 @@ import BinaryToBase64 from './BinaryToBase64.vue';
 import BinaryUploader from './BinaryUploader.vue';
 import ReadMore from '../ReadMore.vue';
 
+import { Notify } from 'quasar';
+
 export default defineComponent({
   components: {
     FieldsInputForObject,
@@ -165,7 +173,7 @@ export default defineComponent({
   setup() {
     const errMsg = ref('');
     const {
-      editingHeavyContentAlert,
+      stopEditingNotifyMessage,
       getInputFieldLabel,
       getInputDataType,
       updateInputPropertyExampleValue,
@@ -214,10 +222,30 @@ export default defineComponent({
       return category;
     }
 
+    function editingHeavyContentNotify(message) {
+      Notify.create({
+        message: message,
+        color: 'orange-7',
+        html: true,
+        actions: [
+          {
+            label: 'Dismiss',
+            color: 'white',
+            handler: () => {
+              return null;
+            },
+          },
+        ],
+        timeout: 15000,
+        position: 'center',
+      });
+    }
+
     return {
       isBase64,
       handleUserPastedValue,
-      editingHeavyContentAlert,
+      stopEditingNotifyMessage,
+      editingHeavyContentNotify,
       apiCategory,
       errMsg,
       getInputFieldLabel,
@@ -228,4 +256,10 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss">
+.n-fields-input .q-field__bottom {
+  /** This will remove additional space for error message below input fields */
+  min-height: 0px;
+  padding: 4px 8px;
+}
+</style>

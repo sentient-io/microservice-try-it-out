@@ -1,7 +1,9 @@
 <template>
   <div class="q-pa-md">
     <!-- {{ userDocRef }} -->
-    <h6 class="q-ma-none">{{ $t('tryItOut.header') }}</h6>
+    <h6 class="q-ma-none">
+      {{ $t('tryItOut.header') }} - {{ rawDocRef?.info?.title }}
+    </h6>
     <p>{{ $t('tryItOut.description') }}</p>
     <BeforeYouStart />
 
@@ -170,7 +172,7 @@ export default defineComponent({
     fetchApiDoc(props.docPath);
 
     watch(apiResponse, () => {
-      if (apiResponse.value) {
+      if (apiResponse.status) {
         InputAndResponseTabsRef.value.toggleResponseTab();
       } else {
         InputAndResponseTabsRef.value.toggleInputTab();

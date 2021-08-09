@@ -9,7 +9,10 @@
     </q-expansion-item>
 
     <div class="q-mt-md">
-      <b>{{ $t('terms.response_code') }} : {{ apiResponse.status }} </b>
+      <b :class="apiResponse.status[0] === '2' ? 'text-green-8' : 'text-red'"
+        >{{ $t('terms.response_code') }} : {{ apiResponse.status }} -
+        {{ apiResponse.statusText }}
+      </b>
     </div>
 
     <!-- 
@@ -22,7 +25,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -32,6 +35,7 @@
 import FlatObjectList from './FlatObjectList.vue';
 
 import { tryOutResService } from '../../../services/TryItOut/TryItOutResponse_service';
+import { apiResponseInterface } from '../../../services/TryItOut/TryItOut_types';
 import JsonDataInput from '../InputUnits/JsonDataInput.vue';
 
 export default {
@@ -40,7 +44,7 @@ export default {
     JsonDataInput,
   },
   props: {
-    apiResponse: {},
+    apiResponse: { type: Object as () => apiResponseInterface, required: true },
   },
   setup() {
     const { processResponse } = tryOutResService();

@@ -4,11 +4,14 @@
       {{ $t('tryItOut.response.rawResponse.description') }}
     </p>
 
-    {{ apiResponse }}
+    <!-- {{ apiResponse }} -->
 
     <div class="q-mt-md">
       <div class="row justify-between items-center">
-        <b>{{ $t('terms.response_code') }} : {{ apiResponse.status }} </b>
+        <b :class="apiResponse.status[0] === '2' ? 'text-green-8' : 'text-red'"
+          >{{ $t('terms.response_code') }} : {{ apiResponse.status }} -
+          {{ apiResponse.statusText }}
+        </b>
         <DownloadResponseAs :response="JSON.stringify(apiResponse.response)" />
       </div>
 
@@ -19,13 +22,13 @@
           class="q-ma-sm absolute"
           color="white"
           outline
-          style="right: 1rem"
+          style="right: 2rem;"
           size="sm"
           @click="copyResponse()"
         ></q-btn>
 
-        <pre class="language-javascript n-code q-px-lg">
-        <code>
+        <pre class="language-javascript s-code q-px-lg" style="max-height: 50vh; overflow: scroll">
+        <code style="word-break:break-all;  white-space:break-spaces">
           <!-- Alwayrs make sure the below line is not indentedF -->
 {{ formatJsonString(JSON.stringify(apiResponse.response)) }}
           </code>
@@ -93,8 +96,5 @@ export default {
 pre.language-javascript {
   border-radius: 8px !important;
 }
-.n-code {
-  background: hsl(90, 10%, 10%);
-  color: hsl(100, 100%, 80%);
-}
+
 </style>

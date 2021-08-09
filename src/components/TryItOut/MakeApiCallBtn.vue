@@ -33,19 +33,46 @@ export default defineComponent({
 
     const $q = useQuasar();
 
+    const loading = {
+      message: [
+        'We are processing your data ...',
+        'Use utility microservices to save time during your app development',
+        "Have a microservice you're looking for but can't find? Write in to us enquiry@sentient.io",
+        "Need help with implementing the APIs? Click the 'Help' button at the bottom of the screen to reach out to our support team.",
+        'The APIs on our platform are curated carefully to ensure reliability for deploymen',
+        'Usage discounts are automatically applied as the number of API calls made reaches the next tier',
+      ],
+      msgCount: 0,
+      interval: null,
+      show: function () {
+        $q.loading.setDefaults({ customClass: 'n-spinner-text' });
+        $q.loading.show({ message: this.message[this.msgCount] });
+        this.interval = setInterval(() => {
+          $q.loading.hide();
+          this.msgCount = Math.floor(Math.random() * this.message.length);
+          $q.loading.show({ message: this.message[this.msgCount] });
+        }, 4000);
+      },
+      hide: function () {
+        $q.loading.hide();
+        clearInterval(this.interval);
+      },
+    };
+
     function makeApiCall() {
       getApiCallMethod(userDocRef);
-      $q.loading.show();
+
+      loading.show();
 
       switch (getApiCallMethod(userDocRef)) {
         case 'get':
           makeGetApiCall().finally(() => {
-            $q.loading.hide();
+            loading.hide();
           });
           break;
         case 'post':
           makePostApiCall().finally(() => {
-            $q.loading.hide();
+            loading.hide();
           });
         default:
           break;
@@ -114,4 +141,9 @@ export default defineComponent({
 // };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss">
+.n-spinner-text {
+  font-size: 1.1rem;
+  text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.5);
+}
+</style>

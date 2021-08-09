@@ -17,7 +17,8 @@ const rawDocRef = ref({});
 const userDocRef = ref({});
 
 const apiResponse = reactive({
-  statues: '',
+  status: '',
+  statusText: '',
   response: '',
 });
 
@@ -25,6 +26,15 @@ const apiKey = ref('');
 if (localStorage.getItem('sentientApiKey')) {
   apiKey.value = localStorage.getItem('sentientApiKey');
 }
+
+const stopEditingNotifyMessage = {
+  base64str: `<span style='font-size:1.1rem'>It seems you are trying to edit data contains <b>base64 string</b>.\
+  As this page is for demo and explore puspe only.\ 
+  To edit the heavy content, please use provided media/file uploader under \ 
+  <b>Fields Input</b> mode to update data instead of directly editing here.</span>`,
+  binaryFile: `This JSON format data contains uploaded binary file, eidting on this page may cause data format error.
+  Please edit with Fields Input mode instead.`,
+};
 
 const tryItOutService = () => {
   function setApiKey(theKey) {
@@ -136,6 +146,7 @@ const tryItOutService = () => {
     /** Duplicate and remove the reactivity of doc object */
     userDocRef.value = JSON.parse(JSON.stringify(rawDocRef.value));
     apiResponse.status = '';
+    apiResponse.statusText = '';
     apiResponse.response = {};
   }
 
@@ -293,19 +304,11 @@ const tryItOutService = () => {
   }
 
   function editingHeavyContentAlert() {
-    window.alert(
-      `It seems you are dealing with huge amount of data.\
-Please take note this page is for demo and explore puspe only.\ 
-To edit the content, please use provided media/file uploader under \ 
-Fields Input mode to update data instead of directly editing here.`
-    );
+    window.alert(stopEditingNotifyMessage.base64str);
   }
 
   function editingBinaryFileContentAlert() {
-    window.alert(
-      `This JSON format data contains uploaded binary file, eidting on this page may cause data format error.
-Please edit with Fields Input mode instead.`
-    );
+    window.alert(stopEditingNotifyMessage.binaryFile);
   }
 
   function getInputFieldLabel(inputProperty, idx) {
@@ -373,7 +376,8 @@ Please edit with Fields Input mode instead.`
 
       xhr.onreadystatechange = function () {
         if (this.readyState === this.DONE) {
-          apiResponse.statues = xhr.status.toString();
+          apiResponse.status = xhr.status.toString();
+          apiResponse.statusText = xhr.statusText;
           apiResponse.response = JSON.parse(xhr.response);
           console.log(xhr);
           resolve(xhr.response);
@@ -382,6 +386,9 @@ Please edit with Fields Input mode instead.`
       xhr.setRequestHeader('Content-Type', getContentType(userDocRef));
       xhr.setRequestHeader('x-api-key', apiKey.value);
       xhr.send(rawInputPropertiesToJsonString(getInputProperties(userDocRef)));
+      console.log(
+        rawInputPropertiesToJsonString(getInputProperties(userDocRef))
+      );
     });
   }
 
@@ -396,7 +403,8 @@ Please edit with Fields Input mode instead.`
 
       xhr.onreadystatechange = function () {
         if (this.readyState === this.DONE) {
-          apiResponse.statues = xhr.status.toString();
+          apiResponse.status = xhr.status.toString();
+          apiResponse.statusText = xhr.statusText;
           apiResponse.response = JSON.parse(xhr.response);
           console.log(xhr);
           resolve(xhr.response);
@@ -417,6 +425,7 @@ Please edit with Fields Input mode instead.`
   function getInputDataType(inputProperty) {
     switch (inputProperty.type) {
       case 'float':
+      case 'number':
         return 'number';
         break;
       default:
@@ -480,6 +489,7 @@ Please edit with Fields Input mode instead.`
 
     editingHeavyContentAlert,
     editingBinaryFileContentAlert,
+    stopEditingNotifyMessage,
 
     makePostApiCall,
     makeGetApiCall,

@@ -30,3 +30,8 @@ export interface docInterface {
   };
   components: { schemas: { input: { properties: string; required: [] } } };
 }
+
+export interface apiResponseInterface {
+  status: string;
+  response: unknown;
+}

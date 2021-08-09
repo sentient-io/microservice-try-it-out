@@ -17,7 +17,7 @@
         value="response"
         label="Response"
         class="col-6"
-        :disable="!apiResponse"
+        :disable="!apiResponse.status"
       />
     </q-tabs>
 

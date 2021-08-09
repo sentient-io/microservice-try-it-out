@@ -1,16 +1,25 @@
 <template>
   <div>
+    <pre
+      v-if="disable"
+      class="s-code q-px-lg"
+      style="max-height: 50vh; overflow: scroll"
+    >
+      <code style="word-break:break-all;  white-space:break-spaces">
+        {{jsonStrInput}}
+      </code>
+    </pre>
     <q-input
+      v-else
       type="textarea"
       v-model="jsonStrInput"
       outlined
       class="n-json-str-input"
       input-style="resize:none; word-break:break-all; max-height:50vh; overflow:scroll"
       autogrow
-      @input="processUserInputData"
+      @update:modelValue="processUserInputData"
       :error-message="errMsg"
       :error="errMsg !== ''"
-      :disable="disable"
     ></q-input>
   </div>
 </template>
@@ -19,6 +28,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { defineComponent, ref, watch } from 'vue';
 import { tryItOutService } from '../../../services/TryItOut/TryItOut_service';
+import { Notify } from 'quasar';
 
 export default defineComponent({
   props: { inputProperties: {}, disable: { type: Boolean, default: false } },
@@ -29,8 +39,7 @@ export default defineComponent({
       formatJsonString,
       updateJsonToInputProperties,
       validateInputProperties,
-      editingHeavyContentAlert,
-      editingBinaryFileContentAlert,
+      stopEditingNotifyMessage,
       inputPropertiesContainMaskedValue,
       inputPropertiesContainBinaryFile,
       getInputProperties,
@@ -40,11 +49,35 @@ export default defineComponent({
 
     const inputProperties = getInputProperties(userDocRef);
 
+    function editingHeavyContentNotify(message) {
+      Notify.create({
+        message: message,
+        color: 'orange-7',
+        html: true,
+        actions: [
+          {
+            label: 'Dismiss',
+            color: 'white',
+            handler: () => {
+              return null;
+            },
+          },
+        ],
+        timeout: 15000,
+        position: 'center',
+      });
+    }
+
     function processUserInputData() {
       if (inputPropertiesContainMaskedValue(inputProperties)) {
-        editingHeavyContentAlert();
+        // To prevent user from editing base64 string
+        editingHeavyContentNotify(stopEditingNotifyMessage.base64str);
       } else if (inputPropertiesContainBinaryFile(inputProperties)) {
-        editingBinaryFileContentAlert();
+        /**
+         * To prevent user from editing binary fine, as the display
+         * on screen is just the file name, not the actual data
+         */
+        editingHeavyContentNotify(stopEditingNotifyMessage.binaryFile);
       } else {
         errMsg.value = '';
         try {

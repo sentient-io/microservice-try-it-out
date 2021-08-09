@@ -7,7 +7,7 @@
       outlined
       input-style="max-height:240px; word-break:break-all"
       autogrow
-      @input="processUserInputData"
+      @update:modelValue="processUserInputData"
       :error-message="errMsg"
       :error="errMsg !== ''"
       hide-bottom-space
@@ -39,12 +39,13 @@ export default defineComponent({
 
     function processUserInputData() {
       errMsg.value = '';
-      if (jsonStrInput.value === '') {
+      if (jsonStrInput.value.replace(/\n/g, '') === '') {
         emit('userInput', '');
         return;
       }
       try {
         emit('userInput', JSON.parse(jsonStrInput.value));
+        console.log(JSON.parse(jsonStrInput.value));
       } catch (err) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         errMsg.value = err.message;
