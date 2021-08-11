@@ -3,6 +3,8 @@
     <!-- {{ userDocRef }} -->
     <h6 class="q-ma-none">
       {{ $t('tryItOut.header') }} - {{ rawDocRef?.info?.title }}
+
+      <q-btn class="float-right" to="/" icon="home" />
     </h6>
     <p>{{ $t('tryItOut.description') }}</p>
     <BeforeYouStart />

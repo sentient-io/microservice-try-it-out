@@ -8,7 +8,7 @@
         v-model="docPath"
         outlined
       />
-      <q-input label="API Key" v-model="apiKey" type="password" outlined />
+      <!-- <q-input label="API Key" v-model="apiKey" type="password" outlined /> -->
       <q-btn
         class="self-center bg-green-6"
         label="Launch Try It Out"
