@@ -67,9 +67,11 @@ module.exports = {
     //  (async) .babelrc, .babelrc.js, package.json, babel.config.js
     //  (sync) .babelrc, .babelrc.js, babel.config.js, package.json
     // https://github.com/tleunen/find-babel-config/issues/33
-    '.*\\.vue$': 'vue-jest',
+    // '.*\\.vue$': 'vue-jest',
     '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$':
       'jest-transform-stub',
+    '.*\\.vue$':
+      '<rootDir>/node_modules/@quasar/quasar-app-extension-testing-unit-jest/node_modules/vue-jest',
   },
   transformIgnorePatterns: [`node_modules/(?!(${esModules}))`],
   snapshotSerializers: ['<rootDir>/node_modules/jest-serializer-vue'],

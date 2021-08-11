@@ -12,7 +12,7 @@
       :error="errMsg !== ''"
       hide-bottom-space
     >
-      <template v-slot:append>
+      <template v-slot:after>
         <q-icon name="close" @click="clearJsonStrInput"></q-icon>
       </template>
     </q-input>

@@ -34,7 +34,7 @@
 
 import FlatObjectList from './FlatObjectList.vue';
 
-import { tryOutResService } from '../../../services/TryItOut/TryItOutResponse_service';
+import { tryItOutResService } from '../../../services/TryItOut/TryItOutResponse_service';
 import { apiResponseInterface } from '../../../services/TryItOut/TryItOut_types';
 import JsonDataInput from '../InputUnits/JsonDataInput.vue';
 
@@ -47,36 +47,37 @@ export default {
     apiResponse: { type: Object as () => apiResponseInterface, required: true },
   },
   setup() {
-    const { processResponse } = tryOutResService();
+    const { processResponse } = tryItOutResService();
 
     return { processResponse };
   },
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const op = {
-  processResponse(_response) {
-    let resType, response;
 
-    /** Always assign input to response as an object */
-    typeof _response.response == 'object'
-      ? (response = _response.response)
-      : (response = JSON.parse(_response.response));
+// const op = {
+//   processResponse(_response: _responseInterface) {
+//     let resType, response;
 
-    const nestedResults = response.results;
-    nestedResults ? (response = nestedResults) : null;
+//     /** Always assign input to response as an object */
+//     typeof _response.response == 'object'
+//       ? (response = _response.response)
+//       : (response = JSON.parse(_response.response));
 
-    /** Loop through the results and identify value type */
-    const typeIsString = Object.values(response).every((val) => {
-      console.log(typeof val);
-      typeof val === 'string';
-    });
+//     const nestedResults = response.results;
+//     nestedResults ? (response = nestedResults) : null;
 
-    typeIsString ? (resType = 'string') : (resType = 'not detected');
+//     /** Loop through the results and identify value type */
+//     const typeIsString = Object.values(response).every((val) => {
+//       console.log(typeof val);
+//       typeof val === 'string';
+//     });
 
-    return { resType, response };
-  },
-};
+//     typeIsString ? (resType = 'string') : (resType = 'not detected');
+
+//     return { resType, response };
+//   },
+// };
 </script>
 
 <style lang="scss" scoped></style>
