@@ -1,4 +1,4 @@
 export interface processedResponseInterface {
-  response?: string;
-  results?: string;
+  response?: unknown;
+  results?: unknown;
 }
