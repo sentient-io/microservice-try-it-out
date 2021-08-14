@@ -1,14 +1,35 @@
 <template>
   <div>
-    <pre
-      v-if="disable"
-      class="s-code q-px-lg"
-      style="max-height: 50vh; overflow: scroll"
-    >
+    <!-- 
+      This disable key may be a bit confusing, but it saved a lot of duplicated code.
+      -
+      From [Parsed Response] page, we'll provide full details of what user had passed
+      to the API, so they'll have a better idea where are the result came from.
+      It works exactly same as JSON data input, except, user shouldn't key in anything
+      -
+      To make it more useful, we are adding preview of audio/images and video data
+     -->
+    <div v-if="disable">
+      <pre class="s-code q-px-lg" style="max-height: 30vh; overflow: scroll">
       <code style="word-break:break-all;  white-space:break-spaces">
         {{jsonStrInput}}
       </code>
-    </pre>
+      </pre>
+      <img
+        v-if="getMediaBase64ByType('image')"
+        :src="getMediaBase64ByType('image')"
+        style="height: 200px"
+      />
+      <audio v-if="getMediaBase64ByType('audio')" controls>
+        <source :src="getMediaBase64ByType('audio')" />
+      </audio>
+      <video
+        controls
+        v-if="getMediaBase64ByType('video')"
+        :src="getMediaBase64ByType('video')"
+        style="height: 200px"
+      ></video>
+    </div>
     <q-input
       v-else
       type="textarea"
@@ -24,8 +45,11 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+
 import { defineComponent, ref, watch } from 'vue';
 import { tryItOutService } from '../../../services/TryItOut/TryItOut_service';
 import { Notify } from 'quasar';
@@ -44,6 +68,7 @@ export default defineComponent({
       inputPropertiesContainBinaryFile,
       getInputProperties,
     } = tryItOutService();
+
     const jsonStrInput = ref();
     const errMsg = ref('');
 
@@ -104,12 +129,43 @@ export default defineComponent({
     }
     getJsonStrInput('removeEmptyValue');
 
+    const getMediaBase64ByType = (mediaType: string) => {
+      const mdeiaTypesMapping = {
+        // mediaType : [[array of key names used in input],'data type']
+        image: [['image_base64'], 'image/jpeg'],
+        audio: [['wav_base64'], 'audio/wav'],
+        video: [['video_base64'], 'video/mp4'],
+      };
+      const keys: [] = mdeiaTypesMapping[mediaType][0];
+      const base64DataType: string = mdeiaTypesMapping[mediaType][1];
+
+      let result = '';
+
+      keys.forEach((key) => {
+        console.log(Object.keys(inputProperties).indexOf(key));
+        if (Object.keys(inputProperties).indexOf(key) > -1) {
+          console.log(
+            `data:${base64DataType};base64,${inputProperties[key].example}`
+          );
+          result = `data:${base64DataType};base64,${inputProperties[key].example}`;
+        }
+      });
+
+      return result;
+    };
+
     watch(props, () => {
       errMsg.value = '';
       getJsonStrInput();
     });
 
-    return { jsonStrInput, processUserInputData, errMsg };
+    return {
+      jsonStrInput,
+      processUserInputData,
+      errMsg,
+      userDocRef,
+      getMediaBase64ByType,
+    };
   },
 });
 </script>
