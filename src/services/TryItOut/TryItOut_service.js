@@ -223,14 +223,29 @@ const tryItOutService = () => {
         });
       }
     });
+
     return JSON.stringify(jsonInput);
+  }
+
+  function rawInputPropertiesToDataForm(inputProperties) {
+    var data = new FormData();
+
+    Object.keys(inputProperties).forEach((propertyKey) => {
+      let property = inputProperties[propertyKey];
+      let key = property.name || property['x-name'] || propertyKey;
+      let value = property.example;
+      if (value) {
+        data.append(`${key}`, value);
+      }
+    });
+
+    return data;
   }
 
   function modifyValueByType(value, type) {
     let modifiedValue = value;
     switch (type) {
       case 'array':
-        console.log(value);
         typeof value !== 'object' ? (modifiedValue = JSON.parse(value)) : null;
         break;
 
@@ -269,7 +284,6 @@ const tryItOutService = () => {
     let tempArr = splittedJsonStr.split('\n');
     let formattedStr = '';
     let indent = '';
-    console.log(tempArr);
     tempArr.forEach((str) => {
       str.includes('}') ? (indent = indent.replace('    ', '')) : null;
       formattedStr += indent + str + '\n';
@@ -311,13 +325,14 @@ const tryItOutService = () => {
     window.alert(stopEditingNotifyMessage.binaryFile);
   }
 
-  function getInputFieldLabel(inputProperty, idx) {
+  function getInputFieldLabel(inputProperty, name, idx) {
     /**
-     * idx is a fall back, some case the property doesn't
+     * idx and name are fall backs:, some case the property doesn't
      * contain x-name and name, but the key itself is the name
      */
     let label = null;
-    label = inputProperty['x-name'] || inputProperty.name || idx;
+    label = inputProperty['x-name'] || inputProperty.name || name || idx;
+    console.log(label, inputProperty);
     label += ` (${inputProperty.type || inputProperty.schema.type})`;
     return label;
   }
@@ -372,6 +387,8 @@ const tryItOutService = () => {
   function makePostApiCall() {
     return new Promise((resolve) => {
       const xhr = new XMLHttpRequest();
+      const contentType = getContentType(userDocRef);
+
       xhr.open('POST', getEndPoint(userDocRef));
 
       xhr.onreadystatechange = function () {
@@ -383,11 +400,28 @@ const tryItOutService = () => {
           resolve(xhr.response);
         }
       };
-      xhr.setRequestHeader('Content-Type', getContentType(userDocRef));
+
       xhr.setRequestHeader('x-api-key', apiKey.value);
-      xhr.send(rawInputPropertiesToJsonString(getInputProperties(userDocRef)));
+
+      if (contentType === 'multipart/form-data') {
+        xhr.send(rawInputPropertiesToDataForm(getInputProperties(userDocRef)));
+      } else {
+        /**
+         * For multipart/form-data, DO NOT set the Request Header, else will
+         * keep getting error. Refer to :
+         * https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
+         * Middle of the page, there is a warning message
+         */
+        xhr.setRequestHeader('Content-Type', contentType);
+        xhr.send(
+          rawInputPropertiesToJsonString(getInputProperties(userDocRef))
+        );
+      }
+
       console.log(
-        rawInputPropertiesToJsonString(getInputProperties(userDocRef))
+        rawInputPropertiesToDataForm(getInputProperties(userDocRef)).get(
+          'filePath'
+        )
       );
     });
   }
