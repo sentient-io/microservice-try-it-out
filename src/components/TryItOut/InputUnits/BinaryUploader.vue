@@ -1,11 +1,10 @@
-
 <template>
   <div>
     <q-file
       outlined
       :label="label + ' (Please upload file)'"
       v-model="file"
-      @input="uploadFile()"
+      @update:model-value="uploadFile()"
       :error="!file || !file.lastModified"
       hide-bottom-space
       clearable
@@ -28,7 +27,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { ref, onMounted } from 'vue';
 export default {
-  props: { label: {}, hint: {}, example: { type: String } },
+  props: { label: {}, hint: {}, example: {} },
   setup(props, { emit }) {
     onMounted(() => {
       /** Assign user uploaded file to file variable */
@@ -36,6 +35,7 @@ export default {
     });
     const file = ref();
     function uploadFile() {
+      console.log(file.value);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       emit('uploadFile', file.value);
     }

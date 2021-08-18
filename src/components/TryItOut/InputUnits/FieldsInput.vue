@@ -26,7 +26,7 @@
       <div v-else-if="inputProperty.format === 'binary'">
         <p>test</p>
         <BinaryUploader
-          :label="getInputFieldLabel(inputProperty, index)"
+          :label="getInputFieldLabel(inputProperty, name, index)"
           :example="inputProperty['example']"
           @uploadFile="
             (file) => {
@@ -52,7 +52,7 @@
           input-style="max-height:120px"
           :type="getInputDataType(inputProperty)"
           :autogrow="getInputDataType(inputProperty) === 'textarea'"
-          :label="getInputFieldLabel(inputProperty, index)"
+          :label="getInputFieldLabel(inputProperty, name, index)"
           :model-value="inputProperty.maskedValue || inputProperty.example"
           :error-message="'Field required'"
           :error="

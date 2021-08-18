@@ -45,10 +45,11 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 
 import { defineComponent, ref, watch } from 'vue';
 import { tryItOutService } from '../../../services/TryItOut/TryItOut_service';
@@ -129,24 +130,20 @@ export default defineComponent({
     }
     getJsonStrInput('removeEmptyValue');
 
-    const getMediaBase64ByType = (mediaType: string) => {
+    const getMediaBase64ByType = (mediaType) => {
       const mdeiaTypesMapping = {
         // mediaType : [[array of key names used in input],'data type']
         image: [['image_base64'], 'image/jpeg'],
         audio: [['wav_base64'], 'audio/wav'],
         video: [['video_base64'], 'video/mp4'],
       };
-      const keys: [] = mdeiaTypesMapping[mediaType][0];
-      const base64DataType: string = mdeiaTypesMapping[mediaType][1];
+      const keys = mdeiaTypesMapping[mediaType][0];
+      const base64DataType = mdeiaTypesMapping[mediaType][1];
 
       let result = '';
 
       keys.forEach((key) => {
-        console.log(Object.keys(inputProperties).indexOf(key));
         if (Object.keys(inputProperties).indexOf(key) > -1) {
-          console.log(
-            `data:${base64DataType};base64,${inputProperties[key].example}`
-          );
           result = `data:${base64DataType};base64,${inputProperties[key].example}`;
         }
       });
