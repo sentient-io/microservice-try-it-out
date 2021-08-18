@@ -10,6 +10,9 @@ import axios from 'axios';
 import { ref, reactive } from 'vue';
 import yaml from 'js-yaml';
 
+import { formatterService } from '../formatter_service';
+const { anythingToString } = formatterService();
+
 /** DO NOT mutate or change this rawDocRef */
 const rawDocRef = ref({});
 
@@ -303,7 +306,7 @@ const tryItOutService = () => {
   }
 
   function reverseFormatJsonString(jsonString) {
-    let reverseFormattedStr = jsonString.replace(/\n/g, '');
+    let reverseFormattedStr = jsonString.replace(/\n/g, '').replace(/\s/g, '');
 
     return reverseFormattedStr;
   }
@@ -435,6 +438,11 @@ const tryItOutService = () => {
           parseInputPropertiesToQueryStr(getInputProperties(userDocRef))
       );
 
+      console.log(
+        parseInputPropertiesToQueryStr(getInputProperties(userDocRef))
+      );
+      console.log(getInputProperties(userDocRef));
+
       xhr.onreadystatechange = function () {
         if (this.readyState === this.DONE) {
           apiResponse.status = xhr.status.toString();
@@ -470,12 +478,16 @@ const tryItOutService = () => {
 
   function updateInputPropertyExampleValue(inputProperty, exampleValue) {
     console.log(exampleValue);
+    const inputPropertyType = inputProperty.type ?? inputProperty.schema.type;
     try {
-      switch (inputProperty.type) {
+      switch (inputPropertyType) {
         case 'float':
           inputProperty.example = parseFloat(exampleValue);
           break;
-
+        case 'string':
+          inputProperty.example = anythingToString(exampleValue);
+          // inputProperty.example = JSON.stringify(exampleValue);
+          break;
         default:
           inputProperty.example = exampleValue;
           break;
@@ -515,6 +527,7 @@ const tryItOutService = () => {
     inputPropertiesContainBinaryFile,
     parseInputPropertiesToQueryStr,
     formatJsonString,
+    reverseFormatJsonString,
 
     updateJsonToInputProperties,
     updateInputPropertyExampleValue,

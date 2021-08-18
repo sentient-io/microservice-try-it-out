@@ -7,9 +7,9 @@
         </div>
       </template>
       <template v-slot:after>
-        <div class="q-ml-sm s-code-container">
+        <div class="q-ml-sm s-code-container s-code">
           <pre
-            class="q-pa-md bg-grey-3 brder-round-4"
+            class="q-pa-md brder-round-4"
           ><code >{{ parseInputPropertiesToQueryStr(inputProperties) }}</code></pre>
         </div>
       </template>

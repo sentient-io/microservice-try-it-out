@@ -18,7 +18,8 @@
         :inputProperties="inputProperty.example"
         @userInput="
           (userInputValue) => {
-            inputProperty.example = userInputValue;
+            //inputProperty.example = userInputValue;
+            updateInputPropertyExampleValue(inputProperty,userInputValue)
           }
         "
       ></FieldsInputForObject>

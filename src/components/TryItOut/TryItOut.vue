@@ -4,7 +4,7 @@
     <h6 class="q-ma-none">
       {{ $t('tryItOut.header') }} - {{ rawDocRef?.info?.title }}
 
-      <q-btn class="float-right" to="/" icon="home" />
+      <q-btn v-if="!isInIframe" class="float-right" to="/" icon="home" />
     </h6>
     <p>{{ $t('tryItOut.description') }}</p>
     <BeforeYouStart />
@@ -161,6 +161,9 @@ export default defineComponent({
     const responseTypeIdx = ref(0);
     const InputAndResponseTabsRef = ref(null);
 
+    /** Check if the page opened in iframe */
+    const isInIframe = window.location !== window.parent.location;
+
     function postWindowHeight() {
       /**
        * This function useful when embedding try it out as iframe
@@ -209,6 +212,7 @@ export default defineComponent({
       InputAndResponseTabsRef,
       apiResponse,
       validateInputProperties,
+      isInIframe,
     };
   },
 });

@@ -45,7 +45,12 @@ export default defineComponent({
       msgCount: 0,
       interval: null,
       show: function () {
-        $q.loading.setDefaults({ customClass: 'n-spinner-text' });
+        $q.loading.setDefaults({
+          spinnerColor: 'green-6',
+          messageColor: 'grey-8',
+          backgroundColor: 'white',
+          customClass: 'n-spinner',
+        });
         $q.loading.show({ message: this.message[this.msgCount] });
         this.interval = setInterval(() => {
           $q.loading.hide();
@@ -142,8 +147,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.n-spinner-text {
-  font-size: 1.1rem;
-  text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.5);
+.n-spinner {
+  background-color: hsla(0, 100%, 100%, 0.5);
+  backdrop-filter: blur(5px);
+  font-size: 1rem;
 }
 </style>
