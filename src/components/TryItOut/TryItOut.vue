@@ -161,10 +161,26 @@ export default defineComponent({
     const responseTypeIdx = ref(0);
     const InputAndResponseTabsRef = ref(null);
 
+    function postWindowHeight() {
+      /**
+       * This function useful when embedding try it out as iframe
+       * try it out  will consistantpy posting window size to the
+       * parent frame.
+       */
+      let message = {
+        height: document.body.scrollHeight,
+        width: document.body.scrollWidth,
+      };
+      // window.top refers to parent window
+      window.top.postMessage(message, '*');
+    }
+    /** Consistantly update the window size to parent window */
+    window.addEventListener('resize', postWindowHeight);
     onMounted(() => {
       if (props.apiKey) {
         setApiKey(props.apiKey);
       }
+      postWindowHeight(); /** Send the size to parent window */
     });
 
     watch(props, () => {

@@ -1,7 +1,13 @@
 // app global css in SCSS form
+
 // ------- //
 // Borders //
 // ------- //
+.border-none {
+  text-decoration: none;
+  border: none;
+}
+
 .border-round-4 {
   border-radius: 4px;
 }

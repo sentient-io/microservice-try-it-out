@@ -43,7 +43,7 @@
           <a
             href="https://platform.sentient.io"
             target="_blank"
-            class="block q-mx-auto"
+            class="block q-mx-auto border-none"
           >
             <q-btn
               color="green-6"
