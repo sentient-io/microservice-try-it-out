@@ -1,5 +1,12 @@
 <template>
   <div class="q-pa-md">
+    <!-- 
+      This will listen to window size change 
+      and update parent latest  height (when 
+      try it out been accessed via iframe) 
+      -->
+    <q-resize-observer @resize="postWindowHeight" />
+
     <!-- {{ userDocRef }} -->
     <h6 class="q-ma-none">
       {{ $t('tryItOut.header') }} - {{ rawDocRef?.info?.title }}
@@ -107,7 +114,7 @@
 
 <script>
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { defineComponent, ref, watch, onMounted } from 'vue';
+import { defineComponent, ref, watch, onMounted, onUpdated } from 'vue';
 import { tryItOutService } from '../../services/TryItOut/TryItOut_service';
 
 import BeforeYouStart from './BeforeYouStart.vue';
@@ -170,20 +177,24 @@ export default defineComponent({
        * try it out  will consistantpy posting window size to the
        * parent frame.
        */
+      const pageContainer =
+        document.getElementsByClassName('q-page-container')[0];
       let message = {
-        height: document.body.scrollHeight,
-        width: document.body.scrollWidth,
+        // height: document.body.scrollHeight,
+        height: pageContainer.scrollHeight,
+        width: pageContainer.scrollWidth,
       };
       // window.top refers to parent window
       window.top.postMessage(message, '*');
     }
+
     /** Consistantly update the window size to parent window */
     window.addEventListener('resize', postWindowHeight);
     onMounted(() => {
       if (props.apiKey) {
         setApiKey(props.apiKey);
       }
-      postWindowHeight(); /** Send the size to parent window */
+      // postWindowHeight(); /** Send the size to parent window */
     });
 
     watch(props, () => {
@@ -213,6 +224,7 @@ export default defineComponent({
       apiResponse,
       validateInputProperties,
       isInIframe,
+      postWindowHeight,
     };
   },
 });
