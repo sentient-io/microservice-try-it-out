@@ -14,17 +14,18 @@
             v-if="data[item] && typeof data[item] === 'object'"
           >
             <q-item-label>
+              <!-- If the sub-item is an object, pass the value do to nestes FlatObjectList -->
               <div
                 v-for="(subItem, subidx) in data[item]"
                 :key="'sub' + subidx"
               >
                 <FlatObjectList
-                  :data="subItem"
+                  :data="{ [subidx]: subItem }"
                   v-if="typeof subItem === 'object'"
                 />
 
                 <!-- 
-                For the last layer of result, with out belo list, 
+                For the last layer of result, with out list, 
                 string will be recognise as object by v-for  
                 -->
                 <q-list v-else eparator bordered class="q-mb-md q-mt-sm">

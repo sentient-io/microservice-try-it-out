@@ -10,11 +10,13 @@
       To make it more useful, we are adding preview of audio/images and video data
      -->
     <div v-if="disable">
-      <pre class="s-code q-px-lg" style="max-height: 30vh; overflow: scroll">
-      <code style="word-break:break-all;  white-space:break-spaces">
+      <div class="s-code">
+        <pre class="q-px-lg">
+      <code>
         {{jsonStrInput}}
       </code>
       </pre>
+      </div>
       <img
         v-if="getMediaBase64ByType('image')"
         :src="getMediaBase64ByType('image')"

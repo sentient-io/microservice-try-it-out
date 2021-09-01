@@ -28,7 +28,8 @@ import { tryItOutService } from '../../../services/TryItOut/TryItOut_service';
 export default defineComponent({
   props: { inputProperties: {}, label: {} },
   setup(props, { emit }) {
-    const { formatJsonString, checkJsonAlikeString } = tryItOutService();
+    const { formatJsonString, checkJsonAlikeString, reverseFormatJsonString } =
+      tryItOutService();
     const jsonStrInput = ref('');
     const errMsg = ref('');
 
