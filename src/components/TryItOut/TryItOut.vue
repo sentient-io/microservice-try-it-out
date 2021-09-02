@@ -114,7 +114,7 @@
 
 <script>
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { defineComponent, ref, watch, onMounted, onUpdated } from 'vue';
+import { defineComponent, ref, watch, onMounted } from 'vue';
 import { tryItOutService } from '../../services/TryItOut/TryItOut_service';
 
 import BeforeYouStart from './BeforeYouStart.vue';

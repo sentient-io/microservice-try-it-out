@@ -388,6 +388,9 @@ const tryItOutService = () => {
           inputProperty.example = anythingToString(exampleValue);
           // inputProperty.example = JSON.stringify(exampleValue);
           break;
+        case 'number':
+          inputProperty.example = +exampleValue
+          break;
         default:
           inputProperty.example = exampleValue;
           break;
