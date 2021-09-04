@@ -7,108 +7,132 @@
       -->
     <q-resize-observer @resize="postWindowHeight" />
 
-    <!-- {{ userDocRef }} -->
-    <h6 class="q-ma-none">
-      {{ $t('tryItOut.header') }} - {{ rawDocRef?.info?.title }}
-
-      <q-btn v-if="!isInIframe" class="float-right" to="/" icon="home" />
-    </h6>
-    <p>{{ $t('tryItOut.description') }}</p>
-    <BeforeYouStart />
-
-    <APIKeyInput v-if="!apiKey" />
-    <InputAndResponseTabs
-      ref="InputAndResponseTabsRef"
-      :apiResponse="apiResponse"
+    <!-- 
+      Using v-show logic to display 404 error
+      message if the document is  not found .
+     -->
+    <div
+      v-show="Object.keys(rawDocRef).length === 0"
+      class="row items-center justify-center q-my-lg"
     >
-      <!-- Input Tab -->
-      <template v-slot:input>
-        <div class="flex row justify-between">
-          <div class="flex row q-my-sm">
-            <h6 class="q-my-none">
+      <div class="q-mr-md">
+        <q-icon name="mdi-telescope" size="4rem" color="grey-4" />
+      </div>
+      <div>
+        <p>Oops, API documentation not found from the provided url below:</p>
+        <a :href="docPath" :target="isInIframe ? '_parent' : '_blank'">{{
+          docPath
+        }}</a>
+      </div>
+    </div>
+
+    <!-- 
+      Below content will only display when there is valid rawDocRef content
+      -->
+    <div v-show="Object.keys(rawDocRef).length !== 0">
+      <!-- {{ userDocRef }} -->
+      <h6 class="q-ma-none">
+        {{ $t('tryItOut.header') }} - {{ rawDocRef?.info?.title }}
+
+        <q-btn v-if="!isInIframe" class="float-right" to="/" icon="home" />
+      </h6>
+      <p>{{ $t('tryItOut.description') }}</p>
+      <BeforeYouStart />
+
+      <APIKeyInput v-if="!apiKey" />
+      <InputAndResponseTabs
+        ref="InputAndResponseTabsRef"
+        :apiResponse="apiResponse"
+      >
+        <!-- Input Tab -->
+        <template v-slot:input>
+          <div class="flex row justify-between">
+            <div class="flex row q-my-sm">
+              <h6 class="q-my-none">
+                {{
+                  [
+                    $t('tryItOut.fieldsInput'),
+                    $t(`tryItOut.${inputTypeByApi(rawDocRef)}`),
+                  ][inputTypeIdx]
+                }}
+              </h6>
+              <ResetUserInputs @resetInputs="resetInputs()"></ResetUserInputs>
+            </div>
+            <ToggleButton
+              :label="$t('tryItOut.inputWith')"
+              :options="[
+                $t('tryItOut.fieldsInput'),
+                $t(`tryItOut.${inputTypeByApi(rawDocRef)}`),
+              ]"
+              @select="(idx) => (inputTypeIdx = idx)"
+              :selected-idx="inputTypeIdx"
+            ></ToggleButton>
+          </div>
+          <EndpointsAndMethods :doc="rawDocRef"></EndpointsAndMethods>
+
+          <!-- Main input fields area -->
+          <p
+            v-if="getInputProperties(userDocRef) == undefined"
+            class="text-center"
+          >
+            {{ $t('tryItOut.doesNotRequireInput') }}
+          </p>
+
+          <FieldsInput
+            v-else-if="inputTypeIdx === 0"
+            :inputProperties="getInputProperties(userDocRef)"
+            :requiredValues="listOfRequiredValues(userDocRef)"
+          />
+          <div v-else>
+            <div v-if="inputTypeByApi(rawDocRef) === 'jsonDataInput'">
+              <p class="q-mb-md">{{ $t('tryItOut.editJsonDataInput') }}</p>
+              <JsonDataInput />
+            </div>
+
+            <div v-else>
+              <p class="q-mb-md">{{ $t('tryItOut.editQueryInput') }}</p>
+              <QueryStringInput
+                :inputProperties="getInputProperties(userDocRef)"
+              />
+            </div>
+          </div>
+          <MakeApiCallBtn
+            :disable="
+              !!validateInputProperties() &&
+              getInputProperties(userDocRef) != undefined
+            "
+          ></MakeApiCallBtn>
+        </template>
+
+        <!-- Response Tab -->
+        <template v-slot:response>
+          <div class="flex row justify-between q-mb-md">
+            <h6 class="q-my-sm">
               {{
-                [
-                  $t('tryItOut.fieldsInput'),
-                  $t(`tryItOut.${inputTypeByApi(rawDocRef)}`),
-                ][inputTypeIdx]
+                [$t('tryItOut.parsedResponse'), $t('tryItOut.rawResponse')][
+                  responseTypeIdx
+                ]
               }}
             </h6>
-            <ResetUserInputs @resetInputs="initUserDocRef()"></ResetUserInputs>
-          </div>
-          <ToggleButton
-            :label="$t('tryItOut.inputWith')"
-            :options="[
-              $t('tryItOut.fieldsInput'),
-              $t(`tryItOut.${inputTypeByApi(rawDocRef)}`),
-            ]"
-            @select="(idx) => (inputTypeIdx = idx)"
-            :selected-idx="inputTypeIdx"
-          ></ToggleButton>
-        </div>
-        <EndpointsAndMethods :doc="rawDocRef"></EndpointsAndMethods>
-
-        <!-- Main input fields area -->
-        <p
-          v-if="getInputProperties(userDocRef) == undefined"
-          class="text-center"
-        >
-          {{ $t('tryItOut.doesNotRequireInput') }}
-        </p>
-
-        <FieldsInput
-          v-else-if="inputTypeIdx === 0"
-          :inputProperties="getInputProperties(userDocRef)"
-          :requiredValues="listOfRequiredValues(userDocRef)"
-        />
-        <div v-else>
-          <div v-if="inputTypeByApi(rawDocRef) === 'jsonDataInput'">
-            <p class="q-mb-md">{{ $t('tryItOut.editJsonDataInput') }}</p>
-            <JsonDataInput />
-          </div>
-
-          <div v-else>
-            <p class="q-mb-md">{{ $t('tryItOut.editQueryInput') }}</p>
-            <QueryStringInput
-              :inputProperties="getInputProperties(userDocRef)"
+            <ToggleButton
+              :label="$t('tryItOut.displayAs')"
+              :options="[
+                $t('tryItOut.parsedResponse'),
+                $t('tryItOut.rawResponse'),
+              ]"
+              @select="(idx) => (responseTypeIdx = idx)"
+              :selected-idx="responseTypeIdx"
             />
           </div>
-        </div>
-        <MakeApiCallBtn
-          :disable="
-            !!validateInputProperties() &&
-            getInputProperties(userDocRef) != undefined
-          "
-        ></MakeApiCallBtn>
-      </template>
 
-      <!-- Response Tab -->
-      <template v-slot:response>
-        <div class="flex row justify-between q-mb-md">
-          <h6 class="q-my-sm">
-            {{
-              [$t('tryItOut.parsedResponse'), $t('tryItOut.rawResponse')][
-                responseTypeIdx
-              ]
-            }}
-          </h6>
-          <ToggleButton
-            :label="$t('tryItOut.displayAs')"
-            :options="[
-              $t('tryItOut.parsedResponse'),
-              $t('tryItOut.rawResponse'),
-            ]"
-            @select="(idx) => (responseTypeIdx = idx)"
-            :selected-idx="responseTypeIdx"
-          />
-        </div>
-
-        <ParsedResponse
-          v-if="responseTypeIdx === 0"
-          :apiResponse="apiResponse"
-        ></ParsedResponse>
-        <RawResponse v-else :apiResponse="apiResponse"></RawResponse>
-      </template>
-    </InputAndResponseTabs>
+          <ParsedResponse
+            v-if="responseTypeIdx === 0"
+            :apiResponse="apiResponse"
+          ></ParsedResponse>
+          <RawResponse v-else :apiResponse="apiResponse"></RawResponse>
+        </template>
+      </InputAndResponseTabs>
+    </div>
   </div>
 </template>
 
@@ -162,14 +186,12 @@ export default defineComponent({
       getInputProperties,
       apiResponse,
       validateInputProperties,
+      isInIframe,
     } = tryItOutService();
 
     const inputTypeIdx = ref(0);
     const responseTypeIdx = ref(0);
     const InputAndResponseTabsRef = ref(null);
-
-    /** Check if the page opened in iframe */
-    const isInIframe = window.location !== window.parent.location;
 
     function postWindowHeight() {
       /**
@@ -183,9 +205,15 @@ export default defineComponent({
         // height: document.body.scrollHeight,
         height: pageContainer.scrollHeight,
         width: pageContainer.scrollWidth,
+        completed: apiResponse.status,
       };
+
       // window.top refers to parent window
       window.top.postMessage(message, '*');
+    }
+
+    function resetInputs() {
+      initUserDocRef();
     }
 
     /** Consistantly update the window size to parent window */
@@ -199,9 +227,14 @@ export default defineComponent({
 
     watch(props, () => {
       /** Update doc when the docPath changes */
-      fetchApiDoc(props.docPath);
+      fetchApiDoc(props.docPath).catch((err) => {
+        console.log(err);
+      });
     });
-    fetchApiDoc(props.docPath);
+
+    fetchApiDoc(props.docPath).catch((err) => {
+      console.log(err);
+    });
 
     watch(apiResponse, () => {
       if (apiResponse.status) {
@@ -212,7 +245,6 @@ export default defineComponent({
     });
 
     return {
-      initUserDocRef,
       rawDocRef,
       userDocRef,
       inputTypeIdx,
@@ -225,6 +257,7 @@ export default defineComponent({
       validateInputProperties,
       isInIframe,
       postWindowHeight,
+      resetInputs,
     };
   },
 });

@@ -17,6 +17,9 @@ import { postApiService } from './post-api_service';
 
 const { anythingToString } = formatterService();
 
+/** Check if the page opened in iframe */
+const isInIframe = window.location !== window.parent.location;
+
 /** DO NOT mutate or change this rawDocRef */
 const rawDocRef = ref({});
 
@@ -25,7 +28,7 @@ const userDocRef = ref({});
 
 const apiResponse = reactive({
   status: '',
-  statusText: '',
+  statusDescription: '',
   response: '',
 });
 
@@ -141,11 +144,19 @@ const tryItOutService = () => {
   }
 
   function fetchApiDoc(path) {
-    axios.get(path).then((res) => {
-      rawDocRef.value = JSON.parse(
-        JSON.stringify(yaml.load(res.data, { json: true }))
-      );
-      initUserDocRef();
+    return new Promise((resolve, reject) => {
+      axios
+        .get(path)
+        .then((res) => {
+          rawDocRef.value = JSON.parse(
+            JSON.stringify(yaml.load(res.data, { json: true }))
+          );
+          initUserDocRef();
+          resolve('ApiDoc Fetched');
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
   }
 
@@ -153,7 +164,7 @@ const tryItOutService = () => {
     /** Duplicate and remove the reactivity of doc object */
     userDocRef.value = JSON.parse(JSON.stringify(rawDocRef.value));
     apiResponse.status = '';
-    apiResponse.statusText = '';
+    apiResponse.statusDescription = '';
     apiResponse.response = {};
   }
 
@@ -323,7 +334,15 @@ const tryItOutService = () => {
     const res = await postApiCall(userDocRef, apiKey);
     console.log(res);
     apiResponse.status = res?.status?.toString() || '';
-    apiResponse.statusText = res?.statusText || '';
+    /**
+     * Trying to get the correct status description from the documentation,
+     * The response doesn't contain the description test, so  have  to  get
+     * from the documentation iteself.
+     * */
+    apiResponse.statusDescription =
+      Object.values(rawDocRef.value.paths)[0]?.post?.responses[
+        res?.status?.toString()
+      ]?.description || '';
     apiResponse.response =
       typeof res.response == 'object' ? JSON.parse(res.response) : res.response;
     return res;
@@ -346,7 +365,7 @@ const tryItOutService = () => {
       xhr.onreadystatechange = function () {
         if (this.readyState === this.DONE) {
           apiResponse.status = xhr.status.toString();
-          apiResponse.statusText = xhr.statusText;
+          apiResponse.statusDescription = xhr.statusText;
           apiResponse.response = JSON.parse(xhr.response);
           console.log(xhr);
           resolve(xhr.response);
@@ -389,7 +408,7 @@ const tryItOutService = () => {
           // inputProperty.example = JSON.stringify(exampleValue);
           break;
         case 'number':
-          inputProperty.example = +exampleValue
+          inputProperty.example = +exampleValue;
           break;
         default:
           inputProperty.example = exampleValue;
@@ -409,6 +428,7 @@ const tryItOutService = () => {
     fetchApiDoc,
     initUserDocRef,
     inputTypeByApi,
+    isInIframe,
 
     validApiDoc,
     validateInputProperties,

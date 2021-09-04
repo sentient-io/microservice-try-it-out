@@ -10,7 +10,7 @@
       <div class="row justify-between items-center">
         <b :class="apiResponse.status[0] === '2' ? 'text-green-8' : 'text-red'"
           >{{ $t('terms.response_code') }} : {{ apiResponse.status }} -
-          {{ apiResponse.statusText }}
+          {{ apiResponse.statusDescription }}
         </b>
         <DownloadResponseAs :response="JSON.stringify(apiResponse.response)" />
       </div>
@@ -22,12 +22,15 @@
           class="q-ma-sm absolute"
           color="white"
           outline
-          style="right: 2rem;"
+          style="right: 2rem"
           size="sm"
           @click="copyResponse()"
         ></q-btn>
 
-        <pre class="language-javascript s-code q-px-lg" style="max-height: 50vh; overflow: scroll">
+        <pre
+          class="language-javascript s-code q-px-lg"
+          style="max-height: 50vh; overflow: scroll"
+        >
         <code style="word-break:break-all;  white-space:break-spaces">
           <!-- Alwayrs make sure the below line is not indentedF -->
 {{ formatJsonString(JSON.stringify(apiResponse.response)) }}
@@ -61,10 +64,18 @@ export default {
     apiResponse: { type: Object, required: true },
   },
   setup(props) {
-    const { formatJsonString } = tryItOutService();
+    const { formatJsonString, isInIframe } = tryItOutService();
 
     function copyResponse() {
-      copyToClipboard(props.apiResponse.response);
+      if (isInIframe) {
+        window.top.postMessage(
+          { responseToCopy: props.apiResponse.response },
+          '*'
+        );
+      } else {
+        copyToClipboard(props.apiResponse.response);
+      }
+
       Notify.create({
         message: 'Response Copied To Clipboard',
         color: 'green-6',
@@ -96,5 +107,4 @@ export default {
 pre.language-javascript {
   border-radius: 8px !important;
 }
-
 </style>

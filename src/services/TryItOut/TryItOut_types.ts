@@ -40,6 +40,6 @@ export interface docInterface {
 
 export interface apiResponseInterface {
   status: string;
-  statusText: string;
+  statusDescription: string;
   response: unknown;
 }
