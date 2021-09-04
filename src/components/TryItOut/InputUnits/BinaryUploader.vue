@@ -34,7 +34,7 @@ export default defineComponent({
       typeof props.example !== 'string' ? (file.value = props.example) : null;
     });
     const file = ref(props.example);
-    function uploadFile(ufile) {
+    function uploadFile(ufile: File) {
       /**
        * Emit "uploadFile" event together with the user uploaded file
        * At this moment, the file variable haven't updated  yet . The
