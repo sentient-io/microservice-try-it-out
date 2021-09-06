@@ -216,6 +216,14 @@ export default defineComponent({
       initUserDocRef();
     }
 
+    if (isInIframe) {
+      /**
+       * Disable scroll bar on body element if the page is opened in iframe, This will
+       * prevent  flashing  scroll  bar  when  user toggle Fields inout and JSON input
+       * */
+      document.getElementsByTagName('body')[0].style.overflow = 'hidden';
+    }
+
     /** Consistantly update the window size to parent window */
     window.addEventListener('resize', postWindowHeight);
     onMounted(() => {

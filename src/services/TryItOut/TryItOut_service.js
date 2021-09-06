@@ -42,7 +42,7 @@ const stopEditingNotifyMessage = {
   As this page is for demo and explore puspe only.\ 
   To edit the heavy content, please use provided media/file uploader under \ 
   <b>Fields Input</b> mode to update data instead of directly editing here.</span>`,
-  binaryFile: `This JSON format data contains uploaded binary file, eidting on this page may cause data format error.
+  binaryFile: `This JSON format data contains uploaded binary file, edit on this page may cause data format error.
   Please edit with Fields Input mode instead.`,
 };
 
