@@ -10,16 +10,23 @@
     <!-- 
       Using v-show logic to display 404 error
       message if the document is  not found .
+      Forget why don't use v-if, but there is
+      a reason.
      -->
     <div
-      v-show="Object.keys(rawDocRef).length === 0"
+      v-show="Object.keys(rawDocRef).length === 0 || !rawDocRef.openapi"
       class="row items-center justify-center q-my-lg"
     >
       <div class="q-mr-md">
         <q-icon name="mdi-telescope" size="4rem" color="grey-4" />
       </div>
       <div>
-        <p>Oops, API documentation not found from the provided url below:</p>
+        <p v-if="rawDocRef.openapi">
+          Oops, API documentation not found from the provided url below:
+        </p>
+        <p v-else>
+          Try it out is not available for websocket API at this moment.
+        </p>
         <a :href="docPath" :target="isInIframe ? '_parent' : '_blank'">{{
           docPath
         }}</a>
@@ -29,7 +36,7 @@
     <!-- 
       Below content will only display when there is valid rawDocRef content
       -->
-    <div v-show="Object.keys(rawDocRef).length !== 0">
+    <div v-show="Object.keys(rawDocRef).length !== 0 && rawDocRef.openapi">
       <!-- {{ userDocRef }} -->
       <h6 class="q-ma-none">
         {{ $t('tryItOut.header') }} - {{ rawDocRef?.info?.title }}
