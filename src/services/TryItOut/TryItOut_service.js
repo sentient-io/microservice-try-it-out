@@ -30,6 +30,7 @@ const apiResponse = reactive({
   status: '',
   statusDescription: '',
   response: '',
+  counter: 0, // Counter to trigger reactive (for repeating API Call)
 });
 
 const apiKey = ref('');
@@ -166,6 +167,7 @@ const tryItOutService = () => {
     apiResponse.status = '';
     apiResponse.statusDescription = '';
     apiResponse.response = {};
+    apiResponse.counter = 0;
   }
 
   function validApiDoc(apiDoc) {
@@ -345,6 +347,7 @@ const tryItOutService = () => {
       ]?.description || '';
     apiResponse.response =
       typeof res.response == 'object' ? JSON.parse(res.response) : res.response;
+    apiResponse.counter += 1;
     return res;
   }
 
@@ -367,6 +370,7 @@ const tryItOutService = () => {
           apiResponse.status = xhr.status.toString();
           apiResponse.statusDescription = xhr.statusText;
           apiResponse.response = JSON.parse(xhr.response);
+          apiResponse.counter += 1;
           console.log(xhr);
           resolve(xhr.response);
         }

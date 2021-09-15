@@ -46,9 +46,12 @@
         <q-btn v-if="!isInIframe" class="float-right" to="/" icon="home" />
       </h6>
       <p>{{ $t('tryItOut.description') }}</p>
-      <BeforeYouStart />
 
-      <APIKeyInput v-if="!apiKey" />
+      <div v-if="!apiKey">
+        <BeforeYouStart />
+        <APIKeyInput />
+      </div>
+
       <InputAndResponseTabs
         ref="InputAndResponseTabsRef"
         :apiResponse="apiResponse"
@@ -254,6 +257,7 @@ export default defineComponent({
     });
 
     watch(apiResponse, () => {
+      console.log('Watching response')
       if (apiResponse.status) {
         InputAndResponseTabsRef.value.toggleResponseTab();
       } else {
