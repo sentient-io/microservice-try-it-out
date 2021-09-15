@@ -28,8 +28,13 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   props: { disable: {} },
   setup() {
-    const { userDocRef, getApiCallMethod, makePostApiCall, makeGetApiCall } =
-      tryItOutService();
+    const {
+      userDocRef,
+      getApiCallMethod,
+      makePostApiCall,
+      makeGetApiCall,
+      isInIframe,
+    } = tryItOutService();
 
     const $q = useQuasar();
 
@@ -51,6 +56,18 @@ export default defineComponent({
           backgroundColor: 'white',
           customClass: 'n-spinner',
         });
+
+        if (isInIframe) {
+          /**
+           * Use additional 'n-bottom' class  to  move
+           * the loader to the bottom, if it is loaded
+           * from iframe(usually space will be narrow)
+           * */
+          $q.loading.setDefaults({
+            customClass: 'n-spinner n-bottom',
+          });
+        }
+
         $q.loading.show({ message: this.message[this.msgCount] });
         this.interval = setInterval(() => {
           $q.loading.hide();
@@ -115,6 +132,7 @@ export default defineComponent({
 
     return {
       makeApiCall,
+      isInIframe,
     };
   },
 });
@@ -151,5 +169,10 @@ export default defineComponent({
   background-color: hsla(0, 100%, 100%, 0.5);
   backdrop-filter: blur(5px);
   font-size: 1rem;
+}
+
+.n-bottom {
+  align-items: flex-end;
+  padding-bottom: 7rem;
 }
 </style>

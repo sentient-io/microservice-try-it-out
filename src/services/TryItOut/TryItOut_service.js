@@ -11,7 +11,14 @@ import { ref, reactive } from 'vue';
 import yaml from 'js-yaml';
 
 import { formatterService } from '../formatter_service';
+
+import { dataFormatter } from './data-formatter';
+import { postApiService } from './post-api_service';
+
 const { anythingToString } = formatterService();
+
+/** Check if the page opened in iframe */
+const isInIframe = window.location !== window.parent.location;
 
 /** DO NOT mutate or change this rawDocRef */
 const rawDocRef = ref({});
@@ -21,8 +28,9 @@ const userDocRef = ref({});
 
 const apiResponse = reactive({
   status: '',
-  statusText: '',
+  statusDescription: '',
   response: '',
+  counter: 0, // Counter to trigger reactive (for repeating API Call)
 });
 
 const apiKey = ref('');
@@ -35,7 +43,7 @@ const stopEditingNotifyMessage = {
   As this page is for demo and explore puspe only.\ 
   To edit the heavy content, please use provided media/file uploader under \ 
   <b>Fields Input</b> mode to update data instead of directly editing here.</span>`,
-  binaryFile: `This JSON format data contains uploaded binary file, eidting on this page may cause data format error.
+  binaryFile: `This JSON format data contains uploaded binary file, edit on this page may cause data format error.
   Please edit with Fields Input mode instead.`,
 };
 
@@ -137,11 +145,19 @@ const tryItOutService = () => {
   }
 
   function fetchApiDoc(path) {
-    axios.get(path).then((res) => {
-      rawDocRef.value = JSON.parse(
-        JSON.stringify(yaml.load(res.data, { json: true }))
-      );
-      initUserDocRef();
+    return new Promise((resolve, reject) => {
+      axios
+        .get(path)
+        .then((res) => {
+          rawDocRef.value = JSON.parse(
+            JSON.stringify(yaml.load(res.data, { json: true }))
+          );
+          initUserDocRef();
+          resolve('ApiDoc Fetched');
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
   }
 
@@ -149,8 +165,9 @@ const tryItOutService = () => {
     /** Duplicate and remove the reactivity of doc object */
     userDocRef.value = JSON.parse(JSON.stringify(rawDocRef.value));
     apiResponse.status = '';
-    apiResponse.statusText = '';
+    apiResponse.statusDescription = '';
     apiResponse.response = {};
+    apiResponse.counter = 0;
   }
 
   function validApiDoc(apiDoc) {
@@ -173,28 +190,8 @@ const tryItOutService = () => {
     return inputType;
   }
 
-  function getInputProperties(apiDocRef) {
-    let apiDoc = apiDocRef.value ?? apiDocRef;
-    let inputProperties = '';
-    try {
-      inputProperties = apiDoc.components.schemas.input.properties;
-      addMaskedValueToInputProperties(inputProperties);
-    } catch (err) {}
-    try {
-      inputProperties = Object.values(apiDoc.paths)[0].get.parameters;
-    } catch (err) {}
-    return inputProperties;
-  }
-
-  function addMaskedValueToInputProperties(inputProperties) {
-    const trim = 5000;
-    Object.values(inputProperties).forEach((property) => {
-      if (property.example.length > trim) {
-        property.maskedValue = `${property.example.slice(0, trim)}
-          ...(${property.example.length - trim} characters been clipped)`;
-      }
-    });
-  }
+  const { getInputProperties, addMaskedValueToInputProperties } =
+    dataFormatter();
 
   function inputPropertiesToJsonString(inputProperties) {
     const jsonInput = {};
@@ -211,51 +208,6 @@ const tryItOutService = () => {
       });
     });
     return JSON.stringify(jsonInput);
-  }
-
-  function rawInputPropertiesToJsonString(inputProperties) {
-    /** Ignores masked value and empty value */
-    const jsonInput = {};
-    Object.keys(inputProperties).forEach((propertyKey) => {
-      let property = inputProperties[propertyKey];
-      let key = property.name || property['x-name'] || propertyKey;
-      let value = property.example;
-      if (value) {
-        Object.assign(jsonInput, {
-          [key]: modifyValueByType(value, property.type),
-        });
-      }
-    });
-
-    return JSON.stringify(jsonInput);
-  }
-
-  function rawInputPropertiesToDataForm(inputProperties) {
-    var data = new FormData();
-
-    Object.keys(inputProperties).forEach((propertyKey) => {
-      let property = inputProperties[propertyKey];
-      let key = property.name || property['x-name'] || propertyKey;
-      let value = property.example;
-      if (value) {
-        data.append(`${key}`, value);
-      }
-    });
-
-    return data;
-  }
-
-  function modifyValueByType(value, type) {
-    let modifiedValue = value;
-    switch (type) {
-      case 'array':
-        typeof value !== 'object' ? (modifiedValue = JSON.parse(value)) : null;
-        break;
-
-      default:
-        break;
-    }
-    return modifiedValue;
   }
 
   function inputPropertiesContainMaskedValue(inputProperties) {
@@ -378,55 +330,25 @@ const tryItOutService = () => {
     return `${server}${path}`;
   }
 
-  function getContentType(docRef) {
-    const doc = docRef.value ?? docRef;
-    console.log(doc);
-    const contentType = Object.keys(
-      Object.values(Object.values(doc.paths)[0])[0].requestBody.content
-    )[0];
-    return contentType;
-  }
+  const { postApiCall } = postApiService();
 
-  function makePostApiCall() {
-    return new Promise((resolve) => {
-      const xhr = new XMLHttpRequest();
-      const contentType = getContentType(userDocRef);
-
-      xhr.open('POST', getEndPoint(userDocRef));
-
-      xhr.onreadystatechange = function () {
-        if (this.readyState === this.DONE) {
-          apiResponse.status = xhr.status.toString();
-          apiResponse.statusText = xhr.statusText;
-          apiResponse.response = JSON.parse(xhr.response);
-          console.log(xhr);
-          resolve(xhr.response);
-        }
-      };
-
-      xhr.setRequestHeader('x-api-key', apiKey.value);
-
-      if (contentType === 'multipart/form-data') {
-        xhr.send(rawInputPropertiesToDataForm(getInputProperties(userDocRef)));
-      } else {
-        /**
-         * For multipart/form-data, DO NOT set the Request Header, else will
-         * keep getting error. Refer to :
-         * https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
-         * Middle of the page, there is a warning message
-         */
-        xhr.setRequestHeader('Content-Type', contentType);
-        xhr.send(
-          rawInputPropertiesToJsonString(getInputProperties(userDocRef))
-        );
-      }
-
-      console.log(
-        rawInputPropertiesToDataForm(getInputProperties(userDocRef)).get(
-          'filePath'
-        )
-      );
-    });
+  async function makePostApiCall() {
+    const res = await postApiCall(userDocRef, apiKey);
+    console.log(res);
+    apiResponse.status = res?.status?.toString() || '';
+    /**
+     * Trying to get the correct status description from the documentation,
+     * The response doesn't contain the description test, so  have  to  get
+     * from the documentation iteself.
+     * */
+    apiResponse.statusDescription =
+      Object.values(rawDocRef.value.paths)[0]?.post?.responses[
+        res?.status?.toString()
+      ]?.description || '';
+    apiResponse.response =
+      typeof res.response == 'object' ? JSON.parse(res.response) : res.response;
+    apiResponse.counter += 1;
+    return res;
   }
 
   function makeGetApiCall() {
@@ -446,8 +368,9 @@ const tryItOutService = () => {
       xhr.onreadystatechange = function () {
         if (this.readyState === this.DONE) {
           apiResponse.status = xhr.status.toString();
-          apiResponse.statusText = xhr.statusText;
+          apiResponse.statusDescription = xhr.statusText;
           apiResponse.response = JSON.parse(xhr.response);
+          apiResponse.counter += 1;
           console.log(xhr);
           resolve(xhr.response);
         }
@@ -488,6 +411,9 @@ const tryItOutService = () => {
           inputProperty.example = anythingToString(exampleValue);
           // inputProperty.example = JSON.stringify(exampleValue);
           break;
+        case 'number':
+          inputProperty.example = +exampleValue;
+          break;
         default:
           inputProperty.example = exampleValue;
           break;
@@ -506,6 +432,7 @@ const tryItOutService = () => {
     fetchApiDoc,
     initUserDocRef,
     inputTypeByApi,
+    isInIframe,
 
     validApiDoc,
     validateInputProperties,

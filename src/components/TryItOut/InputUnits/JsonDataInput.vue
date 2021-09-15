@@ -145,7 +145,7 @@ export default defineComponent({
       let result = '';
 
       keys.forEach((key) => {
-        if (Object.keys(inputProperties).indexOf(key) > -1) {
+        if (inputProperties && Object.keys(inputProperties).indexOf(key) > -1) {
           result = `data:${base64DataType};base64,${inputProperties[key].example}`;
         }
       });

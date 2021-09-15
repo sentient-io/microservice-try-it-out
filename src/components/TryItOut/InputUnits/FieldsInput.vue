@@ -25,7 +25,6 @@
       ></FieldsInputForObject>
 
       <div v-else-if="inputProperty.format === 'binary'">
-        <p>test</p>
         <BinaryUploader
           :label="getInputFieldLabel(inputProperty, name, index)"
           :example="inputProperty['example']"

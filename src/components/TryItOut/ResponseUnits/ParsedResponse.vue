@@ -11,7 +11,7 @@
     <div class="q-mt-md">
       <b :class="apiResponse.status[0] === '2' ? 'text-green-8' : 'text-red'"
         >{{ $t('terms.response_code') }} : {{ apiResponse.status }} -
-        {{ apiResponse.statusText }}
+        {{ apiResponse.statusDescription }}
       </b>
     </div>
 

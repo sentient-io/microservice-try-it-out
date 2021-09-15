@@ -3,8 +3,8 @@
     <div class="flex row justify-between q-my-md">
       <div class="flex row items-center">
         <b class="q-mr-sm">{{ $t('tryItOut.endPoint') }} </b>
-        <div class="flex row no-wrap items-center">
-          <p>{{ server }}</p>
+        <div class="flex row items-center">
+          <p class="s-break-all">{{ server }}</p>
           <q-select
             dense
             class="q-pa-xs"
@@ -13,7 +13,7 @@
             v-model="path"
             v-if="pathOptions.length > 1"
           />
-          <p v-else class="text-brown-4">
+          <p v-else class="text-brown-4 s-break-all">
             {{ pathOptions[0] }}
           </p>
         </div>
