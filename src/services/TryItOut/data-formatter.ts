@@ -70,18 +70,19 @@ const dataFormatter = () => {
     inputProperties: inputPropertyInterface
   ) {
     /** Ignores masked value and empty value */
+
     const jsonInput = {};
     Object.keys(inputProperties).forEach((propertyKey) => {
       const property: any = inputProperties[propertyKey];
       const key = property.name || property['x-name'] || propertyKey;
       const value = property.example;
-      if (value) {
+      console.log(key, value);
+      if (value || value === 0) {
         Object.assign(jsonInput, {
           [key]: modifyValueByType(value, property.type),
         });
       }
     });
-
     return JSON.stringify(jsonInput);
   }
 
