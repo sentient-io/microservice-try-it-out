@@ -19,7 +19,7 @@
         @userInput="
           (userInputValue) => {
             //inputProperty.example = userInputValue;
-            updateInputPropertyExampleValue(inputProperty,userInputValue)
+            updateInputPropertyExampleValue(inputProperty, userInputValue);
           }
         "
       ></FieldsInputForObject>
@@ -38,6 +38,23 @@
 
       <!-- Remark: 2021 Jul 27 Removed .native modifier from
 @[isBase64(inputProperty)].native.capture.prevent  -->
+      <div v-else-if="inputProperty.type == 'boolean'">
+        <!-- Remark: 2021 Nov 19 Added boolean value -->
+        <q-checkbox
+          class="q-ml-sm"
+          color="green-8"
+          left-label
+          :label="getInputFieldLabel(inputProperty, name, index)"
+          :model-value="inputProperty.maskedValue || inputProperty.example"
+          @update:modelValue="
+            (val) => {
+              inputProperty.maskedValue
+                ? editingHeavyContentNotify(stopEditingNotifyMessage.base64str)
+                : updateInputPropertyExampleValue(inputProperty, val);
+            }
+          "
+        />
+      </div>
       <div v-else>
         <!-- Generic input fields -->
         <!-- Some notes: 
