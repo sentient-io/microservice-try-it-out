@@ -40,11 +40,11 @@
       -->
     <div v-show="Object.keys(rawDocRef).length !== 0 && rawDocRef.openapi">
       <!-- {{ userDocRef }} -->
-      <h6 class="q-ma-none">
+      <h3 class="q-ma-none">
         {{ $t('tryItOut.header') }} - {{ rawDocRef?.info?.title }}
 
         <q-btn v-if="!isInIframe" class="float-right" to="/" icon="home" />
-      </h6>
+      </h3>
       <p>{{ $t('tryItOut.description') }}</p>
 
       <div v-if="!apiKey">
