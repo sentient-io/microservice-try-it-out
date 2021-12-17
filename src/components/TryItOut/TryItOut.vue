@@ -41,7 +41,8 @@
     <div v-show="Object.keys(rawDocRef).length !== 0 && rawDocRef.openapi">
       <!-- {{ userDocRef }} -->
       <h3 class="q-ma-none">
-        {{ $t('tryItOut.header') }} - {{ rawDocRef?.info?.title }}
+        {{ $t('tryItOut.header') }}
+        {{ isInIframe ? null : `- ${rawDocRef?.info?.title}` }}
 
         <q-btn v-if="!isInIframe" class="float-right" to="/" icon="home" />
       </h3>
@@ -257,7 +258,7 @@ export default defineComponent({
     });
 
     watch(apiResponse, () => {
-      console.log('Watching response')
+      console.log('Watching response');
       if (apiResponse.status) {
         InputAndResponseTabsRef.value.toggleResponseTab();
       } else {
