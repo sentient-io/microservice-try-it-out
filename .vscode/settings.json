@@ -3,6 +3,9 @@
   "vetur.format.enable": false,
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
   "typescript.tsdk": "node_modules/typescript/lib",
+<<<<<<< HEAD
   "vetur.experimental.templateInterpolationService": false,
+=======
+>>>>>>> dev
   "standard.enable": false
 }

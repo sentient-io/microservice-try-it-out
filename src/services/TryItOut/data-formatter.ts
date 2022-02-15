@@ -66,6 +66,17 @@ const dataFormatter = () => {
     return data;
   }
 
+  function validValue(value: unknown) {
+    /**
+     * Validate value, because the value can be multiple type
+     * for each type need to treate differentely.
+     */
+    if (value) return true;
+    if (value === 0) return true;
+    if (typeof value === 'boolean') return true;
+    return false;
+  }
+
   function rawInputPropertiesToJsonString(
     inputProperties: inputPropertyInterface
   ) {
@@ -76,8 +87,10 @@ const dataFormatter = () => {
       const property: any = inputProperties[propertyKey];
       const key = property.name || property['x-name'] || propertyKey;
       const value = property.example;
-      console.log(key, value);
-      if (value || value === 0) {
+      console.log('*** test ***');
+      console.log(key, property.type);
+      console.log('*** end test ***');
+      if (validValue(value)) {
         Object.assign(jsonInput, {
           [key]: modifyValueByType(value, property.type),
         });
