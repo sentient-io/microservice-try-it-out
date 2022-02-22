@@ -194,7 +194,7 @@ export default defineComponent({
     // });
 
     watch(apiResponse, () => {
-      console.log('Watching response');
+      // console.log('Watching response');
       if (apiResponse.status) {
         InputAndResponseTabsRef.value.toggleResponseTab();
       } else {
