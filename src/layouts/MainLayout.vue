@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-page-container>
-      <router-view />
+    <q-page-container class="full-width">
+      <router-view style="max-width: 1200px" class="q-mx-auto" />
     </q-page-container>
   </q-layout>
 </template>

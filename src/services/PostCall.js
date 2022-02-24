@@ -11,7 +11,7 @@ export default ({
     xhr.onreadystatechange = function () {
       if (this.readyState === this.DONE) {
         console.log(xhr);
-        resolve(xhr);
+        resolve(xhr.response);
         if (false) {
           // TODO add in error catcher
           reject('error');
@@ -22,7 +22,7 @@ export default ({
     xhr.setRequestHeader('x-api-key', apiKey);
 
     if (contentType === 'multipart/form-data') {
-      // xhr.send();
+      xhr.send();
     } else {
       /**
        * For multipart/form-data, DO NOT set the Request Header, else will
@@ -31,12 +31,12 @@ export default ({
        * Middle of the page, there is a warning message
        */
       xhr.setRequestHeader('Content-Type', contentType);
-      console.log({
-        endpoint,
-        contentType,
-        data,
-        apiKey,
-      });
+      // console.log({
+      //   endpoint,
+      //   contentType,
+      //   data,
+      //   apiKey,
+      // });
       xhr.send(data);
     }
   });
