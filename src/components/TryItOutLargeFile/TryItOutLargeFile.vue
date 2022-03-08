@@ -22,8 +22,8 @@
     </q-tabs>
 
     <q-tab-panels v-model="currentStep">
-      <q-tab-panel :name="LargeFileTrySteps[0]"
-        ><UploadLargeFile
+      <q-tab-panel :name="LargeFileTrySteps[0]">
+        <UploadLargeFile
       /></q-tab-panel>
       <q-tab-panel :name="LargeFileTrySteps[1]">
         <GetStatus />

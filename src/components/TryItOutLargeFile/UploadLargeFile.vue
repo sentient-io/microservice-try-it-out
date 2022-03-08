@@ -11,7 +11,6 @@
         }
       "
     />
-
     <div v-if="policy" class="q-my-md">
       <div class="text-center">
         <!-- Main call to action button -->
@@ -37,27 +36,30 @@
 import { defineComponent, ref } from 'vue';
 import largeFileService from 'src/services/LargeFile/largeFileService';
 import FlatObjectList from 'src/components/TryItOut/ResponseUnits/FlatObjectList.vue';
-
 const { requestUploadingPolicy, useUploadLargeFile } = largeFileService();
-
-const file = ref();
-const policy = ref();
-
-async function handleRequestPolicy(fileObj) {
-  // Trigger the first api call
-  policy.value = await requestUploadingPolicy(fileObj);
-}
-
-function handleFileUploading() {
-  // Trigger the second api call
-  useUploadLargeFile(file.value, policy.value);
-  return;
-}
 
 export default defineComponent({
   components: { FlatObjectList },
   setup() {
-    return { file, policy, handleRequestPolicy, handleFileUploading };
+    const file = ref();
+    const policy = ref();
+
+    async function handleRequestPolicy(fileObj) {
+      // Trigger the first api call
+      policy.value = await requestUploadingPolicy(fileObj);
+    }
+
+    function handleFileUploading() {
+      // Trigger the second api call
+      useUploadLargeFile(file.value, policy.value);
+      return;
+    }
+    return {
+      file,
+      policy,
+      handleRequestPolicy,
+      handleFileUploading,
+    };
   },
 });
 </script>

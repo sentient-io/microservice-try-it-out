@@ -24,21 +24,29 @@ function findDocByIndicator(INDICATOR) {
     k.includes(INDICATOR)
   );
   const url = rawDocRef.value.servers[0].url;
-  const method = Object.keys(rawDocRef.value.paths[path]).includes('post')
+  const methodVerb = Object.keys(rawDocRef.value.paths[path]).includes('post')
     ? 'post'
     : 'get';
-  const requestBody = rawDocRef.value.paths[path][method].requestBody;
+  const method = rawDocRef.value.paths[path][methodVerb];
+  const requestBody = method.requestBody;
   const contentType = Object.keys(requestBody.content)[0];
   rawDocRef.value.paths[path].post.requestBody.content;
   const requestBodySchema = get$ref(
     rawDocRef.value,
     requestBody.content[contentType].schema.$ref
   );
+
+  // If there is no server override, return normal endpoint
+  let endpoint = url + path;
+  if (method?.servers?.[0]?.url) {
+    // For server override, return the override endpoint
+    endpoint = method.servers[0].url;
+  }
   return {
     doc: rawDocRef.value.paths[path],
     requestBodySchema,
     reqBodyProp: requestBodySchema.properties,
-    endpoint: url + path,
+    endpoint,
     contentType,
   };
 }
@@ -81,7 +89,9 @@ function fmtFileDataForApiCall(file) {
 }
 
 function fmtFormDataForApiCall(fileObj, fields) {
+  console.log(fileObj, fields);
   const properties = findDocByIndicator(SECOND_API_INDICATOR).reqBodyProp;
+  console.log(properties);
 
   const formData = new FormData();
 
@@ -90,13 +100,18 @@ function fmtFormDataForApiCall(fileObj, fields) {
      * Here we assuming the policy ref and request schemas
      * shares the same key value.
      */
-    if (property == 'filePath') {
-      formData.append(property, fileObj);
+    // !IMPORTANT! Hard coded file key
+    if (property == 'file') {
+      // Skip file element, because of the form data order
+    } else if (property == 'content-type') {
+      console.log('Content-Type', fields[property]);
+      formData.append('content-type', fields[property]);
     } else {
       formData.append(property, fields[property]);
     }
   });
-
+  // !IMPORTANT! Hard coded remind engineer team to add this to api
+  formData.append('file', fileObj);
   return formData;
 }
 

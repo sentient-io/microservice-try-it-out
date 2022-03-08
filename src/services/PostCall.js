@@ -22,7 +22,7 @@ export default ({
     xhr.setRequestHeader('x-api-key', apiKey);
 
     if (contentType === 'multipart/form-data') {
-      xhr.send();
+      xhr.send(data);
     } else {
       /**
        * For multipart/form-data, DO NOT set the Request Header, else will
