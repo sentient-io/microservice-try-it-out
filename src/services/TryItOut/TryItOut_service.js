@@ -15,6 +15,8 @@ import { formatterService } from '../formatter_service';
 import { dataFormatter } from './data-formatter';
 import { postApiService } from './post-api_service';
 
+import DocClass from 'src/services/DocClass';
+
 const { anythingToString } = formatterService();
 
 /** Check if the page opened in iframe */
@@ -22,6 +24,9 @@ const isInIframe = window.location !== window.parent.location;
 
 /** DO NOT mutate or change this rawDocRef */
 const rawDocRef = ref({});
+
+/** New doc class to replace other doc parsing functions */
+let docClass = ref({});
 
 /** Any user input or update goes to  here */
 const userDocRef = ref({});
@@ -152,6 +157,10 @@ const tryItOutService = () => {
           rawDocRef.value = JSON.parse(
             JSON.stringify(yaml.load(res.data, { json: true }))
           );
+          /**
+           * 2022 Mar - going to move all doc functison to DocClass
+           */
+          docClass.value = new DocClass(rawDocRef.value);
           initUserDocRef();
           resolve('ApiDoc Fetched');
         })
@@ -471,6 +480,7 @@ const tryItOutService = () => {
     rawDocRef,
     userDocRef,
     apiResponse,
+    docClass,
   };
 };
 

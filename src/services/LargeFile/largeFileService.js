@@ -1,10 +1,8 @@
 import largeFileAPICallers from './largeFileAPICallers';
-// import largeFileFormatter from './largeFileFormatter';
 import { tryItOutService } from 'src/services/TryItOut/TryItOut_service';
-import yamlDocHelper from 'src/services/yamlDocHelper';
 
-// const { getFileDetail } = largeFileFormatter();
-const { getUploadPolicy, uploadLargeFile } = largeFileAPICallers();
+const { getUploadPolicy, uploadLargeFile, fetchLargeFileStatus } =
+  largeFileAPICallers();
 
 /**
  * !!! Important !!!
@@ -14,42 +12,9 @@ const { getUploadPolicy, uploadLargeFile } = largeFileAPICallers();
  */
 const FIRST_API_INDICATOR = '/getuploadurl';
 const SECOND_API_INDICATOR = '/upload';
+const FETCH_STATUS_API_INDICATOR = '/getstatus';
 
-const { rawDocRef } = tryItOutService();
-const { get$ref } = yamlDocHelper();
-
-function findDocByIndicator(INDICATOR) {
-  /** Find the first post call api doc */
-  const path = Object.keys(rawDocRef.value.paths).find((k) =>
-    k.includes(INDICATOR)
-  );
-  const url = rawDocRef.value.servers[0].url;
-  const methodVerb = Object.keys(rawDocRef.value.paths[path]).includes('post')
-    ? 'post'
-    : 'get';
-  const method = rawDocRef.value.paths[path][methodVerb];
-  const requestBody = method.requestBody;
-  const contentType = Object.keys(requestBody.content)[0];
-  rawDocRef.value.paths[path].post.requestBody.content;
-  const requestBodySchema = get$ref(
-    rawDocRef.value,
-    requestBody.content[contentType].schema.$ref
-  );
-
-  // If there is no server override, return normal endpoint
-  let endpoint = url + path;
-  if (method?.servers?.[0]?.url) {
-    // For server override, return the override endpoint
-    endpoint = method.servers[0].url;
-  }
-  return {
-    doc: rawDocRef.value.paths[path],
-    requestBodySchema,
-    reqBodyProp: requestBodySchema.properties,
-    endpoint,
-    contentType,
-  };
-}
+const { rawDocRef, docClass } = tryItOutService();
 
 function mapFileProperty(file, property) {
   /**
@@ -78,8 +43,8 @@ function fmtFileDataForApiCall(file) {
    * get upload url api call
    */
   const fileData = {};
-  const properties = findDocByIndicator(FIRST_API_INDICATOR).reqBodyProp;
-  Object.keys(properties).forEach((property) => {
+  const requestBody = docClass.value.findRequestBody(FIRST_API_INDICATOR);
+  Object.keys(requestBody.properties).forEach((property) => {
     // !!! Hard coded to ignore the additional_param
     if (property == 'additional_param') return;
     fileData[property] = mapFileProperty(file, property);
@@ -90,12 +55,13 @@ function fmtFileDataForApiCall(file) {
 
 function fmtFormDataForApiCall(fileObj, fields) {
   console.log(fileObj, fields);
-  const properties = findDocByIndicator(SECOND_API_INDICATOR).reqBodyProp;
-  console.log(properties);
+
+  const requestBody = docClass.value.findRequestBody(SECOND_API_INDICATOR);
+  console.log(requestBody.properties);
 
   const formData = new FormData();
 
-  Object.keys(properties).forEach((property) => {
+  Object.keys(requestBody.properties).forEach((property) => {
     /**
      * Here we assuming the policy ref and request schemas
      * shares the same key value.
@@ -115,24 +81,69 @@ function fmtFormDataForApiCall(fileObj, fields) {
   return formData;
 }
 
+function setLocalStorageJID(jID) {
+  // Store job id to local storage together with the current time
+  const storage = window.localStorage;
+  const timestamp = new Date(Date.now()).toLocaleString();
+  const msTitle = rawDocRef.value.info.title;
+  const storageMsItem = storage.getItem(msTitle);
+  // const storageMsItem = storage.removeItem(msTitle); // Testing purpose
+  // return
+  let jIDList;
+  if (storageMsItem) {
+    jIDList = JSON.parse(storageMsItem);
+    const hasJID = Boolean(jIDList.find((e) => e.jID == jID));
+    if (!hasJID) {
+      // Only append jID if there is no existing jID
+      jIDList.push({ jID, timestamp });
+    }
+  } else {
+    // Init new array of jids
+    jIDList = [{ jID, timestamp }];
+  }
+
+  storage.setItem(msTitle, JSON.stringify(jIDList));
+  console.log(storage.getItem(msTitle));
+}
+
+function getLocalStorageJID() {
+  const storage = window.localStorage;
+  const msTitle = rawDocRef.value.info.title;
+  const storageMsItem = storage.getItem(msTitle);
+  const jIDList = JSON.parse(storageMsItem);
+  return jIDList;
+}
+
+async function useFetchLargeFileStatus(jID) {
+  const endpoint = docClass.value.findEndpoint(FETCH_STATUS_API_INDICATOR);
+  const status = await fetchLargeFileStatus(jID, endpoint)
+  return status;
+}
+
 async function requestUploadingPolicy(fileObj) {
   // Prepare data and trigger 1st api call
   const fileData = fmtFileDataForApiCall(fileObj);
-  // const fileDetail = getFileDetail(fileObj);
-  const endpoint = findDocByIndicator(FIRST_API_INDICATOR).endpoint;
+  const endpoint = docClass.value.findEndpoint(FIRST_API_INDICATOR);
   const policy = await getUploadPolicy(fileData, endpoint);
+  setLocalStorageJID(policy.jid);
   return policy;
 }
 
 function useUploadLargeFile(fileObj, policyRef) {
   // Prepare data and trigger 2nd api call
   const formData = fmtFormDataForApiCall(fileObj, policyRef.fields);
-  const contentType = findDocByIndicator(SECOND_API_INDICATOR).contentType;
+
+  const contentType = docClass.value.findContentType(SECOND_API_INDICATOR);
   // Hard coded url, assume each time policy return the valid url to upload
   void uploadLargeFile(formData, policyRef.url, contentType);
   return;
 }
 
 export default () => {
-  return { requestUploadingPolicy, useUploadLargeFile };
+  return {
+    requestUploadingPolicy,
+    useUploadLargeFile,
+    getLocalStorageJID,
+    useFetchLargeFileStatus,
+  };
 };
