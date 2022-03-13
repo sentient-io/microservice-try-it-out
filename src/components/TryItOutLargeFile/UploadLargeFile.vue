@@ -36,11 +36,11 @@
 import { defineComponent, ref } from 'vue';
 import largeFileService from 'src/services/LargeFile/largeFileService';
 import FlatObjectList from 'src/components/TryItOut/ResponseUnits/FlatObjectList.vue';
-const { requestUploadingPolicy, useUploadLargeFile } = largeFileService();
 
 export default defineComponent({
   components: { FlatObjectList },
   setup() {
+    const { requestUploadingPolicy, useUploadLargeFile } = largeFileService();
     const file = ref();
     const policy = ref();
 

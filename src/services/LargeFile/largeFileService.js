@@ -1,8 +1,12 @@
 import largeFileAPICallers from './largeFileAPICallers';
 import { tryItOutService } from 'src/services/TryItOut/TryItOut_service';
 
-const { getUploadPolicy, uploadLargeFile, fetchLargeFileStatus } =
-  largeFileAPICallers();
+const {
+  getUploadPolicy,
+  uploadLargeFile,
+  fetchLargeFileStatus,
+  fetchLargeFileResult,
+} = largeFileAPICallers();
 
 /**
  * !!! Important !!!
@@ -81,43 +85,54 @@ function fmtFormDataForApiCall(fileObj, fields) {
   return formData;
 }
 
-function setLocalStorageJID(jID) {
+function setJobLocalStorage(policy, fileObj) {
   // Store job id to local storage together with the current time
   const storage = window.localStorage;
   const timestamp = new Date(Date.now()).toLocaleString();
   const msTitle = rawDocRef.value.info.title;
-  const storageMsItem = storage.getItem(msTitle);
-  // const storageMsItem = storage.removeItem(msTitle); // Testing purpose
-  // return
-  let jIDList;
-  if (storageMsItem) {
-    jIDList = JSON.parse(storageMsItem);
-    const hasJID = Boolean(jIDList.find((e) => e.jID == jID));
+  // !IMPORTANT hard coded value from policy
+  const jID = policy['jid'];
+  const jobItem = {
+    fileName: fileObj.name,
+    size: fileObj.size,
+    cost: policy['request_cost'],
+    jID,
+    timestamp,
+  };
+  let jobList = getJobLocalStorage();
+
+  if (jobList) {
+    console.log(jobList);
+    const hasJID = Boolean(jobList.find((e) => e.jID == jID));
     if (!hasJID) {
       // Only append jID if there is no existing jID
-      jIDList.push({ jID, timestamp });
+      jobList.push(jobItem);
     }
   } else {
     // Init new array of jids
-    jIDList = [{ jID, timestamp }];
+    jobList = [jobItem];
   }
 
-  storage.setItem(msTitle, JSON.stringify(jIDList));
-  console.log(storage.getItem(msTitle));
+  storage.setItem(msTitle, JSON.stringify(jobList));
+  // storage.removeItem(msTitle); // Testing purpose, clean local storage
+  console.log(getJobLocalStorage());
 }
 
-function getLocalStorageJID() {
+function getJobLocalStorage() {
   const storage = window.localStorage;
   const msTitle = rawDocRef.value.info.title;
   const storageMsItem = storage.getItem(msTitle);
-  const jIDList = JSON.parse(storageMsItem);
-  return jIDList;
+  const jobList = JSON.parse(storageMsItem);
+  return jobList;
 }
 
 async function useFetchLargeFileStatus(jID) {
   const endpoint = docClass.value.findEndpoint(FETCH_STATUS_API_INDICATOR);
-  const status = await fetchLargeFileStatus(jID, endpoint)
-  return status;
+  const res = await fetchLargeFileStatus(jID, endpoint);
+  if (res.data) {
+    return res.data;
+  }
+  return res;
 }
 
 async function requestUploadingPolicy(fileObj) {
@@ -125,7 +140,8 @@ async function requestUploadingPolicy(fileObj) {
   const fileData = fmtFileDataForApiCall(fileObj);
   const endpoint = docClass.value.findEndpoint(FIRST_API_INDICATOR);
   const policy = await getUploadPolicy(fileData, endpoint);
-  setLocalStorageJID(policy.jid);
+  console.log(policy);
+
   return policy;
 }
 
@@ -136,14 +152,21 @@ function useUploadLargeFile(fileObj, policyRef) {
   const contentType = docClass.value.findContentType(SECOND_API_INDICATOR);
   // Hard coded url, assume each time policy return the valid url to upload
   void uploadLargeFile(formData, policyRef.url, contentType);
+  setJobLocalStorage(policyRef, fileObj);
   return;
+}
+
+async function useFetchLargeFileResult(resultUrl) {
+  const res = await fetchLargeFileResult(resultUrl);
+  return res.data['results'];
 }
 
 export default () => {
   return {
     requestUploadingPolicy,
     useUploadLargeFile,
-    getLocalStorageJID,
+    getJobLocalStorage,
     useFetchLargeFileStatus,
+    useFetchLargeFileResult,
   };
 };

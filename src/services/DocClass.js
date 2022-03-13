@@ -66,7 +66,7 @@ class DocClass {
   findMethodVerbByPath(path) {
     /**
      * !!Assuming only one method under each endpoint.
-     * !!Assuming only post and get methods
+     * !!Assuming either post and get methods
      */
     const isPost = Object.keys(this.rawDoc.paths[path]).includes('post');
     if (isPost) return 'post';

@@ -26,10 +26,10 @@
         <UploadLargeFile
       /></q-tab-panel>
       <q-tab-panel :name="LargeFileTrySteps[1]">
-        <GetStatus />
+        <GetStatus @handleDisplayResult="(url) => displayResult(url)" />
       </q-tab-panel>
       <q-tab-panel :name="LargeFileTrySteps[2]">
-        <DislayResults />
+        <DislayResults :result-url="resultUrl" />
       </q-tab-panel>
     </q-tab-panels>
   </div>
@@ -43,18 +43,27 @@ import UploadLargeFile from 'src/components/TryItOutLargeFile/UploadLargeFile.vu
 import GetStatus from 'src/components/TryItOutLargeFile/GetStatus.vue';
 import DislayResults from 'src/components/TryItOutLargeFile/DisplayResults.vue';
 
-const { rawDocRef } = tryItOutService();
-
-const LargeFileTrySteps = ['Upload', 'Get Status', 'Display Result'];
-
 export default defineComponent({
   components: { UploadLargeFile, GetStatus, DislayResults },
   setup() {
+    const { rawDocRef } = tryItOutService();
+
+    const LargeFileTrySteps = ['Upload', 'Get Status', 'Display Result'];
     const currentStep = ref(LargeFileTrySteps[0]);
+
+    const resultUrl = ref('');
+
+    const displayResult = (url) => {
+      console.log(url)
+      resultUrl.value = url;
+      currentStep.value = LargeFileTrySteps[2];
+    };
     return {
       currentStep,
       rawDocRef,
       LargeFileTrySteps,
+      resultUrl,
+      displayResult,
     };
   },
 });
