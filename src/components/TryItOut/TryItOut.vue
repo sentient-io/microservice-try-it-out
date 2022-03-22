@@ -90,7 +90,7 @@
             v-if="responseTypeIdx === 0"
             :apiResponse="apiResponse"
           ></ParsedResponse>
-          <RawResponse v-else :apiResponse="apiResponse"></RawResponse>
+          <RawResponseOLD v-else :apiResponse="apiResponse"></RawResponseOLD>
         </template>
       </InputAndResponseTabs>
     </div>
@@ -110,7 +110,7 @@ import FieldsInput from './InputUnits/FieldsInput.vue';
 import JsonDataInput from './InputUnits/JsonDataInput.vue';
 import QueryStringInput from './InputUnits/QueryStringInput.vue';
 import MakeApiCallBtn from './MakeApiCallBtn.vue';
-import RawResponse from './ResponseUnits/RawResponse.vue';
+import RawResponseOLD from './ResponseUnits/RawResponseOLD.vue';
 import ParsedResponse from './ResponseUnits/ParsedResponse.vue';
 
 export default defineComponent({
@@ -123,7 +123,7 @@ export default defineComponent({
     JsonDataInput,
     QueryStringInput,
     MakeApiCallBtn,
-    RawResponse,
+    RawResponseOLD,
     ParsedResponse,
   },
   props: {

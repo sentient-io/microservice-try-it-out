@@ -1,7 +1,7 @@
 {
   "name": "microservice-try-it-out",
   "version": "0.0.1",
-  "description": "Try it our for Sentient.io's API",
+  "description": "Try it out for Sentient.io's API",
   "productName": "Try It Out",
   "author": "Zhang Qiao <zqthedesigner@gmail.com>",
   "private": true,

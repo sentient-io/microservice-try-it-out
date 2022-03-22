@@ -23,13 +23,15 @@
 
     <q-tab-panels v-model="currentStep">
       <q-tab-panel :name="LargeFileTrySteps[0]">
-        <UploadLargeFile
+        <UploadLargeFile @goToGetStatus="goToGetStatus"
       /></q-tab-panel>
       <q-tab-panel :name="LargeFileTrySteps[1]">
-        <GetStatus @handleDisplayResult="(url) => displayResult(url)" />
+        <GetStatus
+          @handleDisplayResult="(statusObj) => displayResult(statusObj)"
+        />
       </q-tab-panel>
       <q-tab-panel :name="LargeFileTrySteps[2]">
-        <DislayResults :result-url="resultUrl" />
+        <DislayResults :status-obj="statusObjRef" />
       </q-tab-panel>
     </q-tab-panels>
   </div>
@@ -48,22 +50,31 @@ export default defineComponent({
   setup() {
     const { rawDocRef } = tryItOutService();
 
-    const LargeFileTrySteps = ['Upload', 'Get Status', 'Display Result'];
+    const LargeFileTrySteps = [
+      'Upload',
+      'File Process Status',
+      'Display Result',
+    ];
     const currentStep = ref(LargeFileTrySteps[0]);
 
-    const resultUrl = ref('');
+    const statusObjRef = ref({});
 
-    const displayResult = (url) => {
-      console.log(url)
-      resultUrl.value = url;
+    const displayResult = (statusObj) => {
+      console.log(statusObj);
+      statusObjRef.value = statusObj;
       currentStep.value = LargeFileTrySteps[2];
     };
+
+    function goToGetStatus() {
+      currentStep.value = LargeFileTrySteps[1];
+    }
     return {
       currentStep,
       rawDocRef,
       LargeFileTrySteps,
-      resultUrl,
+      statusObjRef,
       displayResult,
+      goToGetStatus,
     };
   },
 });

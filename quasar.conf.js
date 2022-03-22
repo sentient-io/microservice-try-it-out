@@ -140,7 +140,7 @@ module.exports = configure(function (ctx) {
       manifest: {
         name: 'Try It Out',
         short_name: 'Try It Out',
-        description: "Try it our for Sentient.io's API",
+        description: "Try it out for Sentient.io's API",
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',

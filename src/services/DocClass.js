@@ -21,13 +21,8 @@ class DocClass {
     const path = this.findPath(INDICATOR);
     const method = this.findMethodByPath(path);
     const requestBody = method.requestBody;
-    const contentType = Object.keys(requestBody.content)[0];
-    const schemaRef = requestBody.content[contentType].schema;
 
-    if (schemaRef.$ref) {
-      return this.get$ref(schemaRef.$ref);
-    }
-    return schemaRef;
+    return requestBody;
   }
 
   findContentType(INDICATOR) {
@@ -55,6 +50,19 @@ class DocClass {
       k.includes(INDICATOR)
     );
     return path;
+  }
+
+  findRequestBodySchema(INDICATOR) {
+    const requestBody = this.findRequestBody(INDICATOR);
+    const contentType = this.findContentType(INDICATOR);
+    const schemaRef = requestBody.content[contentType].schema;
+    let schema;
+    if (schemaRef.$ref) {
+      schema = this.get$ref(schemaRef.$ref);
+    } else {
+      schema = schemaRef;
+    }
+    return schema;
   }
 
   findMethodByPath(path) {

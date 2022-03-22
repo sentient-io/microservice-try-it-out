@@ -1,8 +1,18 @@
 <template>
   <div>
-    <q-table v-if="tableRows[0]" :columns="tableColumns" :rows="tableRows">
+    <q-table
+      v-if="tableRows[0]"
+      :columns="tableColumns"
+      :rows="tableRows"
+      virtual-scroll
+      :rows-per-page-options="[0]"
+      style="height: 400px"
+    >
       <template v-slot:body-cell-status="scope">
-        <td class="text-center">
+        <td
+          class="text-center"
+          style="max-width: 220px; white-space: normal; text-align: left"
+        >
           <span
             class="text-orange-8"
             v-if="scope.row.status['status'] !== 'Success'"
@@ -10,7 +20,7 @@
             <!-- Handle all none success case -->
             {{ scope.row.status['message'] || scope.row.status }}
           </span>
-          <div v-else>
+          <div v-else class="row no-wrap">
             <!-- Handle success case -->
             <span class="text-green-8">{{ scope.row.status['message'] }}</span>
             <q-btn
@@ -19,7 +29,7 @@
               class="q-mx-sm"
               color="green-8"
               label="Show Result"
-              @click="handleDisplayResult(scope.row.status['output_url'])"
+              @click="handleDisplayResult(scope.row)"
             />
           </div>
         </td>
@@ -47,16 +57,36 @@ export default defineComponent({
         field: 'fileName',
         label: 'File Name',
         align: 'center',
+        sortable: true,
       },
-      { name: 'cost', field: 'cost', label: 'Cost', align: 'center' },
-      { name: 'jID', field: 'jID', label: 'Job ID', align: 'center' },
+      {
+        name: 'cost',
+        field: 'cost',
+        label: 'Cost',
+        align: 'center',
+        sortable: true,
+      },
+      {
+        name: 'jID',
+        field: 'jID',
+        label: 'Job ID',
+        align: 'center',
+        sortable: true,
+      },
       {
         name: 'timestamp',
         field: 'timestamp',
         label: 'Upload Time',
         align: 'center',
+        sortable: true,
       },
-      { name: 'status', field: 'status', label: 'Status', align: 'center' },
+      {
+        name: 'status',
+        field: 'status',
+        label: 'Status',
+        align: 'center',
+        sortable: true,
+      },
     ];
     const tableRows = ref([]);
 
@@ -66,6 +96,13 @@ export default defineComponent({
       });
       const status = await useFetchLargeFileStatus(jID);
       target.status = status;
+
+      // Temporarily escape the error 415 case, there will be a few seconds lapse after the file is successfully uploaded.
+      console.log(status);
+      if (status == 'Request failed with status code 415') {
+        target.status =
+          'Loading ... please refresh in a few minutes. If you keep seeing this message after 30 minutes, contact sentient.io customer service';
+      }
     };
 
     const jobList = getJobLocalStorage();
@@ -83,8 +120,8 @@ export default defineComponent({
       });
     }
 
-    const handleDisplayResult = (url) => {
-      emit('handleDisplayResult', url);
+    const handleDisplayResult = (statusObj) => {
+      emit('handleDisplayResult', statusObj);
     };
 
     return {

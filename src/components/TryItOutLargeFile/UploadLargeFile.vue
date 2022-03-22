@@ -1,10 +1,21 @@
 <template>
   <div>
-    Upload Large File
+    <div v-if="additionalParamRef">
+      <div v-for="(paramKey, idx) in additionalParamKeys" :key="idx">
+        <ParamInput
+          :label="paramKey"
+          :type="additionalParamRef.properties[paramKey].type"
+          :default="additionalParamRef.properties[paramKey].example"
+          :description="additionalParamRef.properties[paramKey].description"
+          @input="(param) => userParamInput(paramKey, param)"
+        />
+      </div>
+    </div>
 
     <q-file
+      outlined
       v-model="file"
-      label="Upload"
+      label="Upload File"
       @update:model-value="
         (value) => {
           handleRequestPolicy(value);
@@ -36,29 +47,60 @@
 import { defineComponent, ref } from 'vue';
 import largeFileService from 'src/services/LargeFile/largeFileService';
 import FlatObjectList from 'src/components/TryItOut/ResponseUnits/FlatObjectList.vue';
+import ParamInput from 'src/components/ParamInput.vue';
 
 export default defineComponent({
-  components: { FlatObjectList },
-  setup() {
-    const { requestUploadingPolicy, useUploadLargeFile } = largeFileService();
+  components: { FlatObjectList, ParamInput },
+  setup(_, { emit }) {
+    const { requestUploadingPolicy, useUploadLargeFile, getInputSchema } =
+      largeFileService();
+
     const file = ref();
     const policy = ref();
+    const additionalParamRef = ref();
+    const additionalParamKeys = ref();
+    const additionalParam = ref({});
+    // !IMPORTANT hard coded value
+
+    additionalParamRef.value = getInputSchema().properties['additional_param'];
+    if (additionalParamRef.value) {
+      // Not all large files have additional Params
+      additionalParamKeys.value = Object.keys(
+        additionalParamRef.value.properties
+      );
+    } else {
+      additionalParamKeys.value = '';
+    }
 
     async function handleRequestPolicy(fileObj) {
       // Trigger the first api call
-      policy.value = await requestUploadingPolicy(fileObj);
+      policy.value = await requestUploadingPolicy(
+        fileObj,
+        additionalParam.value
+      );
     }
 
-    function handleFileUploading() {
+    async function handleFileUploading() {
       // Trigger the second api call
-      useUploadLargeFile(file.value, policy.value);
+      await useUploadLargeFile(file.value, policy.value);
+      emit('goToGetStatus');
       return;
+    }
+
+    function userParamInput(key, val) {
+      if (!additionalParam.value[key]) {
+        additionalParam.value[key] = '';
+      }
+      additionalParam.value[key] = val;
     }
     return {
       file,
       policy,
+      additionalParamRef,
+      additionalParamKeys,
       handleRequestPolicy,
       handleFileUploading,
+      userParamInput,
     };
   },
 });

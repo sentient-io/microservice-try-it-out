@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { defineComponent, computed, onMounted } from 'vue';
+import { defineComponent, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { tryItOutService } from 'src/services/TryItOut/TryItOut_service';
 import { checkers } from 'src/services/checkers';
@@ -86,6 +86,14 @@ export default defineComponent({
         setApiKey(apiKey);
       }
       // postWindowHeight(); /** Send the size to parent window */
+    });
+
+    onUnmounted(() => {
+      /**
+       * Reset the doc ref value, potentially reset the doc class
+       * value as well, to prevent cashed data in UI
+       */
+      rawDocRef.value = '';
     });
 
     return {

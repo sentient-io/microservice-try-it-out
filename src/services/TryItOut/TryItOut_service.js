@@ -160,7 +160,10 @@ const tryItOutService = () => {
           /**
            * 2022 Mar - going to move all doc functison to DocClass
            */
-          docClass.value = new DocClass(rawDocRef.value);
+          docClass.value = new DocClass(
+            JSON.parse(JSON.stringify(yaml.load(res.data, { json: true })))
+          );
+          console.log(docClass.value)
           initUserDocRef();
           resolve('ApiDoc Fetched');
         })
