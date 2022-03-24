@@ -1,5 +1,23 @@
 <template>
   <div>
+    <div class="row justify-between no-wrap items-center full-width">
+      <Quote
+        content="Please take note, this function is designed for testing and trying out purpose, not for production. All Job IDs are sotred in local storage, you won't be able to access the stored Job ID and status with another browsers, or other devices. Stored Job IDs will also be removed if you testing with private mode or after clened the browser cache."
+        class="col-8"
+        color="#e1676a"
+        icon="warning"
+      />
+      <q-btn
+        label="Clear Table"
+        no-caps
+        dense
+        icon="delete_outline"
+        size="sm"
+        flat
+        color="red"
+        @click="useClearJobLocalStorage()"
+      />
+    </div>
     <q-table
       v-if="tableRows[0]"
       :columns="tableColumns"
@@ -7,7 +25,9 @@
       virtual-scroll
       :rows-per-page-options="[0]"
       style="height: 400px"
+      class="q-mt-md"
     >
+      <!-- Customise display for status column with body-cell-[name] slot-->
       <template v-slot:body-cell-status="scope">
         <td
           class="text-center"
@@ -34,6 +54,30 @@
           </div>
         </td>
       </template>
+
+      <!-- Customise display for additionalParam column with body-cell-[name] slot-->
+      <template v-slot:body-cell-additionalParam="scope">
+        <td>
+          <pre
+            v-if="scope.value"
+            style="
+              max-width: 300px;
+              white-space: normal;
+              text-align: left;
+              line-break: anywhere;
+              max-height: 120px;
+              overflow: scroll;
+              background: #f8f8f8;
+            "
+            class="small-scrollbar q-pa-sm"
+          >
+          <code>
+{{ scope.value }}
+          </code>
+        </pre>
+          <span v-else>N.a.</span>
+        </td>
+      </template>
     </q-table>
     <div v-else>
       No recorded jobs. For trying purpose, your large files jobs will be stored
@@ -47,10 +91,16 @@
 <script>
 import { defineComponent, ref } from 'vue';
 import largeFileService from 'src/services/LargeFile/largeFileService';
+import Quote from 'src/components/Quote.vue';
 
-const { getJobLocalStorage, useFetchLargeFileStatus } = largeFileService();
 export default defineComponent({
+  components: { Quote },
   setup(_, { emit }) {
+    const {
+      getJobLocalStorage,
+      useFetchLargeFileStatus,
+      clearJobLocalStorage,
+    } = largeFileService();
     const tableColumns = [
       {
         name: 'fileName',
@@ -70,6 +120,13 @@ export default defineComponent({
         name: 'jID',
         field: 'jID',
         label: 'Job ID',
+        align: 'center',
+        sortable: true,
+      },
+      {
+        name: 'additionalParam',
+        field: 'additionalParam',
+        label: 'Additional Parameters',
         align: 'center',
         sortable: true,
       },
@@ -105,29 +162,39 @@ export default defineComponent({
       }
     };
 
-    const jobList = getJobLocalStorage();
-
-    if (jobList?.[0]) {
-      jobList.forEach((jobItem) => {
-        tableRows.value.push({
-          fileName: jobItem.fileName,
-          cost: jobItem.cost,
-          jID: jobItem.jID,
-          timestamp: jobItem.timestamp,
-          status: 'loading...',
+    function updateTable() {
+      const jobList = getJobLocalStorage();
+      tableRows.value = [];
+      if (jobList?.[0]) {
+        jobList.forEach((jobItem) => {
+          tableRows.value.push({
+            fileName: jobItem.fileName,
+            cost: jobItem.cost,
+            jID: jobItem.jID,
+            timestamp: jobItem.timestamp,
+            additionalParam: jobItem.additionalParam,
+            status: 'loading...',
+          });
+          void getLargeFileStatus(jobItem.jID);
         });
-        void getLargeFileStatus(jobItem.jID);
-      });
+      }
     }
+    updateTable();
 
     const handleDisplayResult = (statusObj) => {
       emit('handleDisplayResult', statusObj);
     };
 
+    function useClearJobLocalStorage() {
+      clearJobLocalStorage();
+      updateTable();
+    }
+
     return {
       tableColumns,
       tableRows,
       handleDisplayResult,
+      useClearJobLocalStorage,
     };
   },
 });

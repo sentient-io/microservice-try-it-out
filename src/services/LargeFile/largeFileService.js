@@ -1,6 +1,8 @@
 import largeFileAPICallers from './largeFileAPICallers';
 import { tryItOutService } from 'src/services/TryItOut/TryItOut_service';
 
+import { Notify } from 'quasar';
+
 export default () => {
   const {
     getUploadPolicy,
@@ -101,6 +103,7 @@ export default () => {
       fileName: fileObj.name,
       size: fileObj.size,
       cost: policy['request_cost'],
+      additionalParam: policy['fields']['x-goog-meta-additional_param'] || '',
       jID,
       timestamp,
     };
@@ -119,8 +122,38 @@ export default () => {
     }
 
     storage.setItem(msTitle, JSON.stringify(jobList));
-    // storage.removeItem(msTitle); // Testing purpose, clean local storage
-    console.log(getJobLocalStorage());
+
+    // console.log(getJobLocalStorage());
+  }
+
+  function clearJobLocalStorage() {
+    const storage = window.localStorage;
+    const msTitle = rawDocRef.value.info.title;
+
+    Notify.create({
+      message:
+        'Fro try it out purpose, all Job ID are sotred in local storage, by clicking CLEAR button, all sotred Job ID and Status will be removed permanently. Please marke sure your testing process have completely finished before clear the table.',
+      color: 'red',
+      multiLine: true,
+      icon: 'warning',
+      timeout: 0,
+      actions: [
+        {
+          label: 'Clear',
+          color: 'white',
+          handler: () => {
+            storage.removeItem(msTitle); // Testing purpose, clean local storage
+          },
+        },
+        {
+          label: 'Cancel',
+          color: 'white',
+          handler: () => {
+            /* ... */
+          },
+        },
+      ],
+    });
   }
 
   function getJobLocalStorage() {
@@ -185,5 +218,6 @@ export default () => {
     useFetchLargeFileStatus,
     useFetchLargeFileResult,
     getInputSchema,
+    clearJobLocalStorage,
   };
 };

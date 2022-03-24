@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-center items-center" style="height: 100vh">
+  <div class="row justify-center items-center" style="height: 90vh">
     <div class="col-4 column q-gutter-lg">
       <q-input
         label="YAML Document URL"

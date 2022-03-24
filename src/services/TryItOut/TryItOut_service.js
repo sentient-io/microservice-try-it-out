@@ -62,7 +62,9 @@ const tryItOutService = () => {
   function updateJsonToInputProperties(jsonStr, inputProperties) {
     let parsedStr;
     try {
-      parsedStr = JSON.parse(reverseFormatJsonString(jsonStr));
+      // Below code disabled on 2022-Mar-24, to solve JSON formatting issue
+      // parsedStr = JSON.parse(reverseFormatJsonString(jsonStr));
+      parsedStr = JSON.parse(jsonStr);
     } catch (err) {
       console.log(err);
       throw err.message; // For bad formatted jsong string
