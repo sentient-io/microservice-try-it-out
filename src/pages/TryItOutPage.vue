@@ -1,7 +1,5 @@
 <template>
   <div class="q-pa-md">
-    {{ docPath }}
-    {{ route.query }}
     <BaseHeader :doc-path="docPath" :api-key="apiKey" />
     <!-- 
       This will listen to window size change 
@@ -129,7 +127,6 @@ export default defineComponent({
       apiKey,
       rawDocRef,
       docClass,
-      route,
       postWindowHeight,
       isLargeFileRes: computed(() => {
         return isLargeFile(rawDocRef);
