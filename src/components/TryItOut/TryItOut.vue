@@ -1,58 +1,6 @@
 <template>
-  <div class="q-pa-md">
-    <!-- 
-      This will listen to window size change 
-      and update parent latest  height (when 
-      try it out been accessed via iframe) 
-      -->
-    <q-resize-observer @resize="postWindowHeight" />
-
-    <!-- 
-      Using v-show logic to display 404 error
-      message if the document is  not found .
-      Forget why don't use v-if, but there is
-      a reason.
-     -->
-    <div
-      v-show="Object.keys(rawDocRef).length === 0 || !rawDocRef.openapi"
-      class="row items-center justify-center q-my-lg no-wrap"
-    >
-      <div class="q-mr-md">
-        <q-icon name="mdi-telescope" size="4rem" color="grey-4" />
-      </div>
-      <div v-if="rawDocRef.openapi">
-        <p>Oops, API documentation not found from the provided url below:</p>
-
-        <a
-          class="s-break-all text-green-8"
-          :href="docPath"
-          :target="isInIframe ? '_parent' : '_blank'"
-          >{{ docPath }}</a
-        >
-      </div>
-      <h5 v-else class="text-grey-7">
-        Try It Out is currently not available for websocket APIs.
-      </h5>
-    </div>
-
-    <!-- 
-      Below content will only display when there is valid rawDocRef content
-      -->
-    <div v-show="Object.keys(rawDocRef).length !== 0 && rawDocRef.openapi">
-      <!-- {{ userDocRef }} -->
-      <h3 class="q-ma-none">
-        {{ $t('tryItOut.header') }}
-        {{ isInIframe ? null : `- ${rawDocRef?.info?.title}` }}
-
-        <q-btn v-if="!isInIframe" class="float-right" to="/" icon="home" />
-      </h3>
-      <p>{{ $t('tryItOut.description') }}</p>
-
-      <div v-if="!apiKey">
-        <BeforeYouStart />
-        <APIKeyInput />
-      </div>
-
+  <div>
+    <div>
       <InputAndResponseTabs
         ref="InputAndResponseTabsRef"
         :apiResponse="apiResponse"
@@ -142,7 +90,7 @@
             v-if="responseTypeIdx === 0"
             :apiResponse="apiResponse"
           ></ParsedResponse>
-          <RawResponse v-else :apiResponse="apiResponse"></RawResponse>
+          <RawResponseOLD v-else :apiResponse="apiResponse"></RawResponseOLD>
         </template>
       </InputAndResponseTabs>
     </div>
@@ -151,11 +99,9 @@
 
 <script>
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { defineComponent, ref, watch, onMounted } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 import { tryItOutService } from '../../services/TryItOut/TryItOut_service';
 
-import BeforeYouStart from './BeforeYouStart.vue';
-import APIKeyInput from './InputUnits/APIKeyInput.vue';
 import InputAndResponseTabs from './InputAndResponseTabs.vue';
 import ResetUserInputs from './ResetUserInputs.vue';
 import ToggleButton from './ToggleButton.vue';
@@ -164,13 +110,11 @@ import FieldsInput from './InputUnits/FieldsInput.vue';
 import JsonDataInput from './InputUnits/JsonDataInput.vue';
 import QueryStringInput from './InputUnits/QueryStringInput.vue';
 import MakeApiCallBtn from './MakeApiCallBtn.vue';
-import RawResponse from './ResponseUnits/RawResponse.vue';
+import RawResponseOLD from './ResponseUnits/RawResponseOLD.vue';
 import ParsedResponse from './ResponseUnits/ParsedResponse.vue';
 
 export default defineComponent({
   components: {
-    BeforeYouStart,
-    APIKeyInput,
     InputAndResponseTabs,
     ResetUserInputs,
     ToggleButton,
@@ -179,7 +123,7 @@ export default defineComponent({
     JsonDataInput,
     QueryStringInput,
     MakeApiCallBtn,
-    RawResponse,
+    RawResponseOLD,
     ParsedResponse,
   },
   props: {
@@ -189,8 +133,8 @@ export default defineComponent({
   },
   setup(props) {
     const {
-      setApiKey,
-      fetchApiDoc,
+      // setApiKey,
+      // fetchApiDoc,
       rawDocRef,
       userDocRef,
       initUserDocRef,
@@ -229,36 +173,28 @@ export default defineComponent({
       initUserDocRef();
     }
 
-    if (isInIframe) {
-      /**
-       * Disable scroll bar on body element if the page is opened in iframe, This will
-       * prevent  flashing  scroll  bar  when  user toggle Fields inout and JSON input
-       * */
-      document.getElementsByTagName('body')[0].style.overflow = 'hidden';
-    }
-
     /** Consistantly update the window size to parent window */
     window.addEventListener('resize', postWindowHeight);
-    onMounted(() => {
-      if (props.apiKey) {
-        setApiKey(props.apiKey);
-      }
-      // postWindowHeight(); /** Send the size to parent window */
-    });
+    // onMounted(() => {
+    //   if (props.apiKey) {
+    //     setApiKey(props.apiKey);
+    //   }
+    //   // postWindowHeight(); /** Send the size to parent window */
+    // });
 
     watch(props, () => {
       /** Update doc when the docPath changes */
-      fetchApiDoc(props.docPath).catch((err) => {
-        console.log(err);
-      });
+      // fetchApiDoc(props.docPath).catch((err) => {
+      //   console.log(err);
+      // });
     });
 
-    fetchApiDoc(props.docPath).catch((err) => {
-      console.log(err);
-    });
+    // fetchApiDoc(props.docPath).catch((err) => {
+    //   console.log(err);
+    // });
 
     watch(apiResponse, () => {
-      console.log('Watching response');
+      // console.log('Watching response');
       if (apiResponse.status) {
         InputAndResponseTabsRef.value.toggleResponseTab();
       } else {

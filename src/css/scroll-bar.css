@@ -1,0 +1,12 @@
+/* Last update: 2022-Mar-24 */ 
+
+.small-scrollbar::-webkit-scrollbar {
+  /* CSS variable doesn't wrok here */
+  width: 6px;
+  background-color: white;
+}
+
+.small-scrollbar::-webkit-scrollbar-thumb {
+  background: #e6e6e6;
+  border-radius: 99px;
+}
