@@ -8,7 +8,9 @@
 
     <div class="q-mt-md">
       <div class="row justify-between items-center">
-        <b :class="apiResponse.status[0] === '2' ? 'text-green-8' : 'text-red'"
+        <b
+          v-if="typeof apiResponse.status == 'object'"
+          :class="apiResponse.status[0] === '2' ? 'text-green-8' : 'text-red'"
           >{{ $t('terms.response_code') }} : {{ apiResponse.status }} -
           {{ apiResponse.statusDescription }}
         </b>

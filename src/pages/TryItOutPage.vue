@@ -1,5 +1,7 @@
 <template>
   <div class="q-pa-md">
+    {{ docPath }}
+    {{ route.query }}
     <BaseHeader :doc-path="docPath" :api-key="apiKey" />
     <!-- 
       This will listen to window size change 
@@ -13,7 +15,7 @@
       -->
     <div v-show="Object.keys(rawDocRef).length !== 0 && rawDocRef.openapi">
       <TryItOutLargeFile
-        v-if="isLargeFileRes"
+        v-if="isLargeFileRes && docClass"
         :api-key="apiKey"
         :doc-path="docPath"
       />
@@ -23,7 +25,14 @@
 </template>
 
 <script>
-import { defineComponent, computed, onMounted, onUnmounted } from 'vue';
+import {
+  ref,
+  defineComponent,
+  computed,
+  onMounted,
+  onUnmounted,
+  watch,
+} from 'vue';
 import { useRoute } from 'vue-router';
 import { tryItOutService } from 'src/services/TryItOut/TryItOut_service';
 import { checkers } from 'src/services/checkers';
@@ -32,7 +41,8 @@ import TryItOut from '../components/TryItOut/TryItOut.vue';
 import TryItOutLargeFile from '../components/TryItOutLargeFile/TryItOutLargeFile.vue';
 import BaseHeader from 'src/components/BaseHeader.vue';
 
-const { rawDocRef, fetchApiDoc, apiResponse, setApiKey } = tryItOutService();
+const { rawDocRef, fetchApiDoc, apiResponse, setApiKey, docClass } =
+  tryItOutService();
 const { isLargeFile, isInIframe } = checkers();
 
 export default defineComponent({
@@ -42,7 +52,8 @@ export default defineComponent({
 
     const apiKey = route.query.apiKey || '';
 
-    const docPath = route.query.docPath;
+    const docPath = ref('');
+    docPath.value = route.query.docPath;
 
     function postWindowHeight() {
       /**
@@ -67,7 +78,7 @@ export default defineComponent({
     /** Consistantly update the window size to parent window */
     window.addEventListener('resize', postWindowHeight);
 
-    fetchApiDoc(docPath).catch((err) => {
+    fetchApiDoc(docPath.value).catch((err) => {
       console.log(err);
     });
 
@@ -81,10 +92,12 @@ export default defineComponent({
 
     /** Consistantly update the window size to parent window */
     window.addEventListener('resize', postWindowHeight);
+
     onMounted(() => {
       if (apiKey) {
         setApiKey(apiKey);
       }
+      console.log('Try It Out Mounted');
       // postWindowHeight(); /** Send the size to parent window */
     });
 
@@ -96,10 +109,27 @@ export default defineComponent({
       rawDocRef.value = '';
     });
 
+    /**
+     * Watching query parameters in URL change, reload yaml docs
+     */
+    watch(
+      () => route.query.docPath,
+      () => {
+        docPath.value = route.query.docPath;
+        // Reset docClass to trigger re-draw large file try it out
+        docClass.value = '';
+        fetchApiDoc(docPath.value).catch((err) => {
+          console.log(err);
+        });
+      }
+    );
+
     return {
       docPath,
       apiKey,
       rawDocRef,
+      docClass,
+      route,
       postWindowHeight,
       isLargeFileRes: computed(() => {
         return isLargeFile(rawDocRef);
