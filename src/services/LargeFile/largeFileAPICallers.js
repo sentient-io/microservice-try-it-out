@@ -11,7 +11,24 @@ async function getUploadPolicy(fileData, endpoint) {
     'content-type': 'application/json',
   };
   Loading.show();
-  const response = await axios.post(endpoint, fileData, { headers });
+  const response = await axios
+    .post(endpoint, fileData, { headers })
+    .catch((err) => {
+      console.log(err);
+      Notify.create({
+        message: err.message + '. Please reload page to re-start.',
+        timeout: 0,
+        actions: [
+          {
+            icon: 'close',
+            // for individual action (button):
+            attrs: {
+              'aria-label': 'Dismiss',
+            },
+          },
+        ],
+      });
+    });
   Loading.hide();
   try {
     console.log(response);

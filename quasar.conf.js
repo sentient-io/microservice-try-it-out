@@ -83,7 +83,13 @@ module.exports = configure(function (ctx) {
 
     // https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
-      config: {},
+      config: {
+        loading: {
+          backgroundColor: 'white',
+          messageColor: 'grey-8',
+          spinnerColor: 'green-8',
+        },
+      },
 
       // iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
