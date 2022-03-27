@@ -165,7 +165,7 @@ const tryItOutService = () => {
           docClass.value = new DocClass(
             JSON.parse(JSON.stringify(yaml.load(res.data, { json: true })))
           );
-          console.log(docClass.value)
+          // console.log(docClass.value)
           initUserDocRef();
           resolve('ApiDoc Fetched');
         })

@@ -95,7 +95,7 @@ export default defineComponent({
       if (apiKey) {
         setApiKey(apiKey);
       }
-      console.log('Try It Out Mounted');
+      // console.log('Try It Out Mounted');
       // postWindowHeight(); /** Send the size to parent window */
     });
 

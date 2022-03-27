@@ -3,7 +3,7 @@ class DocClass {
     this.userDoc = doc;
     this.rawDoc = doc;
     this.url = doc.servers[0].url;
-    console.log(this.rawDoc);
+    // console.log(this.rawDoc);
   }
 
   get$ref(refStr) {
