@@ -39,6 +39,7 @@
       outlined
       class="n-json-str-input"
       input-style="resize:none; word-break:break-all; max-height:50vh; overflow:scroll"
+      input-class="small-scrollbar"
       autogrow
       @update:modelValue="processUserInputData"
       :error-message="errMsg"
@@ -63,7 +64,7 @@ export default defineComponent({
     const {
       userDocRef,
       inputPropertiesToJsonString,
-      formatJsonString,
+      // formatJsonString,
       updateJsonToInputProperties,
       validateInputProperties,
       stopEditingNotifyMessage,
@@ -121,10 +122,13 @@ export default defineComponent({
     function getJsonStrInput(removeEmptyValue = false) {
       errMsg.value = validateInputProperties(inputProperties);
       try {
-        jsonStrInput.value = formatJsonString(
-          inputPropertiesToJsonString(inputProperties),
-          removeEmptyValue
-        );
+        jsonStrInput.value = inputPropertiesToJsonString(inputProperties)
+        // Below code disabled on 2022-Mar-24, to solve JSON formatting issue
+        // jsonStrInput.value = formatJsonString(
+        //   inputPropertiesToJsonString(inputProperties),
+        //   removeEmptyValue
+        // );
+        removeEmptyValue // Prevent error message
       } catch (err) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         errMsg.value === '' ? (errMsg.value = err.message) : null;

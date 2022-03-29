@@ -15,6 +15,8 @@ import { formatterService } from '../formatter_service';
 import { dataFormatter } from './data-formatter';
 import { postApiService } from './post-api_service';
 
+import DocClass from 'src/services/DocClass';
+
 const { anythingToString } = formatterService();
 
 /** Check if the page opened in iframe */
@@ -22,6 +24,9 @@ const isInIframe = window.location !== window.parent.location;
 
 /** DO NOT mutate or change this rawDocRef */
 const rawDocRef = ref({});
+
+/** New doc class to replace other doc parsing functions */
+let docClass = ref({});
 
 /** Any user input or update goes to  here */
 const userDocRef = ref({});
@@ -57,7 +62,9 @@ const tryItOutService = () => {
   function updateJsonToInputProperties(jsonStr, inputProperties) {
     let parsedStr;
     try {
-      parsedStr = JSON.parse(reverseFormatJsonString(jsonStr));
+      // Below code disabled on 2022-Mar-24, to solve JSON formatting issue
+      // parsedStr = JSON.parse(reverseFormatJsonString(jsonStr));
+      parsedStr = JSON.parse(jsonStr);
     } catch (err) {
       console.log(err);
       throw err.message; // For bad formatted jsong string
@@ -152,6 +159,13 @@ const tryItOutService = () => {
           rawDocRef.value = JSON.parse(
             JSON.stringify(yaml.load(res.data, { json: true }))
           );
+          /**
+           * 2022 Mar - going to move all doc functison to DocClass
+           */
+          docClass.value = new DocClass(
+            JSON.parse(JSON.stringify(yaml.load(res.data, { json: true })))
+          );
+          // console.log(docClass.value)
           initUserDocRef();
           resolve('ApiDoc Fetched');
         })
@@ -471,6 +485,7 @@ const tryItOutService = () => {
     rawDocRef,
     userDocRef,
     apiResponse,
+    docClass,
   };
 };
 

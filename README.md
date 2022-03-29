@@ -1,6 +1,6 @@
 # Try It Out (microservice-try-it-out)
 
-Try it our for Sentient.io's API
+Try it out for Sentient.io's API
 
 ## Install the dependencies
 ```bash

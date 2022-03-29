@@ -43,7 +43,6 @@
         <q-checkbox
           class="q-ml-sm"
           color="green-8"
-          left-label
           :label="getInputFieldLabel(inputProperty, name, index)"
           :model-value="inputProperty.maskedValue || inputProperty.example"
           @update:modelValue="

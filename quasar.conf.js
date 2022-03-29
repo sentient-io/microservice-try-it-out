@@ -83,7 +83,13 @@ module.exports = configure(function (ctx) {
 
     // https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
-      config: {},
+      config: {
+        loading: {
+          backgroundColor: 'white',
+          messageColor: 'grey-8',
+          spinnerColor: 'green-8',
+        },
+      },
 
       // iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
@@ -140,7 +146,7 @@ module.exports = configure(function (ctx) {
       manifest: {
         name: 'Try It Out',
         short_name: 'Try It Out',
-        description: "Try it our for Sentient.io's API",
+        description: "Try it out for Sentient.io's API",
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',

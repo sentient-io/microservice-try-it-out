@@ -4,5 +4,9 @@
     "baseUrl": ".",
     "esModuleInterop": true,
     "types": ["jest", "quasar"]
-  }
+  },
+  "linterOptions": {
+    "exclude": ["src/**"]
+  },
+  "checkJs": false
 }
