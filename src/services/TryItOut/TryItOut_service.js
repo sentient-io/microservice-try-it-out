@@ -414,7 +414,6 @@ const tryItOutService = () => {
   }
 
   function updateInputPropertyExampleValue(inputProperty, exampleValue) {
-    console.log(exampleValue);
     const inputPropertyType = inputProperty.type ?? inputProperty.schema.type;
     try {
       switch (inputPropertyType) {

@@ -19,7 +19,7 @@
         @userInput="
           (userInputValue) => {
             //inputProperty.example = userInputValue;
-            updateInputPropertyExampleValue(inputProperty, userInputValue);
+            handleUserInput(inputProperty, userInputValue);
           }
         "
       ></FieldsInputForObject>
@@ -49,7 +49,7 @@
             (val) => {
               inputProperty.maskedValue
                 ? editingHeavyContentNotify(stopEditingNotifyMessage.base64str)
-                : updateInputPropertyExampleValue(inputProperty, val);
+                : handleUserInput(inputProperty, val);
             }
           "
         />
@@ -80,7 +80,7 @@
             (val) => {
               inputProperty.maskedValue
                 ? editingHeavyContentNotify(stopEditingNotifyMessage.base64str)
-                : updateInputPropertyExampleValue(inputProperty, val);
+                : handleUserInput(inputProperty, val);
             }
           "
           @[isBase64(inputProperty)].capture.prevent="
@@ -186,7 +186,7 @@ export default defineComponent({
     ReadMore,
   },
   props: { inputProperties: {}, requiredValues: {} },
-  setup() {
+  setup(_, { emit }) {
     const errMsg = ref('');
     const {
       stopEditingNotifyMessage,
@@ -257,6 +257,11 @@ export default defineComponent({
       });
     }
 
+    function handleUserInput(inputProperty, userInputValue) {
+      updateInputPropertyExampleValue(inputProperty, userInputValue);
+      emit('input');
+    }
+
     return {
       isBase64,
       handleUserPastedValue,
@@ -266,7 +271,7 @@ export default defineComponent({
       errMsg,
       getInputFieldLabel,
       getInputDataType,
-      updateInputPropertyExampleValue,
+      handleUserInput,
     };
   },
 });
