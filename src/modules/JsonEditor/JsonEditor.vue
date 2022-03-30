@@ -2,13 +2,14 @@
   <div>
     <div class="q-mb-sm">
       <pre
-        contenteditable="true"
-        class="input q-ma-none q-pa-sm text-grey-8"
+        :contenteditable="contentEditable"
+        class="json-input q-ma-none q-pa-sm text-grey-8 small-scrollbar"
+        :class="contentEditable ? '' : 'cursor-not-allowed'"
         style="font: inherit"
         @input="(evt) => handleJsonInputEvt(evt)"
         @click="getCursorPosition"
         @keyup="getCursorPosition"
-        >{{ validatedJsonStr }}</pre
+        >{{ validatedJson }}</pre
       >
     </div>
 
@@ -31,11 +32,24 @@
       <q-icon name="error_outline" color="q-mr-sm" />
       <small>{{ propErrorMessage }}</small>
     </div>
+
+    <!-- Disabled Content Editing Message -->
+    <div
+      class="q-px-sm row items-center q-gutter-xs text-amber-8"
+      v-show="!contentEditable"
+    >
+      <q-icon name="warning_amber" color="q-mr-sm" />
+      <small
+        >Because the JSON object contains long string values, editing is
+        disabled to prevent browser crashes.</small
+      >
+    </div>
   </div>
 </template>
 
 <script>
-import { defineComponent, onMounted, ref, watch } from 'vue';
+import { defineComponent, onMounted, onUnmounted, ref, watch } from 'vue';
+import JsonEditorService from './JsonEditorService';
 
 export default defineComponent({
   props: {
@@ -43,14 +57,26 @@ export default defineComponent({
     errorProp: {},
   },
   setup(props, { emit }) {
-    const validatedJsonStr = ref();
+    // Can be either JsonString or JsonObj
+    const validatedJson = ref();
     const jsonErrorMessage = ref();
     const propErrorMessage = ref();
     const cursorPosition = ref();
+    const contentEditable = ref(true);
+
+    const { clipLongStringInJsonObj, isContainsLongString } =
+      JsonEditorService();
 
     const init = () => {
       const jsonObj = JSON.parse(props.jsonStr);
-      validatedJsonStr.value = jsonObj;
+      console.log(jsonObj);
+      if (isContainsLongString(jsonObj)) {
+        contentEditable.value = false;
+        const clippedJsonObj = clipLongStringInJsonObj(jsonObj);
+        validatedJson.value = clippedJsonObj;
+      } else {
+        validatedJson.value = jsonObj;
+      }
       // formatJsonString();
       console.log('Init JSON Editor Component');
     };
@@ -61,7 +87,9 @@ export default defineComponent({
      */
     const handleJsonInputEvt = (inputEvent) => {
       console.log('calling handleJsonInput Function');
-      const jsonStr = inputEvent.target.innerText;
+      let jsonStr = inputEvent.target.innerText;
+      // Escape empty string scse
+      if (jsonStr === '') jsonStr = '{}';
       jsonErrorMessage.value = '';
       try {
         // Validate user input json
@@ -69,7 +97,7 @@ export default defineComponent({
       } catch (err) {
         console.log(err.message);
         jsonErrorMessage.value = err.message;
-        emit('error');
+        emit('error', err.message);
         return;
       }
       //'String is valid'
@@ -77,8 +105,14 @@ export default defineComponent({
     };
 
     const handleValidInput = (validJsonStr) => {
+      /**
+       * This function causing a smaller issue, when user insert
+       * new keys, the JSON editor will try to auto  format  the
+       * input string for user, and the cursor will move to  the
+       * start position.
+       * */
       const jsonObj = JSON.parse(validJsonStr);
-      validatedJsonStr.value = jsonObj;
+      validatedJson.value = jsonObj;
       // Output As String
       emit('validInput', validJsonStr);
     };
@@ -105,11 +139,17 @@ export default defineComponent({
       init();
     });
 
+    onUnmounted(() => {
+      // When component unmounted, clear the error message
+      emit('error', false);
+    });
+
     return {
-      validatedJsonStr,
+      validatedJson,
       jsonErrorMessage,
       propErrorMessage,
       cursorPosition,
+      contentEditable,
       handleJsonInputEvt,
       getCursorPosition,
     };
@@ -118,18 +158,22 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.input {
+.json-input {
+  max-height: 400px;
+  overflow: scroll;
+  line-break: anywhere;
+  white-space: break-spaces;
   border-style: solid;
   border-width: 1px;
   border-color: rgba(0, 0, 0, 0.25);
   border-radius: 0.25rem;
 }
 
-.input:hover {
+.json-input:hover {
   border-color: rgba(0, 0, 0, 0.7);
 }
 
-.input:focus-within {
+.json-input:focus-within {
   border-color: #1976d2;
 }
 </style>

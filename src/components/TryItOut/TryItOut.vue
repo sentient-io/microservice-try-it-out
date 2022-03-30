@@ -53,7 +53,11 @@
                 :json-str="requestBodyStr"
                 :error-prop="requestBodyError"
                 @validInput="(jsonStr) => handleJsonInput(jsonStr)"
-                @error="handleJsonInputError"
+                @error="
+                  (errMsg) => {
+                    handleJsonInputError(errMsg);
+                  }
+                "
               />
             </div>
 
@@ -226,6 +230,7 @@ export default defineComponent({
     const updateReqBodyStr = () => {
       const inputProperties = getInputProperties(userDocRef);
       requestBodyStr.value = fmtReqBodyFromInputProps(inputProperties);
+      console.log(requestBodyStr.value)
     };
 
     const handleFieldsInput = () => {
@@ -255,8 +260,13 @@ export default defineComponent({
       initUserDocRef();
     }
 
-    const handleJsonInputError = () => {
-      jsonInputError.value = true;
+    const handleJsonInputError = (err) => {
+      if (!err) {
+        jsonInputError.value = false;
+        requestBodyError.value = '';
+      } else {
+        jsonInputError.value = true;
+      }
     };
 
     /** Consistantly update the window size to parent window */

@@ -31,6 +31,7 @@
           @uploadFile="
             (file) => {
               inputProperty.example = file;
+              emit('input');
             }
           "
         ></BinaryUploader>
@@ -104,6 +105,7 @@
                 () => {
                   inputProperty.maskedValue = '';
                   inputProperty.example = '';
+                  emit('input');
                 }
               "
             ></q-icon>
@@ -118,6 +120,7 @@
                 @convertToBase64="
                   (val) => {
                     inputProperty.example = val;
+                    emit('input');
                   }
                 "
               ></BinaryToBase64>
@@ -136,6 +139,7 @@
                 @convertToBase64="
                   (val) => {
                     inputProperty.example = val;
+                    emit('input');
                   }
                 "
               ></AudioRecorder>
@@ -269,6 +273,7 @@ export default defineComponent({
       editingHeavyContentNotify,
       apiCategory,
       errMsg,
+      emit,
       getInputFieldLabel,
       getInputDataType,
       handleUserInput,

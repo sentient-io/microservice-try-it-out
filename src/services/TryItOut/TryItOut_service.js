@@ -415,6 +415,11 @@ const tryItOutService = () => {
 
   function updateInputPropertyExampleValue(inputProperty, exampleValue) {
     const inputPropertyType = inputProperty.type ?? inputProperty.schema.type;
+    if (exampleValue === '') {
+      // If user input empty value, don't perform any data modification
+      inputProperty.example = exampleValue;
+      return;
+    }
     try {
       switch (inputPropertyType) {
         case 'float':
