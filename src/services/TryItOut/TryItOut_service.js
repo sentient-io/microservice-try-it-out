@@ -300,7 +300,7 @@ const tryItOutService = () => {
      * contain x-name and name, but the key itself is the name
      */
     let label = null;
-    label = inputProperty['x-name'] || inputProperty.name || name || idx;
+    label = inputProperty['x-name'] || inputProperty.name || name || idx 
     // console.log(label, inputProperty);
     label += ` (${inputProperty.type || inputProperty.schema.type})`;
     return label;

@@ -14,7 +14,7 @@
           ['object', 'array'].includes(inputProperty.type) ||
           inputProperty.name === 'filterdata'
         "
-        :label="getInputFieldLabel(inputProperty, index)"
+        :label="getInputFieldLabel(inputProperty, name, index)"
         :inputProperties="inputProperty.example"
         @userInput="
           (userInputValue) => {

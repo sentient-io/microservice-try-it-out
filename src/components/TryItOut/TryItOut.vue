@@ -48,7 +48,7 @@
           <div v-else>
             <div v-if="inputTypeByApi(rawDocRef) === 'jsonDataInput'">
               <p class="q-mb-md">{{ $t('tryItOut.editJsonDataInput') }}</p>
-              <JsonDataInput />
+              <!-- <JsonDataInput /> -->
               <JsonEditor
                 :json-str="requestBodyStr"
                 :error-prop="requestBodyError"
@@ -121,12 +121,12 @@ import ResetUserInputs from './ResetUserInputs.vue';
 import ToggleButton from './ToggleButton.vue';
 import EndpointsAndMethods from './EndpointsAndMethods.vue';
 import FieldsInput from './InputUnits/FieldsInput.vue';
-import JsonDataInput from './InputUnits/JsonDataInput.vue';
 import QueryStringInput from './InputUnits/QueryStringInput.vue';
 import MakeApiCallBtn from './MakeApiCallBtn.vue';
 import RawResponseOLD from './ResponseUnits/RawResponseOLD.vue';
 import ParsedResponse from './ResponseUnits/ParsedResponse.vue';
 import JsonEditor from 'src/modules/JsonEditor/JsonEditor.vue';
+// import JsonDataInput from './InputUnits/JsonDataInput.vue';
 
 export default defineComponent({
   components: {
@@ -135,12 +135,12 @@ export default defineComponent({
     ToggleButton,
     EndpointsAndMethods,
     FieldsInput,
-    JsonDataInput,
     QueryStringInput,
     MakeApiCallBtn,
     RawResponseOLD,
     ParsedResponse,
     JsonEditor,
+    // JsonDataInput,
   },
   props: {
     /** Require full path to fetch the documentation */
@@ -230,7 +230,7 @@ export default defineComponent({
     const updateReqBodyStr = () => {
       const inputProperties = getInputProperties(userDocRef);
       requestBodyStr.value = fmtReqBodyFromInputProps(inputProperties);
-      console.log(requestBodyStr.value)
+      console.log(requestBodyStr.value);
     };
 
     const handleFieldsInput = () => {
