@@ -230,7 +230,6 @@ export default defineComponent({
     const updateReqBodyStr = () => {
       const inputProperties = getInputProperties(userDocRef);
       requestBodyStr.value = fmtReqBodyFromInputProps(inputProperties);
-      console.log(requestBodyStr.value);
     };
 
     const handleFieldsInput = () => {

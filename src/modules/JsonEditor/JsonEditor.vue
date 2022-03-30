@@ -69,7 +69,6 @@ export default defineComponent({
 
     const init = () => {
       const jsonObj = JSON.parse(props.jsonStr);
-      console.log(jsonObj);
       if (isContainsLongString(jsonObj)) {
         contentEditable.value = false;
         const clippedJsonObj = clipLongStringInJsonObj(jsonObj);
@@ -78,7 +77,7 @@ export default defineComponent({
         validatedJson.value = jsonObj;
       }
       // formatJsonString();
-      console.log('Init JSON Editor Component');
+      // console.log('Init JSON Editor Component');
     };
 
     /**
@@ -86,7 +85,7 @@ export default defineComponent({
      * Check if the input is valid JSON string
      */
     const handleJsonInputEvt = (inputEvent) => {
-      console.log('calling handleJsonInput Function');
+      // console.log('calling handleJsonInput Function');
       let jsonStr = inputEvent.target.innerText;
       // Escape empty string scse
       if (jsonStr === '') jsonStr = '{}';
@@ -130,9 +129,8 @@ export default defineComponent({
     // };
 
     watch(props, () => {
-      console.log('Watching error message');
+      // console.log('Watching error message');
       propErrorMessage.value = props.errorProp;
-      console.log(propErrorMessage.value);
     });
 
     onMounted(() => {
