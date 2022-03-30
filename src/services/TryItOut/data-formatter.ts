@@ -33,6 +33,7 @@ const dataFormatter = () => {
       default:
         break;
     }
+
     return modifiedValue;
   }
 

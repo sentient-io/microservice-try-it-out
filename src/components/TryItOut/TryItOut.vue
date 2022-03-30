@@ -113,6 +113,7 @@
 <script>
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { defineComponent, ref, watch } from 'vue';
+
 import { tryItOutService } from '../../services/TryItOut/TryItOut_service';
 import { formatterService } from 'src/services/formatter_service';
 
@@ -284,6 +285,14 @@ export default defineComponent({
     fetchApiDoc(props.docPath).catch((err) => {
       console.log(err);
     });
+
+    // watch(
+    //   rawDocRef,
+    //   () => {
+    //     console.log('Watching raw doc change')
+    //     updateReqBodyStr();
+    //   }
+    // );
 
     watch(apiResponse, () => {
       // console.log('Watching response');

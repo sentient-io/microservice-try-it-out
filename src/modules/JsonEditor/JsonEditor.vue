@@ -132,6 +132,13 @@ export default defineComponent({
       // console.log('Watching error message');
       propErrorMessage.value = props.errorProp;
     });
+    watch(
+      () => props.jsonStr,
+      () => {
+        // console.log('Watching jsonStr props change');
+        init();
+      }
+    );
 
     onMounted(() => {
       init();
