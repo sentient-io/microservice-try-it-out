@@ -17,11 +17,13 @@ const formatterService = () => {
   }
 
   const fmtReqBodyFromInputProps = (InputProps) => {
+    if (!InputProps) return {};
+    
     const reqBodyObj = {};
     Object.keys(InputProps).forEach((key) => {
-      reqBodyObj[key] = InputProps[key].example
+      reqBodyObj[key] = InputProps[key].example;
     });
-    const reqBodyStr = JSON.stringify(reqBodyObj)
+    const reqBodyStr = JSON.stringify(reqBodyObj);
     return reqBodyStr;
   };
 

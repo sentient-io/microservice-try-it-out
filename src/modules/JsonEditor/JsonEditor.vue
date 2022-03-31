@@ -6,7 +6,7 @@
         class="json-input q-ma-none q-pa-sm text-grey-8 small-scrollbar"
         :class="contentEditable ? '' : 'cursor-not-allowed'"
         style="font: inherit"
-        @input="(evt) => handleJsonInputEvt(evt)"
+        @input="(inputEvent) => handleJsonInputEvt(inputEvent)"
         @click="getCursorPosition"
         @keyup="getCursorPosition"
         >{{ validatedJson }}</pre
@@ -39,15 +39,27 @@
       v-show="!contentEditable"
     >
       <q-icon name="warning_amber" color="q-mr-sm" />
-      <small
-        >Because the JSON object contains long string values, editing is
-        disabled to prevent browser crashes.</small
-      >
+      <small>Content editing is disabled. {{ contentDisabledMsg }}</small>
     </div>
   </div>
 </template>
 
 <script>
+/**
+ * @author zq
+ * @lastUpdate 2022-Mar-31
+ *
+ * A vue.js component takes a JSON string, display formatted JSON content
+ * editing, and report JSON formatting error.
+ *
+ * @depencencies ['scroll-bar.css', './JsonEditorService']
+ *
+ * @props jsonStr: JSON string, must be validated
+ * @props errorProp: error message passed from parent component
+ *
+ * @emits error: emit error event contains an error message string
+ * @emits validInput: emit validInput event with validated JSON string
+ */
 import { defineComponent, onMounted, onUnmounted, ref, watch } from 'vue';
 import JsonEditorService from './JsonEditorService';
 
@@ -55,29 +67,65 @@ export default defineComponent({
   props: {
     jsonStr: {},
     errorProp: {},
+    disabled: { default: false, type: Boolean },
   },
   setup(props, { emit }) {
+    const EDIT_LONG_STRING_WARNING =
+      'Editing JSON object with long string value may cause browser crashes.';
+
     // Can be either JsonString or JsonObj
     const validatedJson = ref();
     const jsonErrorMessage = ref();
     const propErrorMessage = ref();
     const cursorPosition = ref();
     const contentEditable = ref(true);
+    const contentDisabledMsg = ref('');
 
     const { clipLongStringInJsonObj, isContainsLongString } =
       JsonEditorService();
 
+    /**
+     * Set local variables to default value, local state management
+     */
+    const setDefault = () => {
+      contentDisabledMsg.value = '';
+      contentEditable.value = true;
+    };
+
     const init = () => {
+      /**
+       * Assign prop value to local variable, working together
+       * with watcher function.
+       */
+      setDefault();
       const jsonObj = JSON.parse(props.jsonStr);
-      if (isContainsLongString(jsonObj)) {
+
+      if (props.disabled) {
         contentEditable.value = false;
-        const clippedJsonObj = clipLongStringInJsonObj(jsonObj);
-        validatedJson.value = clippedJsonObj;
+      }
+
+      if (isContainsLongString(jsonObj)) {
+        handleLongStringJsonObj(jsonObj);
       } else {
         validatedJson.value = jsonObj;
       }
+
       // formatJsonString();
-      // console.log('Init JSON Editor Component');
+      console.log('Init JSON Editor Component');
+    };
+
+    /**
+     * If input JSON object contains very long string, stop user
+     * from editing the JSON object.Trim the JSON object and add
+     * in trimmed message.
+     */
+    const handleLongStringJsonObj = (jsonObj) => {
+      contentEditable.value = false;
+      contentDisabledMsg.value = EDIT_LONG_STRING_WARNING;
+
+      // Displaying the JSON object with clipped long string
+      const clippedJsonObj = clipLongStringInJsonObj(jsonObj);
+      validatedJson.value = clippedJsonObj;
     };
 
     /**
@@ -87,11 +135,13 @@ export default defineComponent({
     const handleJsonInputEvt = (inputEvent) => {
       // console.log('calling handleJsonInput Function');
       let jsonStr = inputEvent.target.innerText;
+
       // Escape empty string scse
       if (jsonStr === '') jsonStr = '{}';
       jsonErrorMessage.value = '';
+
+      // Validate user input json
       try {
-        // Validate user input json
         JSON.parse(jsonStr);
       } catch (err) {
         console.log(err.message);
@@ -103,13 +153,13 @@ export default defineComponent({
       handleValidInput(jsonStr);
     };
 
+    /**
+     * This function causing a smaller issue, when user insert
+     * new keys, the JSON editor will try to auto  format  the
+     * input string for user, and the cursor will move to  the
+     * start position.
+     * */
     const handleValidInput = (validJsonStr) => {
-      /**
-       * This function causing a smaller issue, when user insert
-       * new keys, the JSON editor will try to auto  format  the
-       * input string for user, and the cursor will move to  the
-       * start position.
-       * */
       const jsonObj = JSON.parse(validJsonStr);
       validatedJson.value = jsonObj;
       // Output As String
@@ -132,10 +182,15 @@ export default defineComponent({
       // console.log('Watching error message');
       propErrorMessage.value = props.errorProp;
     });
+
+    /**
+     * Any jsonStr change will always trigger the init() function
+     * This will prevent any casched state from  previous content
+     */
     watch(
       () => props.jsonStr,
       () => {
-        // console.log('Watching jsonStr props change');
+        console.log('Watching jsonStr props change');
         init();
       }
     );
@@ -153,6 +208,7 @@ export default defineComponent({
       validatedJson,
       jsonErrorMessage,
       propErrorMessage,
+      contentDisabledMsg,
       cursorPosition,
       contentEditable,
       handleJsonInputEvt,

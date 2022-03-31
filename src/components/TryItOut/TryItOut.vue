@@ -50,6 +50,7 @@
               <p class="q-mb-md">{{ $t('tryItOut.editJsonDataInput') }}</p>
               <!-- <JsonDataInput /> -->
               <JsonEditor
+                :key="jsonEditorKey"
                 :json-str="requestBodyStr"
                 :error-prop="requestBodyError"
                 @validInput="(jsonStr) => handleJsonInput(jsonStr)"
@@ -175,6 +176,7 @@ export default defineComponent({
     // Error message placeholder for JsonEditor
     const requestBodyError = ref('');
     const jsonInputError = ref(false);
+    const jsonEditorKey = ref(0);
     /**
      * Process validated JSON data from JSON editor
      */
@@ -229,6 +231,7 @@ export default defineComponent({
      * update requestBodyStr for JsonEditor to display updated value
      */
     const updateReqBodyStr = () => {
+      requestBodyStr.value = '';
       const inputProperties = getInputProperties(userDocRef);
       requestBodyStr.value = fmtReqBodyFromInputProps(inputProperties);
     };
@@ -257,7 +260,9 @@ export default defineComponent({
     }
 
     function resetInputs() {
+      console.log('resetting input');
       initUserDocRef();
+      jsonEditorKey.value += 1;
     }
 
     const handleJsonInputError = (err) => {
@@ -279,6 +284,7 @@ export default defineComponent({
     // });
 
     watch(userDocRef, () => {
+      // console.log('Watching userDocRef update');
       updateReqBodyStr();
     });
 
@@ -322,6 +328,7 @@ export default defineComponent({
       requestBodyError,
       handleFieldsInput,
       jsonInputError,
+      jsonEditorKey,
       handleJsonInputError,
     };
   },

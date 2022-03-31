@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="row justify-between no-wrap items-center full-width">
+    <div class="row justify-between no-wrap items-center full-width q-mb-md">
       <Quote
         content="Please take note, this function is designed for testing and trying out purpose, not for production. All Job IDs are sotred in local storage, you won't be able to access the stored Job ID and status with another browsers, or other devices. Stored Job IDs will also be removed if you testing with private mode or after clened the browser cache."
         class="col-8"
@@ -186,8 +186,9 @@ export default defineComponent({
     };
 
     function useClearJobLocalStorage() {
-      clearJobLocalStorage();
-      updateTable();
+      void clearJobLocalStorage().then(() => {
+        updateTable();
+      });
     }
 
     return {
