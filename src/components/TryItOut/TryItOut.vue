@@ -198,7 +198,7 @@ export default defineComponent({
           updateInputPropertyExampleValue(inputProps[key], jsonObj[key]);
         } else {
           console.log('Capturing error message');
-          requestBodyError.value = `Invalid key "${key}", please refer to documentation detail.`;
+          requestBodyError.value = `Invalid key "${key}", please refer to documentation detail. For trying out purpose, please try not to modify the pre-defined key value.`;
           console.log(requestBodyError.value);
           return; // Catch error and break loop
         }
