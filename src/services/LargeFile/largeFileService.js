@@ -129,30 +129,34 @@ export default () => {
   function clearJobLocalStorage() {
     const storage = window.localStorage;
     const msTitle = rawDocRef.value.info.title;
-
-    Notify.create({
-      message:
-        'Fro try it out purpose, all Job ID are sotred in local storage, by clicking CLEAR button, all sotred Job ID and Status will be removed permanently. Please marke sure your testing process have completely finished before clear the table.',
-      color: 'red',
-      multiLine: true,
-      icon: 'warning',
-      timeout: 0,
-      actions: [
-        {
-          label: 'Clear',
-          color: 'white',
-          handler: () => {
-            storage.removeItem(msTitle); // Testing purpose, clean local storage
+    return new Promise((resolve, reject) => {
+      Notify.create({
+        message:
+          'Fro try it out purpose, all Job ID are sotred in local storage, by clicking CLEAR button, all sotred Job ID and Status will be removed permanently. Please marke sure your testing process have completely finished before clear the table.',
+        color: 'red',
+        position: 'center',
+        multiLine: true,
+        icon: 'warning',
+        timeout: 0,
+        actions: [
+          {
+            label: 'Clear',
+            color: 'white',
+            handler: () => {
+              storage.removeItem(msTitle); // Clean local storage
+              resolve();
+            },
           },
-        },
-        {
-          label: 'Cancel',
-          color: 'white',
-          handler: () => {
-            /* ... */
+          {
+            label: 'Cancel',
+            color: 'white',
+            handler: () => {
+              /* ... */
+              reject();
+            },
           },
-        },
-      ],
+        ],
+      });
     });
   }
 

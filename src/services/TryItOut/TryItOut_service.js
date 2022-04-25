@@ -300,7 +300,7 @@ const tryItOutService = () => {
      * contain x-name and name, but the key itself is the name
      */
     let label = null;
-    label = inputProperty['x-name'] || inputProperty.name || name || idx;
+    label = inputProperty['x-name'] || inputProperty.name || name || idx 
     // console.log(label, inputProperty);
     label += ` (${inputProperty.type || inputProperty.schema.type})`;
     return label;
@@ -414,8 +414,12 @@ const tryItOutService = () => {
   }
 
   function updateInputPropertyExampleValue(inputProperty, exampleValue) {
-    console.log(exampleValue);
     const inputPropertyType = inputProperty.type ?? inputProperty.schema.type;
+    if (exampleValue === '') {
+      // If user input empty value, don't perform any data modification
+      inputProperty.example = exampleValue;
+      return;
+    }
     try {
       switch (inputPropertyType) {
         case 'float':
