@@ -345,7 +345,7 @@ export default defineComponent({
       });
 
     watch(rawDocRef, () => {
-      // console.log('Watching raw doc change')
+      console.log('Watching raw doc change')
       updateReqBodyStr();
       updateReqBodyProperty();
     });

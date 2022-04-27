@@ -70,7 +70,7 @@ export default defineComponent({
     const apiKey = route.query.apiKey || '';
 
     const docPath = ref('');
-    docPath.value = route.query.docPath;
+    docPath.value = getDocPath();
 
     const isSentientLargeFile = ref();
     const isSingleEndpoint = ref();
@@ -125,7 +125,7 @@ export default defineComponent({
         });
     };
 
-    const getDocPath = () => {
+    function getDocPath() {
       /**
        * Added 2022 Apr 27
        * Some of the url contains "&" special character, vue route
@@ -144,7 +144,7 @@ export default defineComponent({
       } else {
         return route.query.docPath;
       }
-    };
+    }
 
     // fetchApiDoc(docPath.value).catch((err) => {
     //   console.log(err);
@@ -182,7 +182,7 @@ export default defineComponent({
      * Watching query parameters in URL change, reload yaml docs
      */
     watch(
-      () => route.query.docPath,
+      () => route.query,
       () => {
         init();
       }
