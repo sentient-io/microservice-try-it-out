@@ -16,7 +16,7 @@ async function getUploadPolicy(fileData, endpoint) {
     .catch((err) => {
       console.log(err);
       Notify.create({
-        message: err.message + '. Please reload page to re-start.',
+        message: err.response.data.message + '. Reload page to re-start.',
         timeout: 0,
         actions: [
           {

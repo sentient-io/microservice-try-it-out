@@ -11,13 +11,32 @@
     <!-- 
       Below content will only display when there is valid rawDocRef content
       -->
-    <div v-show="Object.keys(rawDocRef).length !== 0 && rawDocRef.openapi">
+    <div v-show="!!docClass && isValidOpenApiDoc">
       <TryItOutLargeFile
-        v-if="isLargeFileRes && docClass"
+        v-if="isSentientLargeFile"
         :api-key="apiKey"
         :doc-path="docPath"
       />
-      <TryItOut v-else :api-key="apiKey" :doc-path="docPath" />
+      <TryItOut
+        v-else-if="isSingleEndpoint"
+        :api-key="apiKey"
+        :doc-path="docPath"
+      />
+      <div v-else>
+        <p class="text-center q-ma-none">
+          Try It Out is currently not support for this microservice.
+        </p>
+      </div>
+    </div>
+
+    <div v-show="isFetchingMicroserviceDoc">
+      <p class="text-center q-ma-none">Loading microservice document ...</p>
+    </div>
+
+    <div v-show="!isFetchingMicroserviceDoc && !isValidOpenApiDoc">
+      <p class="text-center q-ma-none">
+        Try It Out is currently not support for this microservice.
+      </p>
     </div>
   </div>
 </template>
@@ -51,7 +70,12 @@ export default defineComponent({
     const apiKey = route.query.apiKey || '';
 
     const docPath = ref('');
-    docPath.value = route.query.docPath;
+    docPath.value = getDocPath();
+
+    const isSentientLargeFile = ref();
+    const isSingleEndpoint = ref();
+    const isValidOpenApiDoc = ref();
+    const isFetchingMicroserviceDoc = ref(false);
 
     function postWindowHeight() {
       /**
@@ -76,9 +100,55 @@ export default defineComponent({
     /** Consistantly update the window size to parent window */
     window.addEventListener('resize', postWindowHeight);
 
-    fetchApiDoc(docPath.value).catch((err) => {
-      console.log(err);
-    });
+    const init = () => {
+      console.log('Init try it out page');
+      console.log(
+        route.fullPath.split('?docPath=')[1].split('.yaml')[0].includes('&')
+      );
+
+      docPath.value = getDocPath();
+      // Reset docClass to trigger re-draw large file try it out
+      docClass.value = '';
+      if (!docPath.value) return;
+      isFetchingMicroserviceDoc.value = true;
+      fetchApiDoc(docPath.value)
+        .then(() => {
+          isValidOpenApiDoc.value = docClass.value.isValidOpenApiDoc();
+          isSentientLargeFile.value = docClass.value.isSentientLargeFile();
+          isSingleEndpoint.value = docClass.value.isSingleEndpoint();
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          isFetchingMicroserviceDoc.value = false;
+        });
+    };
+
+    function getDocPath() {
+      /**
+       * Added 2022 Apr 27
+       * Some of the url contains "&" special character, vue route
+       * will read is as a quqery splitter and cause error.
+       *  */
+
+      /**
+       * CroppedDocPath will get the string in-between ?docPath=
+       * and .yaml, that will be the full yaml doc path.
+       *  */
+      const croppedDocPath = route.fullPath
+        .split('?docPath=')[1]
+        .split('.yaml')[0];
+      if (croppedDocPath.includes('&')) {
+        return croppedDocPath + '.yaml';
+      } else {
+        return route.query.docPath;
+      }
+    }
+
+    // fetchApiDoc(docPath.value).catch((err) => {
+    //   console.log(err);
+    // });
 
     if (isInIframe) {
       /**
@@ -95,7 +165,7 @@ export default defineComponent({
       if (apiKey) {
         setApiKey(apiKey);
       }
-      // console.log('Try It Out Mounted');
+      init();
       // postWindowHeight(); /** Send the size to parent window */
     });
 
@@ -105,20 +175,16 @@ export default defineComponent({
        * value as well, to prevent cashed data in UI
        */
       rawDocRef.value = '';
+      docClass.value = '';
     });
 
     /**
      * Watching query parameters in URL change, reload yaml docs
      */
     watch(
-      () => route.query.docPath,
+      () => route.query,
       () => {
-        docPath.value = route.query.docPath;
-        // Reset docClass to trigger re-draw large file try it out
-        docClass.value = '';
-        fetchApiDoc(docPath.value).catch((err) => {
-          console.log(err);
-        });
+        init();
       }
     );
 
@@ -131,6 +197,10 @@ export default defineComponent({
       isLargeFileRes: computed(() => {
         return isLargeFile(rawDocRef);
       }),
+      isSentientLargeFile,
+      isSingleEndpoint,
+      isValidOpenApiDoc,
+      isFetchingMicroserviceDoc,
     };
   },
 });

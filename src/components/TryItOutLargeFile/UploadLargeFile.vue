@@ -22,6 +22,7 @@
         }
       "
     />
+    <span>{{ fileHint }}</span>
     <div v-if="policy" class="q-my-md">
       <div class="text-center">
         <!-- Main call to action button -->
@@ -60,7 +61,13 @@ export default defineComponent({
     const additionalParamRef = ref();
     const additionalParamKeys = ref();
     const additionalParam = ref({});
+    const fileHint = ref();
     // !IMPORTANT hard coded value
+
+    fileHint.value =
+      getInputSchema().properties['file_name'].description +
+      'e.g.' +
+      getInputSchema().properties['file_name'].example;
 
     additionalParamRef.value = getInputSchema().properties['additional_param'];
     if (additionalParamRef.value) {
@@ -101,6 +108,7 @@ export default defineComponent({
       handleRequestPolicy,
       handleFileUploading,
       userParamInput,
+      fileHint,
     };
   },
 });
