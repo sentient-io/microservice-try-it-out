@@ -1,11 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-floating-promises */
-
 import axios from 'axios';
 import { ref, reactive } from 'vue';
 import yaml from 'js-yaml';
@@ -25,11 +17,11 @@ const isInIframe = window.location !== window.parent.location;
 /** DO NOT mutate or change this rawDocRef */
 const rawDocRef = ref({});
 
-/** New doc class to replace other doc parsing functions */
-let docClass = ref({});
-
 /** Any user input or update goes to  here */
 const userDocRef = ref({});
+
+/** New doc class to replace other doc parsing functions */
+let docClass = ref({});
 
 const apiResponse = reactive({
   status: '',
@@ -178,11 +170,15 @@ const tryItOutService = () => {
   function initUserDocRef() {
     /** Duplicate and remove the reactivity of doc object */
     userDocRef.value = JSON.parse(JSON.stringify(rawDocRef.value));
+    resetApiResponse();
+  }
+
+  const resetApiResponse = () => {
     apiResponse.status = '';
     apiResponse.statusDescription = '';
     apiResponse.response = {};
     apiResponse.counter = 0;
-  }
+  };
 
   function validApiDoc(apiDoc) {
     let valid = true;
@@ -300,7 +296,7 @@ const tryItOutService = () => {
      * contain x-name and name, but the key itself is the name
      */
     let label = null;
-    label = inputProperty['x-name'] || inputProperty.name || name || idx 
+    label = inputProperty['x-name'] || inputProperty.name || name || idx;
     // console.log(label, inputProperty);
     label += ` (${inputProperty.type || inputProperty.schema.type})`;
     return label;

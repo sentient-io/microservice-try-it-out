@@ -2,7 +2,9 @@
   <q-layout view="lHh Lpr lFf">
     <q-page-container class="full-width">
       <router-view style="max-width: 1200px" class="q-mx-auto" />
-      <div class="text-center"><small>Try It Out Version: v0.2.2</small></div>
+      <div class="text-left text-grey-5 q-pa-md">
+        <small>Try It Out Version: v0.3.0</small>
+      </div>
     </q-page-container>
   </q-layout>
 </template>

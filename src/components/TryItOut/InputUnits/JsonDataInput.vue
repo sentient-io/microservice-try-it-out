@@ -1,13 +1,13 @@
 <template>
   <div>
     <!-- 
-      This disable key may be a bit confusing, but it saved a lot of duplicated code.
+      This disable key may be confusing, but it saved a lot of duplicated code.
       -
-      From [Parsed Response] page, we'll provide full details of what user had passed
+      In [Parsed Response] page, we provide full details of  what  user  passed
       to the API, so they'll have a better idea where are the result came from.
-      It works exactly same as JSON data input, except, user shouldn't key in anything
+      It works same as JSON data input, except, user shouldn't key in anything.
       -
-      To make it more useful, we are adding preview of audio/images and video data
+      To make it more useful, we added preview  of  audio/images and video data
      -->
     <div v-if="disable">
       <div class="s-code">

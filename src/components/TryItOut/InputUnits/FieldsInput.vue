@@ -9,7 +9,18 @@
       :key="index"
       class="q-my-lg n-fields-input"
     >
-      <FieldsInputForObject
+      <JsonEditor
+        v-if="
+          ['object', 'array'].includes(inputProperty.type) ||
+          inputProperty.name === 'filterdata'
+        "
+        :label="getInputFieldLabel(inputProperty, name, index)"
+        :json-str="JSON.stringify(inputProperty.example)"
+        @validInput="
+          (jsonStr) => handleUserInput(inputProperty, JSON.parse(jsonStr))
+        "
+      />
+      <!-- <FieldsInputForObject
         v-if="
           ['object', 'array'].includes(inputProperty.type) ||
           inputProperty.name === 'filterdata'
@@ -22,7 +33,7 @@
             handleUserInput(inputProperty, userInputValue);
           }
         "
-      ></FieldsInputForObject>
+      ></FieldsInputForObject> -->
 
       <div v-else-if="inputProperty.format === 'binary'">
         <BinaryUploader
@@ -169,7 +180,8 @@ import { defineComponent, ref } from 'vue';
 
 import { tryItOutService } from '../../../services/TryItOut/TryItOut_service';
 
-import FieldsInputForObject from './FieldsInputForObject.vue';
+// import FieldsInputForObject from './FieldsInputForObject.vue';
+import JsonEditor from 'src/modules/JsonEditor/JsonEditor.vue';
 import Base64AdditionalInfo from './Base64AdditionalInfo.vue';
 import ExpandableIcon from '../ExpandableIcon.vue';
 import AudioRecorder from './AudioRecorder.vue';
@@ -181,7 +193,8 @@ import { Notify } from 'quasar';
 
 export default defineComponent({
   components: {
-    FieldsInputForObject,
+    // FieldsInputForObject,
+    JsonEditor,
     Base64AdditionalInfo,
     ExpandableIcon,
     AudioRecorder,
