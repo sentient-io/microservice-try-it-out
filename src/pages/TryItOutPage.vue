@@ -101,11 +101,6 @@ export default defineComponent({
     window.addEventListener('resize', postWindowHeight);
 
     const init = () => {
-      console.log('Init try it out page');
-      console.log(
-        route.fullPath.split('?docPath=')[1].split('.yaml')[0].includes('&')
-      );
-
       docPath.value = getDocPath();
       // Reset docClass to trigger re-draw large file try it out
       docClass.value = '';
@@ -136,9 +131,11 @@ export default defineComponent({
        * CroppedDocPath will get the string in-between ?docPath=
        * and .yaml, that will be the full yaml doc path.
        *  */
-      const croppedDocPath = route.fullPath
-        .split('?docPath=')[1]
-        .split('.yaml')[0];
+      if (!route.fullPath) return;
+      let croppedDocPath = '';
+      try {
+        croppedDocPath = route.fullPath.split('?docPath=')[1].split('.yaml')[0];
+      } catch (err) {}
       if (croppedDocPath.includes('&')) {
         return croppedDocPath + '.yaml';
       } else {
