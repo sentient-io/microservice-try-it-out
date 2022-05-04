@@ -343,7 +343,8 @@ const tryItOutService = () => {
   const { postApiCall } = postApiService();
 
   async function makePostApiCall() {
-    const res = await postApiCall(userDocRef, apiKey);
+    const _userDocRef = docClass.value.getUserDoc();
+    const res = await postApiCall(_userDocRef, apiKey);
     console.log(res);
     apiResponse.status = res?.status?.toString() || '';
     /**

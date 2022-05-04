@@ -233,6 +233,10 @@ class DocClass {
     return true;
   }
 
+  getUserDoc(){
+    return this.userDoc
+  }
+
   isValidOpenApiDoc() {
     if (!this.userDoc.openapi) {
       return false;
