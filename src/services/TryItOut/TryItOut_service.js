@@ -401,6 +401,7 @@ const tryItOutService = () => {
   function getInputDataType(inputProperty) {
     switch (inputProperty.type) {
       case 'float':
+      case 'integer':
       case 'number':
         return 'number';
         break;
@@ -426,6 +427,7 @@ const tryItOutService = () => {
           inputProperty.example = anythingToString(exampleValue);
           // inputProperty.example = JSON.stringify(exampleValue);
           break;
+        case 'integer':
         case 'number':
           inputProperty.example = +exampleValue;
           break;
