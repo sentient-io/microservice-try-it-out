@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="q-mb-sm">
-      <span v-if="label">{{label}}</span>
+      <span v-if="label">{{ label }}</span>
       <pre
         :contenteditable="contentEditable"
         class="json-input q-ma-none q-pa-sm text-grey-8 small-scrollbar"
@@ -40,7 +40,16 @@
       v-show="!contentEditable"
     >
       <q-icon name="warning_amber" color="q-mr-sm" />
-      <small>Content editing is disabled. {{ contentDisabledMsg }}</small>
+      <small>
+        Content editing is disabled.{{ contentDisabledMsg }}
+        <span
+          style="text-decoration: underline"
+          class="cursor-pointer text-grey"
+          @click="forceAllowContentEditing()"
+        >
+          Enable Editing Anyway.
+        </span>
+      </small>
     </div>
   </div>
 </template>
@@ -82,6 +91,7 @@ export default defineComponent({
     const cursorPosition = ref();
     const contentEditable = ref(true);
     const contentDisabledMsg = ref('');
+    const forceContentEditable = ref(false);
 
     const { clipLongStringInJsonObj, isContainsLongString } =
       JsonEditorService();
@@ -111,14 +121,14 @@ export default defineComponent({
         contentEditable.value = false;
       }
 
-      if (isContainsLongString(jsonObj)) {
+      if (isContainsLongString(jsonObj) && !forceContentEditable.value) {
         handleLongStringJsonObj(jsonObj);
       } else {
         validatedJson.value = jsonObj;
       }
 
       // formatJsonString();
-      console.log('Init JSON Editor Component');
+      // console.log('Init JSON Editor Component');
     };
 
     /**
@@ -132,7 +142,23 @@ export default defineComponent({
 
       // Displaying the JSON object with clipped long string
       const clippedJsonObj = clipLongStringInJsonObj(jsonObj);
-      validatedJson.value = clippedJsonObj;
+
+      const clippingRequired = !forceContentEditable.value;
+      if (clippingRequired) {
+        validatedJson.value = clippedJsonObj;
+      } else {
+        validatedJson.value = jsonObj;
+      }
+    };
+
+    /**
+     * In some case user may still want to edit the JSON object
+     * even with the warning it may freeze the browser.
+     */
+    const forceAllowContentEditing = () => {
+      forceContentEditable.value = true;
+      contentEditable.value = true;
+      init();
     };
 
     /**
@@ -141,15 +167,15 @@ export default defineComponent({
      */
     const handleJsonInputEvt = (inputEvent) => {
       // console.log('calling handleJsonInput Function');
-      let jsonStr = inputEvent.target.innerText;
+      let userJsonStr = inputEvent.target.innerText;
 
       // Escape empty string scse
-      if (jsonStr === '') jsonStr = '{}';
+      if (userJsonStr === '') userJsonStr = '{}';
       jsonErrorMessage.value = '';
 
       // Validate user input json
       try {
-        const jsonObj = JSON.parse(jsonStr);
+        const jsonObj = JSON.parse(userJsonStr);
         handleLargeNumber(jsonObj);
       } catch (err) {
         console.log(err.message);
@@ -158,14 +184,13 @@ export default defineComponent({
         return;
       }
       //'String is valid'
-      handleValidInput(jsonStr);
+      handleValidInput(userJsonStr);
     };
 
     const handleLargeNumber = (jsonObj) => {
       for (const [, val] of Object.entries(jsonObj)) {
         if (typeof val == 'object') handleLargeNumber(val);
         if (typeof val == 'number' && val.toString().length >= 16) {
-          console.log(val.toString());
           jsonErrorMessage.value =
             'Input contains large (long) number, current JSON editor may round the number up and cause error. However you can continue use scientific notation to repersent large number, e.g.1.79e+308';
         }
@@ -232,6 +257,7 @@ export default defineComponent({
       contentEditable,
       handleJsonInputEvt,
       getCursorPosition,
+      forceAllowContentEditing,
     };
   },
 });
