@@ -22,7 +22,7 @@ import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
   props: {
-    content: { type: String, default: 'Default text' },
+    content: { type: String, default: '' },
     trimAt: { type: Number, default: 30 },
     textStyle: {},
   },

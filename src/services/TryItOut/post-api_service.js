@@ -8,31 +8,33 @@
 
 import { dataFormatter } from './data-formatter';
 
-import { docInterface } from './TryItOut_types';
+// import { docInterface } from './TryItOut_types';
 
-import { Ref } from 'vue';
+// import { Ref } from 'vue';
+
+import { tryItOutService } from 'src/services/TryItOut/TryItOut_service';
 
 const {
   getInputProperties,
   rawInputPropertiesToDataForm,
-  rawInputPropertiesToJsonString,
+  // rawInputPropertiesToJsonString,
 } = dataFormatter();
 
 const postApiService = () => {
-  function getEndPoint(doc: docInterface) {
+  function getEndPoint(doc) {
     const server = doc.servers[0]['url'];
     const path = Object.keys(doc.paths)[0];
     return `${server}${path}`;
   }
 
-  function getContentType(doc: docInterface) {
+  function getContentType(doc) {
     const contentType = Object.keys(
       Object.values(Object.values(doc.paths)[0])[0].requestBody.content
     )[0];
     return contentType;
   }
 
-  function postApiCall(userDocRef: Ref<docInterface>, apiKey: Ref<string>) {
+  function postApiCall(userDocRef, apiKey) {
     const doc = userDocRef.value ?? userDocRef;
     console.log('making post api call');
     return new Promise((resolve) => {
@@ -60,9 +62,16 @@ const postApiService = () => {
          * Middle of the page, there is a warning message
          */
         xhr.setRequestHeader('Content-Type', contentType);
-        xhr.send(
-          rawInputPropertiesToJsonString(getInputProperties(userDocRef))
-        );
+
+        const { docClass } = tryItOutService();
+
+        const requestBodyObj = docClass.value.getRequestBodyObjBy(null);
+
+        xhr.send(JSON.stringify(requestBodyObj));
+
+        // xhr.send(
+        //   rawInputPropertiesToJsonString(getInputProperties(userDocRef))
+        // );
       }
 
       console.log(

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div></div>
     <div>
       <InputAndResponseTabs
         ref="InputAndResponseTabsRef"
@@ -39,12 +40,24 @@
             {{ $t('tryItOut.doesNotRequireInput') }}
           </p>
 
-          <FieldsInput
-            v-else-if="inputTypeIdx === 0"
-            :inputProperties="getInputProperties(userDocRef)"
-            :requiredValues="listOfRequiredValues(userDocRef)"
-            @input="handleFieldsInput"
-          />
+          <div v-else-if="inputTypeIdx === 0">
+            <FieldsInput
+              :inputProperties="
+                methodVerb == 'get'
+                  ? getInputProperties(userDocRef)
+                  : requestBodyProperties
+              "
+              :requiredValues="listOfRequiredValues(userDocRef)"
+              @input="handleFieldsInput"
+            />
+            <!-- {{ getInputProperties(userDocRef) }} -->
+            <!-- <pre>{{requestBodySchema}}</pre> -->
+            <!-- <RequestBodyFieldsInput
+              :schema="requestBodySchema"
+              @update="(schema) => updateExampleBySchema(schema)"
+            /> -->
+          </div>
+
           <div v-else>
             <div v-if="inputTypeByApi(rawDocRef) === 'jsonDataInput'">
               <p class="q-mb-md">{{ $t('tryItOut.editJsonDataInput') }}</p>
@@ -128,6 +141,7 @@ import MakeApiCallBtn from './MakeApiCallBtn.vue';
 import RawResponseOLD from './ResponseUnits/RawResponseOLD.vue';
 import ParsedResponse from './ResponseUnits/ParsedResponse.vue';
 import JsonEditor from 'src/modules/JsonEditor/JsonEditor.vue';
+// import RequestBodyFieldsInput from 'src/modules/RequestBodyFieldsInput/RequestBodyFieldsInput.vue';
 // import JsonDataInput from './InputUnits/JsonDataInput.vue';
 
 export default defineComponent({
@@ -142,6 +156,7 @@ export default defineComponent({
     RawResponseOLD,
     ParsedResponse,
     JsonEditor,
+    // RequestBodyFieldsInput,
     // JsonDataInput,
   },
   props: {
@@ -163,6 +178,7 @@ export default defineComponent({
       validateInputProperties,
       isInIframe,
       updateInputPropertyExampleValue,
+      docClass,
     } = tryItOutService();
 
     const { fmtReqBodyFromInputProps } = formatterService();
@@ -177,6 +193,12 @@ export default defineComponent({
     const requestBodyError = ref('');
     const jsonInputError = ref(false);
     const jsonEditorKey = ref(0);
+
+    const requestBodySchema = ref();
+    const requestBodyProperties = ref();
+
+    // Post or Get
+    const methodVerb = ref('');
     /**
      * Process validated JSON data from JSON editor
      */
@@ -184,7 +206,8 @@ export default defineComponent({
       // The jsonStr should always be valid jsonString
       requestBodyError.value = ''; // Reset error message
       const jsonObj = JSON.parse(jsonStr);
-      const inputProps = getInputProperties(userDocRef);
+      // const inputProps = getInputProperties(userDocRef);
+      const inputProps = docClass.value.getRequestBodyPropertiesBy(null);
       const inputPropKeys = Object.keys(inputProps);
 
       /**
@@ -192,6 +215,7 @@ export default defineComponent({
        * keys to the doc props example  ( later will be used for the api
        * call). If there are new keys not in documentation, raise error.
        */
+      console.log(Object.keys(jsonObj), inputPropKeys);
       Object.keys(jsonObj).forEach((key) => {
         if (inputPropKeys.includes(key)) {
           // Avoid invalid keys
@@ -232,8 +256,17 @@ export default defineComponent({
      */
     const updateReqBodyStr = () => {
       requestBodyStr.value = '';
-      const inputProperties = getInputProperties(userDocRef);
+      // const schema = docClass.value.findRequestBodySchema();
+      // const inputProperties = getInputProperties(userDocRef);
+      methodVerb.value = docClass.value.findMethodVerbByPath(null);
+      const inputProperties = docClass.value.getRequestBodyPropertiesBy(null);
+      console.log(inputProperties);
       requestBodyStr.value = fmtReqBodyFromInputProps(inputProperties);
+    };
+
+    const updateReqBodyProperty = () => {
+      requestBodyProperties.value =
+        docClass.value.getRequestBodyPropertiesBy(null);
     };
 
     const handleFieldsInput = () => {
@@ -262,6 +295,8 @@ export default defineComponent({
     function resetInputs() {
       console.log('resetting input');
       initUserDocRef();
+      docClass.value.resetUserDoc();
+      updateReqBodyProperty();
       jsonEditorKey.value += 1;
     }
 
@@ -272,6 +307,18 @@ export default defineComponent({
       } else {
         jsonInputError.value = true;
       }
+    };
+
+    const setRequestBodySchema = (schema) => {
+      docClass.value.setRequestBodySchema(false, schema);
+    };
+
+    const updateExampleBySchema = (schema) => {
+      docClass.value.setRequestBodySchema(false, schema);
+
+      Object.values(schema.properties).forEach((val) => {
+        updateInputPropertyExampleValue(val, val.example);
+      });
     };
 
     /** Consistantly update the window size to parent window */
@@ -288,17 +335,20 @@ export default defineComponent({
       updateReqBodyStr();
     });
 
-    fetchApiDoc(props.docPath).catch((err) => {
-      console.log(err);
-    });
+    fetchApiDoc(props.docPath)
+      .then(() => {
+        // requestBodySchema.value = docClass.value.findRequestBodySchema();
+        updateReqBodyProperty();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
-    // watch(
-    //   rawDocRef,
-    //   () => {
-    //     console.log('Watching raw doc change')
-    //     updateReqBodyStr();
-    //   }
-    // );
+    watch(rawDocRef, () => {
+      console.log('Watching raw doc change')
+      updateReqBodyStr();
+      updateReqBodyProperty();
+    });
 
     watch(apiResponse, () => {
       // console.log('Watching response');
@@ -330,6 +380,12 @@ export default defineComponent({
       jsonInputError,
       jsonEditorKey,
       handleJsonInputError,
+      docClass,
+      requestBodySchema,
+      requestBodyProperties,
+      setRequestBodySchema,
+      updateExampleBySchema,
+      methodVerb,
     };
   },
 });

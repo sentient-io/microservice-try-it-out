@@ -11,3 +11,17 @@ improving along with the project development.
 In a module folder, everything should enclosed and working within it
 the only way to pass in data and send out data is through props and
 emits.
+
+Each Module should be documented properly:
+/**
+ * @author 
+ * @lastUpdate 
+ *
+ * Some description
+ *
+ * @depencencies []
+ *
+ * @props property: description
+ *
+ * @emits events: description
+ */

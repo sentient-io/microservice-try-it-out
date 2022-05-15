@@ -1,21 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-floating-promises */
+// import { inputPropertyInterface, docInterface } from './TryItOut_types';
+// import { Ref } from 'vue';
 
-import { inputPropertyInterface, docInterface } from './TryItOut_types';
-import { Ref } from 'vue';
+// import { tryItOutService } from 'src/services/TryItOut/TryItOut_service';
 
 const dataFormatter = () => {
-  function addMaskedValueToInputProperties(
-    inputProperties: inputPropertyInterface
-  ) {
+  function addMaskedValueToInputProperties(inputProperties) {
     const trim = 5000;
-    Object.values(inputProperties).forEach((property: any) => {
+    Object.values(inputProperties).forEach((property) => {
       if (property.example.length > trim) {
         property.maskedValue = `${property.example.slice(0, trim)}
           ...(${property.example.length - trim} characters been clipped)`;
@@ -23,7 +14,7 @@ const dataFormatter = () => {
     });
   }
 
-  function modifyValueByType(value: any, type: string) {
+  function modifyValueByType(value, type) {
     let modifiedValue = value;
     switch (type) {
       case 'array':
@@ -37,26 +28,31 @@ const dataFormatter = () => {
     return modifiedValue;
   }
 
-  function getInputProperties(apiDocRef: Ref<docInterface>) {
-    const apiDoc: docInterface = apiDocRef.value ?? apiDocRef;
-    let inputProperties: any = '';
+  function getInputProperties(apiDocRef) {
+    // const { docClass } = tryItOutService();
+    const apiDoc = apiDocRef.value ?? apiDocRef;
+    let inputProperties = '';
     try {
       inputProperties = apiDoc.components.schemas.input.properties;
+      // inputProperties = docClass.value.getInputProperties();
       addMaskedValueToInputProperties(inputProperties);
-    } catch (err) {}
+    } catch (err) {
+      // console.log(err);
+    }
+
     try {
       inputProperties = Object.values(apiDoc.paths)[0].get.parameters;
-    } catch (err) {}
+    } catch (err) {
+      // console.log(err);
+    }
     return inputProperties;
   }
 
-  function rawInputPropertiesToDataForm(
-    inputProperties: inputPropertyInterface
-  ) {
-    const data: FormData = new FormData();
+  function rawInputPropertiesToDataForm(inputProperties) {
+    const data = new FormData();
 
     Object.keys(inputProperties).forEach((propertyKey) => {
-      const property: any = inputProperties[propertyKey];
+      const property = inputProperties[propertyKey];
       const key = property.name || property['x-name'] || propertyKey;
       const value = property.example;
       if (value) {
@@ -67,7 +63,7 @@ const dataFormatter = () => {
     return data;
   }
 
-  function validValue(value: unknown) {
+  function validValue(value) {
     /**
      * Validate value, because the value can be multiple type
      * for each type need to treate differentely.
@@ -78,14 +74,12 @@ const dataFormatter = () => {
     return false;
   }
 
-  function rawInputPropertiesToJsonString(
-    inputProperties: inputPropertyInterface
-  ) {
+  function rawInputPropertiesToJsonString(inputProperties) {
     /** Ignores masked value and empty value */
 
     const jsonInput = {};
     Object.keys(inputProperties).forEach((propertyKey) => {
-      const property: any = inputProperties[propertyKey];
+      const property = inputProperties[propertyKey];
       const key = property.name || property['x-name'] || propertyKey;
       const value = property.example;
       console.log('*** test ***');

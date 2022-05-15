@@ -6,7 +6,7 @@
       Forget why don't use v-if, but there is
       a reason.
       -->
-    <div
+    <!-- <div
       v-show="Object.keys(rawDocRef).length === 0 || !rawDocRef.openapi"
       class="row items-center justify-center q-my-lg no-wrap"
     >
@@ -26,10 +26,10 @@
       <h5 v-else class="text-grey-7">
         Try It Out is currently not available for websocket APIs.
       </h5>
-    </div>
+    </div> -->
 
     <h3 class="q-ma-none">
-      {{ $t('tryItOut.header') }}
+      {{ $t('tryItOut.header') }}{{ `- ${rawDocRef?.info?.title}` }}
       {{ isInIframe ? null : `- ${rawDocRef?.info?.title}` }}
 
       <q-btn v-if="!isInIframe" class="float-right" to="/" icon="home" />
