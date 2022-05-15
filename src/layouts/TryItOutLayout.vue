@@ -1,5 +1,9 @@
 <template>
-  <q-layout view="lHh Lpr lFf" style="margin: auto; max-width: 1200px">
+  <q-layout
+    view="lHh Lpr lFf"
+    style="margin: auto; max-width: 1200px"
+    class="q-pa-md"
+  >
     <q-page-container>
       <router-view />
     </q-page-container>
