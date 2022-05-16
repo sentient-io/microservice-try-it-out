@@ -44,6 +44,17 @@ const getServerStr = () => {
   return serverStr;
 };
 
+const getApiObjsByPath = (path) => {
+  const apis = doc.value["paths"][path];
+  return apis;
+};
+
+const getMethodListByPath = (path) => {
+  const apis = getApiObjsByPath(path);
+  const methodList = Object.keys(apis);
+  return methodList;
+};
+
 const _handleLoadDocError = (docUrl) => {
   docErr.value = "An error occured, dococument failed load from url: " + docUrl;
 };
@@ -78,4 +89,12 @@ const _processDocResponse = (docResponse, docType = "") => {
   return docJson;
 };
 
-export { loadDoc, doc, docErr, getPathsList, getServerStr };
+export {
+  loadDoc,
+  doc,
+  docErr,
+  getPathsList,
+  getServerStr,
+  getApiObjsByPath,
+  getMethodListByPath,
+};

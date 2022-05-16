@@ -1,16 +1,17 @@
 <template>
   <div>
     <div v-if="pathsList?.[0]" class="row items-center">
+      <b class="q-pr-xs">Endpoint:</b>
       {{ serverStr }}
       <q-select
         v-if="pathsList.length > 1"
         outlined
         dense
         options-dense
-        class="apiPathSelector q-px-xs"
+        class="apiPathSelector q-pl-xs"
         v-model="selectedPath"
         :options="pathsList"
-        @select="emitSelectPath"
+        @update:model-value="emitSelectPath"
       />
       <span v-else>{{ selectedPath }}</span>
     </div>
