@@ -24,12 +24,12 @@ const loadDoc = async (docUrl) => {
   Loading.hide();
 };
 
+/**
+ * Initiate valid documentation object. Also keep an copy
+ * as rawDoc ,  this rawDoc should not expose to anywhere
+ * outside of this file.   It is used to reset user inout
+ */
 const initDoc = (docJson) => {
-  /**
-   * Initiate valid documentation object. Also keep an copy
-   * as rawDoc ,  this rawDoc should not expose to anywhere
-   * outside of this file.   It is used to reset user inout
-   */
   doc.value = JSON.parse(JSON.stringify(docJson));
   rawDoc.value = JSON.parse(JSON.stringify(docJson));
 };
@@ -65,19 +65,19 @@ const _resetDoc = () => {
   docErr.value = "";
 };
 
+/**
+ * Extract the extention after "." from url to identify
+ * the type of url (json / yaml / yml)
+ */
 const _getUrlType = (url) => {
-  /**
-   * Extract the extention after "." from url to identify
-   * the type of url (json / yaml / yml)
-   */
   return url.match(/.*\.(.*)$/)[1];
 };
 
+/**
+ * This function takes any format of API documentation
+ * and convert to valid JSON object.
+ */
 const _processDocResponse = (docResponse, docType = "") => {
-  /**
-   * This function takes any format of API documentation
-   * and convert to valid JSON object.
-   */
   let docJson;
   if (docType == "yaml" || docType == "yml") {
     docJson = yaml.load(docResponse);
