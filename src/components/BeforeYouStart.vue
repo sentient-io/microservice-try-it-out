@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex row items-center no-wrap bg-beige-1 q-pa-sm q-my-md"
+    class="flex row items-center no-wrap bg-beige-1 q-pa-sm"
     style="
       border-left: 6px solid;
       border-right: 6px solid;

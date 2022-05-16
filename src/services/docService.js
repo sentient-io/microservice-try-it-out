@@ -1,37 +1,57 @@
 import { ref } from "vue";
 import axios from "axios";
 import yaml from "js-yaml";
+import { Loading } from "quasar";
 
 const rawDoc = ref();
 const doc = ref();
+const docErr = ref("");
 
 const loadDoc = async (docUrl) => {
   _resetDoc();
-
+  Loading.show();
   try {
     console.log("Loading doc from ", docUrl);
+
     const loadDocResponse = await axios.get(docUrl);
     const docResponse = loadDocResponse.data;
     const docType = _getUrlType(docUrl);
     const docJson = _processDocResponse(docResponse, docType);
     initDoc(docJson);
   } catch (err) {
-    _handleLoadDocError();
+    _handleLoadDocError(docUrl);
   }
+  Loading.hide();
 };
 
 const initDoc = (docJson) => {
+  /**
+   * Initiate valid documentation object. Also keep an copy
+   * as rawDoc ,  this rawDoc should not expose to anywhere
+   * outside of this file.   It is used to reset user inout
+   */
   doc.value = JSON.parse(JSON.stringify(docJson));
   rawDoc.value = JSON.parse(JSON.stringify(docJson));
 };
 
-const _handleLoadDocError = () => {
-  console.log("An error occured, doc failed load from provided url.");
+const getPathsList = () => {
+  const pathsList = Object.keys(doc.value["paths"]);
+  return pathsList;
+};
+
+const getServerStr = () => {
+  const serverStr = doc.value?.["servers"]?.[0]?.["url"] || doc.value?.["host"];
+  return serverStr;
+};
+
+const _handleLoadDocError = (docUrl) => {
+  docErr.value = "An error occured, dococument failed load from url: " + docUrl;
 };
 
 const _resetDoc = () => {
   rawDoc.value = "";
   doc.value = "";
+  docErr.value = "";
 };
 
 const _getUrlType = (url) => {
@@ -58,4 +78,4 @@ const _processDocResponse = (docResponse, docType = "") => {
   return docJson;
 };
 
-export { loadDoc, doc };
+export { loadDoc, doc, docErr, getPathsList, getServerStr };

@@ -20,15 +20,15 @@
         @click="showApiKey = !showApiKey"
       />
 
-      <!-- Api Key helper -->
-      <q-btn flat round icon="help_outline" dense color="grey" />
+      <!-- Api Key help popyp -->
+      <ApiKeyHelpPopyp />
 
       <q-btn
         no-caps
         color="primary"
         label="Authorize"
         type="submit"
-        style="min-width: 180px"
+        style="min-width: 150px"
       />
     </div>
   </q-form>
@@ -41,8 +41,10 @@
  *
  * @emits setApiKey: emit an event pass the api key to parent component
  */
-import { ref, onMounted, watch, defineEmits } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
+
+import ApiKeyHelpPopyp from "src/components/ApiKeyHelpPopup.vue";
 
 const apiKey = ref();
 const showApiKey = ref(false);

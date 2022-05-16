@@ -8,6 +8,10 @@
   scrollbar-color: rgba(118, 118, 118, 0.3) rgba(0, 0, 0, 0);
 }
 
+p {
+  font-size: 16px;
+}
+
 @each $k, $c in $beigeColors {
 	.bg-#{$k} {background-color: $c}
   .text-#{$k} {color: $c}

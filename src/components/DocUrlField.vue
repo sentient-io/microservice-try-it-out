@@ -5,15 +5,15 @@
         outlined
         dense
         v-model="docUrl"
-        label="Documentation Url"
+        label="Document Url"
         class="full-width"
       />
       <q-btn
         no-caps
         color="primary"
-        label="Import Documentation"
+        label="Import Document"
         type="submit"
-        style="min-width: 180px"
+        style="min-width: 150px"
       />
     </div>
   </q-form>
