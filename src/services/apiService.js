@@ -22,8 +22,8 @@ const setApis = (apiObjs) => {
 
 const _getApiObjsMethods = (apiObjs) => {
   /**
-   * Because no all child in apiObject are methods,
-   * there are also summary, description etc.
+   * Because not all child in apiObject are methods, there
+   * are also summary, description etc. to be filter out.
    */
   const methodsList = [];
   Object.keys(apiObjs).forEach((e) => {
