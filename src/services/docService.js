@@ -24,19 +24,19 @@ const loadDoc = async (docUrl) => {
   Loading.hide();
 };
 
-/**
- * Initiate valid documentation object. Also keep an copy
- * as rawDoc ,  this rawDoc should not expose to anywhere
- * outside of this file.   It is used to reset user inout
- */
 const initDoc = (docJson) => {
+  /**
+   * Initiate valid documentation object. Also keep an copy
+   * as rawDoc ,  this rawDoc should not expose to anywhere
+   * outside of this file.   It is used to reset user inout
+   */
   doc.value = JSON.parse(JSON.stringify(docJson));
   rawDoc.value = JSON.parse(JSON.stringify(docJson));
 };
 
-const getPathsList = () => {
-  const pathsList = Object.keys(doc.value["paths"]);
-  return pathsList;
+const getApiPaths = () => {
+  const apiPaths = Object.keys(doc.value["paths"]);
+  return apiPaths;
 };
 
 const getServerStr = () => {
@@ -93,7 +93,7 @@ export {
   loadDoc,
   doc,
   docErr,
-  getPathsList,
+  getApiPaths,
   getServerStr,
   getApiObjsByPath,
   getMethodListByPath,

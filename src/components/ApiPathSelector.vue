@@ -1,16 +1,16 @@
 <template>
   <div>
-    <div v-if="pathsList?.[0]" class="row items-center">
+    <div v-if="apiPaths?.[0]" class="row items-center">
       <b class="q-pr-xs">Endpoint:</b>
       {{ serverStr }}
       <q-select
-        v-if="pathsList.length > 1"
+        v-if="apiPaths.length > 1"
         outlined
         dense
         options-dense
         class="apiPathSelector q-pl-xs"
         v-model="selectedPath"
-        :options="pathsList"
+        :options="apiPaths"
         @update:model-value="emitSelectPath"
       />
       <span v-else>{{ selectedPath }}</span>
@@ -21,14 +21,14 @@
 <script setup>
 /**
  *
- * @prop pathsList: list of path for user to select
+ * @prop apiPaths: list of path for user to select
  * @prop serverStr: prefix of the path, to form an endpoint
  *
  * @emit selectPath: emit the selected path to parent
  */
 import { onMounted, watch, ref } from "vue";
 const props = defineProps({
-  pathsList: { type: Array },
+  apiPaths: { type: Array },
   serverStr: { type: String },
 });
 
@@ -37,9 +37,8 @@ const emit = defineEmits(["selectPath"]);
 const selectedPath = ref();
 
 const init = () => {
-  if (props?.pathsList?.[0]) {
-    selectedPath.value = props.pathsList[0];
-    emitSelectPath();
+  if (props?.apiPaths?.[0]) {
+    selectedPath.value = props.apiPaths[0];
   }
 };
 
@@ -50,7 +49,7 @@ const emitSelectPath = () => {
 onMounted(() => init());
 
 watch(
-  () => props.pathsList,
+  () => props.apiPaths,
   () => init()
 );
 </script>

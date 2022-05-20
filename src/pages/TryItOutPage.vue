@@ -11,21 +11,19 @@
     <DocUrlField />
     <ApiKeyField @setApiKey="(apiKey) => setApiKey(apiKey)" />
     <ApiPathSelector
-      :paths-list="pathsList"
+      :api-paths="apiPaths"
       :server-str="serverStr"
-      @selectPath="(path) => setCurrentApiPath(path)"
+      @selectPath="(path) => setApiPath(path)"
     />
     <MethodSelector
-      :method-list="currMethodList"
-      @selectMethod="(method) => setCurrentApi(method)"
+      :method-list="methods"
+      @selectMethod="(method) => useSetMethod(method)"
     />
   </div>
 
   <InlineError :error-message="docErr" v-if="docErr" />
 
-  <pre
-    >{{ doc }}
-  </pre>
+  <pre class="bg-grey-2">{{ api }}</pre>
 </template>
 
 <script setup>
@@ -38,11 +36,20 @@ import {
   loadDoc,
   doc,
   docErr,
-  getPathsList,
+  getApiPaths,
   getServerStr,
   getApiObjsByPath,
   getMethodListByPath,
 } from "src/services/docService";
+
+import {
+  apis,
+  api,
+  methods,
+  setApis,
+  initApis,
+  setMethod,
+} from "src/services/apiService";
 
 import DocUrlField from "src/components/DocUrlField.vue";
 import BeforeYouStart from "src/components/BeforeYouStart.vue";
@@ -53,16 +60,14 @@ import InlineError from "src/components/InlineError.vue";
 
 const route = useRoute();
 
-const pathsList = ref();
+// The pre-fix server string
 const serverStr = ref();
-const currentApiPath = ref();
 
-// Consider one endpoint may contain multiple methods
-const currApiObjs = ref();
-const currentApi = ref();
+// A list of paths under the ['paths'] tag
+const apiPaths = ref();
 
-const currMethodList = ref();
-const currentMethod = ref();
+// The path for current selected API
+const apiPath = ref();
 
 const useLoadDoc = async () => {
   init();
@@ -73,38 +78,43 @@ const useLoadDoc = async () => {
   }
 };
 
-const setCurrentApiPath = (path) => {
-  currentApiPath.value = path;
+const setApiPath = (path) => {
+  apiPath.value = path;
 };
 
-const setCurrentApi = (method) => {
-  currentMethod.value = method;
-  currentApi.value = currApiObjs.value[method];
-};
-
-/**
- * After doc successfully loaded, extract detail from doc
- */
 const extractDocDetails = () => {
-  pathsList.value = getPathsList();
+  /**
+   * !!! Critical Function !!!
+   * After doc successfully loaded, extract detail from doc
+   */
+  apiPaths.value = getApiPaths();
   serverStr.value = getServerStr();
+
+  initApiPath();
 };
 
-/**
- * Init currApiObjs, currMethodList, currentApi
- * and currentMethod.
- */
-const initCurrentApis = (path) => {
-  currApiObjs.value = getApiObjsByPath(path);
-  currMethodList.value = getMethodListByPath(path);
+const initApiPath = () => {
+  /** Init current API path by take the first element in the list */
+  if (apiPaths.value[0]) {
+    apiPath.value = apiPaths.value[0];
+  }
+};
+
+const useSetApis = (path) => {
+  /** Set api object that belongs to current path */
+  const apiObjs = getApiObjsByPath(path);
+  setApis(apiObjs);
+};
+
+const useSetMethod = (meth) => {
+  setMethod(meth);
 };
 
 const init = () => {
-  pathsList.value = null;
+  apiPaths.value = null;
   serverStr.value = null;
-  currentApiPath.value = null;
-  currApiObjs.value = null;
-  currentApi.value = null;
+  apiPath.value = null;
+  initApis();
 };
 
 onMounted(() => {
@@ -118,9 +128,9 @@ watch(
   () => useLoadDoc()
 );
 
-watch(currentApiPath, () => {
-  const path = currentApiPath.value;
-  if (path) initCurrentApis(path);
+watch(apiPath, () => {
+  const path = apiPath.value;
+  if (path) useSetApis(path);
 });
 </script>
 
