@@ -50,4 +50,4 @@ const initApis = () => {
   api.value = null;
 };
 
-export { apis, api, methods, setApis, initApis, setMethod };
+export { apis, api, methods, method, setApis, initApis, setMethod };

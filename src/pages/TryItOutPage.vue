@@ -19,6 +19,8 @@
       :method-list="methods"
       @selectMethod="(method) => useSetMethod(method)"
     />
+
+    <RequestResponse :api="api" :method="method" />
   </div>
 
   <InlineError :error-message="docErr" v-if="docErr" />
@@ -46,6 +48,7 @@ import {
   apis,
   api,
   methods,
+  method,
   setApis,
   initApis,
   setMethod,
@@ -57,6 +60,7 @@ import ApiKeyField from "src/components/ApiKeyFiled.vue";
 import ApiPathSelector from "src/components/ApiPathSelector.vue";
 import MethodSelector from "src/components/MethodSelector.vue";
 import InlineError from "src/components/InlineError.vue";
+import RequestResponse from "src/components/RequestResponse.vue";
 
 const route = useRoute();
 

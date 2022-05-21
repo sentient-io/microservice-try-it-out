@@ -1,6 +1,7 @@
 import { ref } from "vue";
 import axios from "axios";
 import yaml from "js-yaml";
+import { Resolver } from "@stoplight/json-ref-resolver";
 import { Loading } from "quasar";
 
 const rawDoc = ref();
@@ -16,7 +17,7 @@ const loadDoc = async (docUrl) => {
     const loadDocResponse = await axios.get(docUrl);
     const docResponse = loadDocResponse.data;
     const docType = _getUrlType(docUrl);
-    const docJson = _processDocResponse(docResponse, docType);
+    const docJson = await _processDocResponse(docResponse, docType);
     initDoc(docJson);
   } catch (err) {
     _handleLoadDocError(docUrl);
@@ -30,6 +31,7 @@ const initDoc = (docJson) => {
    * as rawDoc ,  this rawDoc should not expose to anywhere
    * outside of this file.   It is used to reset user inout
    */
+  // console.log("initDoc");
   doc.value = JSON.parse(JSON.stringify(docJson));
   rawDoc.value = JSON.parse(JSON.stringify(docJson));
 };
@@ -65,19 +67,19 @@ const _resetDoc = () => {
   docErr.value = "";
 };
 
-/**
- * Extract the extention after "." from url to identify
- * the type of url (json / yaml / yml)
- */
 const _getUrlType = (url) => {
+  /**
+   * Extract the extention after "." from url to identify
+   * the type of url (json / yaml / yml)
+   */
   return url.match(/.*\.(.*)$/)[1];
 };
 
-/**
- * This function takes any format of API documentation
- * and convert to valid JSON object.
- */
 const _processDocResponse = (docResponse, docType = "") => {
+  /**
+   * This function takes any format of API documentation
+   * and convert to valid JSON object.
+   */
   let docJson;
   if (docType == "yaml" || docType == "yml") {
     docJson = yaml.load(docResponse);
@@ -86,7 +88,18 @@ const _processDocResponse = (docResponse, docType = "") => {
   } else {
     docJson = JSON.parse(JSON.stringify(docResponse));
   }
+  docJson = _resolveJsonRef(docJson);
   return docJson;
+};
+
+const _resolveJsonRef = async (jsonObj) => {
+  /**
+   * This function takes an Json Object, use the jsonref package to
+   * flat all the "$ref" element. Make everything direct accessable
+   */
+  const resolver = new Resolver();
+  const resolvedJson = await resolver.resolve(jsonObj);
+  return resolvedJson.result;
 };
 
 export {

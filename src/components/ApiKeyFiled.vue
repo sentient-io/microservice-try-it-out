@@ -74,7 +74,7 @@ const localStoreApiKey = () => {
 };
 
 const localGetApiKey = () => {
-  console.log("Local getting api key");
+  // console.log("Local getting api key");
   return localStorage.getItem("SentientApiKey");
 };
 

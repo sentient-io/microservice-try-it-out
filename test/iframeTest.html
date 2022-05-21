@@ -1,7 +1,28 @@
 <html>
+  <input type="text" id="yamlUrl" />
+  <button onclick="updateYamlUrl()">Test</button>
   <iframe
-    src="http://localhost:8080/#/"
+    src="http://localhost:8080/#/?docUrl=https://petstore.swagger.io/v2/swagger.json"
     frameborder="0"
     style="width: 100%; height: 100%"
+    id="tryItOutIframe"
   ></iframe>
+
+  <script>
+    /**
+     * To Test the Try It Out, input differnt yaml urls
+     * in to the input box, and click test button.
+     *
+     * The iframe content supposed to update to the latest
+     * content, and no error should be logged in console
+     */
+    const updateYamlUrl = () => {
+      const tryItOutIframe = document.querySelector("#tryItOutIframe");
+      const yamlUrl = document.querySelector("#yamlUrl");
+      tryItOutIframe.setAttribute(
+        "src",
+        "http://localhost:8080/#/?docUrl=" + yamlUrl.value
+      );
+    };
+  </script>
 </html>
