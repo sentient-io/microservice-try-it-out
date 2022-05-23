@@ -1,4 +1,5 @@
 <template>
+  <DefaultDocUrls @select-doc-url="(url) => pushUrlToRoute(url)" />
   <q-form @submit="pushDocUrlToRoute">
     <div class="row full-width no-wrap items-center q-gutter-sm">
       <q-input
@@ -23,6 +24,8 @@
 import { ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
+import DefaultDocUrls from "src/components/Debug/DefaultDocUrls.vue";
+
 const docUrl = ref();
 
 const router = useRouter();
@@ -40,6 +43,14 @@ const getDocUrlFromRoute = () => {
   if (route.query.docUrl) {
     docUrl.value = decodeURI(route.query.docUrl);
   }
+};
+
+const pushUrlToRoute = (url) => {
+  router.push({
+    query: {
+      docUrl: encodeURI(url),
+    },
+  });
 };
 
 onMounted(() => getDocUrlFromRoute());

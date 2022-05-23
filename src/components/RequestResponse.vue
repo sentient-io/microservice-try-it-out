@@ -15,7 +15,14 @@
     <div style="border: 1px solid #efefef">
       <q-tab-panels v-model="tab">
         <q-tab-panel name="request">
-          <FieldsReq :request-body="requestBody" />
+          <FieldsReq
+            :request-body="requestBody"
+            :content-type="contentType"
+            :parameters="parameters"
+            :method="method"
+            @update-parameters="(newParams) => useSetParams(newParams)"
+            @update-request-body="(newReqBdy) => useSetReqBdy(newReqBdy)"
+          />
         </q-tab-panel>
 
         <q-tab-panel name="response">
@@ -29,43 +36,37 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
 
+import {
+  api,
+  method,
+  requestBody,
+  contentType,
+  parameters,
+  setParameters,
+  setRequestBody,
+} from "src/services/apiService";
+
 import FieldsReq from "src/components/ReqRes/FieldsReq.vue";
 import PrettyRes from "src/components/ReqRes/PrettyRes.vue";
 
-const props = defineProps({
-  api: { required: true },
-  method: {},
-});
-
 const tab = ref();
-
-const requestBody = ref();
 
 const init = () => {
   // Set default active tab
   tab.value = "request";
-  // _setRequestBody();
-  console.log(props);
 };
 
-const _setRequestBody = () => {
-  requestBody.value = props.api["requestBody"];
+const useSetParams = (newParams) => {
+  setParameters(newParams);
+};
+
+const useSetReqBdy = (newReqBdy) => {
+  setRequestBody(newReqBdy);
 };
 
 onMounted(() => {
   init();
 });
-
-watch(
-  () => props.api,
-  () => {
-    console.log("Watching props change.");
-    if (props.api) {
-      console.log(props.api);
-      _setRequestBody();
-    }
-  }
-);
 </script>
 
 <style lang="scss" scoped></style>

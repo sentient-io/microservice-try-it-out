@@ -18,22 +18,25 @@ const loadDoc = async (docUrl) => {
     const docResponse = loadDocResponse.data;
     const docType = _getUrlType(docUrl);
     const docJson = await _processDocResponse(docResponse, docType);
-    initDoc(docJson);
+
+    await initDoc(docJson);
   } catch (err) {
     _handleLoadDocError(docUrl);
   }
   Loading.hide();
 };
 
-const initDoc = (docJson) => {
+const initDoc = async (docJson) => {
   /**
    * Initiate valid documentation object. Also keep an copy
    * as rawDoc ,  this rawDoc should not expose to anywhere
    * outside of this file.   It is used to reset user inout
    */
-  // console.log("initDoc");
-  doc.value = JSON.parse(JSON.stringify(docJson));
-  rawDoc.value = JSON.parse(JSON.stringify(docJson));
+  // console.log("initDoc\n", docJson);
+
+  rawDoc.value = docJson;
+  const parsedDoc = await _resolveJsonRef(docJson);
+  doc.value = parsedDoc;
 };
 
 const getApiPaths = () => {
@@ -88,7 +91,7 @@ const _processDocResponse = (docResponse, docType = "") => {
   } else {
     docJson = JSON.parse(JSON.stringify(docResponse));
   }
-  docJson = _resolveJsonRef(docJson);
+
   return docJson;
 };
 

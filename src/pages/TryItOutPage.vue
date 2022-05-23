@@ -8,6 +8,7 @@
 
   <div class="column q-gutter-md">
     <BeforeYouStart />
+
     <DocUrlField />
     <ApiKeyField @setApiKey="(apiKey) => setApiKey(apiKey)" />
     <ApiPathSelector
@@ -15,17 +16,26 @@
       :server-str="serverStr"
       @selectPath="(path) => setApiPath(path)"
     />
-    <MethodSelector
-      :method-list="methods"
-      @selectMethod="(method) => useSetMethod(method)"
+    <ListSelector
+      label="Method"
+      :options="methods"
+      :default-value="method"
+      @select="(val) => useSetMethod(val)"
+    />
+    <ListSelector
+      label="Content Type"
+      :options="contentTypes"
+      :default-value="contentType"
+      @select="(contType) => useSetContentType(contType)"
     />
 
-    <RequestResponse :api="api" :method="method" />
+    <!-- !!Critical Component!! -->
+    <RequestResponse />
   </div>
 
   <InlineError :error-message="docErr" v-if="docErr" />
 
-  <pre class="bg-grey-2">{{ api }}</pre>
+  <!-- <pre class="bg-grey-2">{{ api }}</pre> -->
 </template>
 
 <script setup>
@@ -45,22 +55,27 @@ import {
 } from "src/services/docService";
 
 import {
-  apis,
-  api,
+  // apis,
+  // api,
   methods,
   method,
+  contentTypes,
+  contentType,
+  requestBody,
   setApis,
   initApis,
   setMethod,
+  setContentType,
 } from "src/services/apiService";
 
 import DocUrlField from "src/components/DocUrlField.vue";
 import BeforeYouStart from "src/components/BeforeYouStart.vue";
 import ApiKeyField from "src/components/ApiKeyFiled.vue";
 import ApiPathSelector from "src/components/ApiPathSelector.vue";
-import MethodSelector from "src/components/MethodSelector.vue";
 import InlineError from "src/components/InlineError.vue";
 import RequestResponse from "src/components/RequestResponse.vue";
+
+import ListSelector from "src/modules/ListSelector/ListSelector.vue";
 
 const route = useRoute();
 
@@ -106,6 +121,8 @@ const initApiPath = () => {
 
 const useSetApis = (path) => {
   /** Set api object that belongs to current path */
+  // console.log("useSetApis\n", path);
+
   const apiObjs = getApiObjsByPath(path);
   setApis(apiObjs);
 };
@@ -114,9 +131,13 @@ const useSetMethod = (meth) => {
   setMethod(meth);
 };
 
+const useSetContentType = (contType) => {
+  setContentType(contType);
+};
+
 const init = () => {
-  apiPaths.value = null;
   serverStr.value = null;
+  apiPaths.value = null;
   apiPath.value = null;
   initApis();
 };
@@ -133,6 +154,8 @@ watch(
 );
 
 watch(apiPath, () => {
+  // console.log("Watching apiPath change");
+
   const path = apiPath.value;
   if (path) useSetApis(path);
 });
