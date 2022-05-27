@@ -1,6 +1,8 @@
-import { ref, toRef, toRefs, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 
 import { PATH_ITEM_OPERATION_OBJECT } from "src/consistents/openapiStructure";
+
+import { deepCopy } from "src/services/utils";
 
 // Apis are all the details inside the path
 const apis = ref();
@@ -70,20 +72,37 @@ const initApis = () => {
   api.value = null;
 };
 
-const setParameters = (params) => {
-  parameters.value = params;
+const setReqBdyExample = (bdyName, bdyExam) => {
+  /**
+   * When user change the request body fields, update
+   * the user input value to the example value.
+   */
+  const content = requestBody.value["content"];
+  const schema = content[contentType.value]["schema"];
+  const reqProps = schema["properties"];
+
+  for (const [k, v] of Object.entries(reqProps)) {
+    if (k == bdyName) {
+      v["example"] = bdyExam;
+    }
+  }
 };
 
-const setRequestBody = (newReqBdy) => {
-  requestBody.value = newReqBdy;
+const setParamExample = (paramName, paramExam) => {
+  parameters.value.forEach((param) => {
+    if (param["name"] == paramName) {
+      param["example"] = paramExam;
+    }
+  });
 };
 
-const _getRequestBody = () => {
+const _setRequestBody = () => {
   // console.log("getRequestBody");
   requestBody.value = null;
 
   if (api.value["requestBody"]) {
-    requestBody.value = api.value["requestBody"];
+    // console.log("Deep copy request body value to make it reactive");
+    requestBody.value = deepCopy(api.value["requestBody"]);
   }
 };
 
@@ -100,18 +119,21 @@ const _getContentTypes = () => {
   }
 };
 
-const _getParameters = () => {
+const _setParameters = () => {
   parameters.value = null;
   if (api.value["parameters"]) {
-    parameters.value = api.value["parameters"];
+    parameters.value = deepCopy(api.value["parameters"]);
   }
 };
 
 watch(api, () => {
   // console.log("Watching api change");
+  // console.log(api.value);
   if (api.value) {
-    _getRequestBody();
-    _getParameters();
+    // console.log("Api value has changed");
+
+    _setRequestBody();
+    _setParameters();
     _getContentTypes();
   }
 });
@@ -129,6 +151,6 @@ export {
   initApis,
   setMethod,
   setContentType,
-  setParameters,
-  setRequestBody,
+  setReqBdyExample,
+  setParamExample,
 };

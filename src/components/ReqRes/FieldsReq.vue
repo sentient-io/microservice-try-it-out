@@ -6,43 +6,59 @@
 
   <div v-if="parameters">
     <h5>Parameters</h5>
-    <div v-for="(param, idx) in parameters" :key="idx">
-      <FieldInput
-        :label="param['name']"
-        :type="param['schema']['type'] ?? 'text'"
-        :description="param['description'] ?? ''"
-        :example="genExample(param?.['example'], param['schema']['type'])"
-        :_in="param['in']"
-        :format="param?.['format'] ?? ''"
-        @input="(val) => emitUpdatedParams(param['name'], val)"
-      />
+    <div class="row no-wrap">
+      <div class="full-width">
+        <div v-for="(param, idx) in parameters" :key="idx">
+          <FieldInput
+            :label="param['name']"
+            :type="param['schema']['type'] ?? 'text'"
+            :description="param['description'] ?? ''"
+            :example="genExample(param?.['example'], param['schema']['type'])"
+            :_in="param['in']"
+            :format="param?.['format'] ?? ''"
+            @input="(paramExam) => emitUpdatedParams(param['name'], paramExam)"
+          />
+        </div>
+      </div>
+
+      <div class="col-6">
+        <pre
+          >{{ parameters }}
+      </pre
+        >
+      </div>
     </div>
-    <pre>{{ parameters }}</pre>
   </div>
 
   <div v-if="reqSchema">
     <h5>Request body</h5>
-    <div v-for="(property, name, idx) in reqProperties" :key="idx">
-      <FieldInput
-        :label="name"
-        :description="property['description'] ?? ''"
-        :example="genExample(property?.['example'], property['type'])"
-        :type="property['type'] ?? ''"
-        :format="property?.['format'] ?? ''"
-        @input="(val) => updatedReqProps(name, val)"
-      />
+    <div class="row no-wrap">
+      <div class="full-width">
+        <div v-for="(property, name, idx) in reqProperties" :key="idx">
+          <FieldInput
+            :label="name"
+            :description="property['description'] ?? ''"
+            :example="genExample(property?.['example'], property['type'])"
+            :type="property['type'] ?? ''"
+            :format="property?.['format'] ?? ''"
+            @input="(bdyExam) => emitUpdatedReqBdy(name, bdyExam)"
+          />
+        </div>
+      </div>
+
+      <!-- <div class="col-6"> -->
+      <!-- <pre>{{ reqSchema }}</pre> -->
+      <!-- </div> -->
     </div>
-    <pre>{{ reqSchema }}</pre>
   </div>
 </template>
 
 <script setup>
-const { ref, watch, onMounted } = require("vue");
+import { ref, watch, onMounted } from "vue";
 
 import FieldInput from "src/components/Inputs/FieldInput.vue";
-import { requestBody } from "src/services/apiService";
 
-import { deepCopy } from "src/services/utils";
+// import { deepCopy } from "src/services/utils";
 
 const props = defineProps({
   requestBody: {},
@@ -59,7 +75,7 @@ const reqProperties = ref();
 const setReqSchema = () => {
   // console.log("setReqSchema");
 
-  if (props.requestBody) {
+  if (props.requestBody?.["content"]) {
     const content = props.requestBody["content"];
     reqSchema.value = content[props.contentType]["schema"];
 
@@ -67,45 +83,29 @@ const setReqSchema = () => {
   }
 };
 
-const emitUpdatedParams = (name, exampleVal) => {
+const emitUpdatedParams = (paramName, paramExam) => {
   // Deep copy the existing parameter
-  const newParams = deepCopy(props.parameters);
+  // const newParams = deepCopy(props.parameters);
 
-  newParams.forEach((param) => {
-    if (param["name"] == name) {
-      param["example"] = exampleVal;
-    }
-  });
+  // newParams.forEach((param) => {
+  //   if (param["name"] == name) {
+  //     param["example"] = exampleVal;
+  //   }
+  // });
 
-  emit("updateParameters", newParams);
+  emit("updateParameters", paramName, paramExam);
 };
 
-const updatedReqProps = (name, newVal) => {
-  console.log("updatedReqBdy\n", name, newVal);
+const emitUpdatedReqBdy = (bdyName, bdyExam) => {
+  // console.log("updatedReqBdy\n", bdyName, bdyExam);
 
-  // Deep copy request properties, pass in user input value
-  const newReqProps = deepCopy(reqProperties.value);
-  for (const [k, v] of Object.entries(newReqProps)) {
-    if (k == name) {
-      v["example"] = newVal;
-    }
-  }
-
-  assignReqPropsToReqBdy(newReqProps);
-};
-
-const assignReqPropsToReqBdy = (newReqProps) => {
-  // Assign properties to request body
-  const newReqBdy = deepCopy(props.requestBody);
-  const content = newReqBdy["content"];
-  const schema = content[props.contentType]["schema"];
-  schema["properties"] = newReqProps;
-
-  emit("updateRequestBody", newReqBdy);
+  emit("updateRequestBody", bdyName, bdyExam);
 };
 
 const init = () => {
   // console.log("init FieldReq.vue");
+  // console.log(props.requestBody);
+
   reqSchema.value = null;
   reqProperties.value = null;
   setReqSchema();
@@ -147,6 +147,7 @@ h5 {
 }
 
 pre {
-  // white-space: pre-line;
+  white-space: pre-wrap;
+  line-break: anywhere;
 }
 </style>

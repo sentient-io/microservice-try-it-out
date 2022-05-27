@@ -14,14 +14,15 @@
     </q-tabs>
     <div style="border: 1px solid #efefef">
       <q-tab-panels v-model="tab">
-        <q-tab-panel name="request">
+        <q-tab-panel name="request" style="max-width: 90vw">
+          {{ parameters }}
           <FieldsReq
             :request-body="requestBody"
             :content-type="contentType"
             :parameters="parameters"
             :method="method"
-            @update-parameters="(newParams) => useSetParams(newParams)"
-            @update-request-body="(newReqBdy) => useSetReqBdy(newReqBdy)"
+            @update-parameters="(k, v) => useSetParamExample(k, v)"
+            @update-request-body="(k, v) => updateReqBdyExample(k, v)"
           />
         </q-tab-panel>
 
@@ -42,8 +43,8 @@ import {
   requestBody,
   contentType,
   parameters,
-  setParameters,
-  setRequestBody,
+  setReqBdyExample,
+  setParamExample,
 } from "src/services/apiService";
 
 import FieldsReq from "src/components/ReqRes/FieldsReq.vue";
@@ -56,12 +57,12 @@ const init = () => {
   tab.value = "request";
 };
 
-const useSetParams = (newParams) => {
-  setParameters(newParams);
+const useSetParamExample = (paramName, paramExam) => {
+  setParamExample(paramName, paramExam);
 };
 
-const useSetReqBdy = (newReqBdy) => {
-  setRequestBody(newReqBdy);
+const updateReqBdyExample = (bdyName, bdyExam) => {
+  setReqBdyExample(bdyName, bdyExam);
 };
 
 onMounted(() => {

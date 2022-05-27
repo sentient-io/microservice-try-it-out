@@ -18,13 +18,13 @@
 </template>
 
 <script setup>
-const { ref, onMounted, watch } = require("vue");
+import { ref, onMounted, watch } from "vue";
 
 /**
  * This component takes an list of things, and emit
  * the user selected element out.
  * If there is only one element in the list, it will
- * display the element only, no options.
+ * display text only, no options will be provided.
  *
  */
 const props = defineProps({

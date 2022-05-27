@@ -20,11 +20,12 @@
 </template>
 
 <script setup>
-const { ref, onMounted } = require("vue");
+import { ref, onMounted } from "vue";
 
 const emit = defineEmits(["selectDocUrl"]);
 
 const defaultDocUrls = [
+  // next : 0, this is the array index number, easier to select default ms
   {
     label: "Swagger Pet Store",
     value: "https://petstore3.swagger.io/api/v3/openapi.json",
@@ -39,6 +40,7 @@ const defaultDocUrls = [
     value:
       "https://raw.githubusercontent.com/sentient-io/microservice-docs/master/voice/text-to-speech_eng.yaml",
   },
+  // next : 3
   {
     label: "Recommendation Engine - Multiple Endpoints",
     value:
@@ -54,17 +56,20 @@ const defaultDocUrls = [
     value:
       "https://raw.githubusercontent.com/sentient-io/microservice-docs/master/voice/automatic_speech_recognition_eng.yaml",
   },
+  // next : 6
 ];
-const currDocUrl = ref({
-  label: "Swagger Pet Store",
-  value: "https://petstore3.swagger.io/api/v3/openapi.json",
-});
+const currDocUrl = ref({});
 
 const emitSelectDocUrl = () => {
   emit("selectDocUrl", currDocUrl.value.value);
 };
 
+const setDefault = () => {
+  currDocUrl.value = defaultDocUrls[5];
+};
+
 onMounted(() => {
+  setDefault();
   emitSelectDocUrl();
 });
 </script>

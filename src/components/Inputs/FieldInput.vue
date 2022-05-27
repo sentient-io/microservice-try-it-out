@@ -17,10 +17,32 @@
         :label="userInput?.toString() || ''"
       />
       <q-input
+        v-else-if="numTypes.includes(type)"
+        outlined
+        dense
+        type="number"
+        v-model="userInput"
+        @update:model-value="useEmitInput()"
+      />
+      <ByteInput
+        v-else-if="format === 'byte' || label.includes('base64')"
+        :base64str="userInput"
+        @update="(newVal) => updateInput(newVal)"
+      />
+      <!-- <q-input
+        v-else-if="format === 'byte' || label.includes('base64')"
+        outlined
+        dense
+        type="textarea"
+        v-model="userInput"
+        @update:model-value="useEmitInput()"
+      /> -->
+      <!-- Fall Back -->
+      <q-input
         v-else
         outlined
         dense
-        :type="type"
+        type="text"
         v-model="userInput"
         @update:model-value="useEmitInput()"
       />
@@ -37,7 +59,9 @@
 </template>
 
 <script setup>
-const { ref, onMounted, watch } = require("vue");
+import { ref, onMounted, watch } from "vue";
+
+import ByteInput from "./ByteInput.vue";
 
 const props = defineProps({
   // Label of the input field
@@ -61,7 +85,10 @@ const emit = defineEmits(["input"]);
 
 const userInput = ref();
 
-// const dataType = ref("text");
+const textTypes = ["string"];
+
+// Todo: console log warning text if the numType is not part of open api specification
+const numTypes = ["number", "float", "integer"];
 
 const init = () => {
   // calculateDataType();
@@ -69,9 +96,14 @@ const init = () => {
 };
 
 const useEmitInput = () => {
-  console.log("emit input\n", userInput.value);
+  // console.log("emit input\n", userInput.value);
 
   emit("input", userInput.value);
+};
+
+const updateInput = (newInputVal) => {
+  userInput.value = newInputVal;
+  useEmitInput();
 };
 
 onMounted(() => {
@@ -84,7 +116,7 @@ watch(
     if (!props.example) {
       init();
     }
-    if (props.example && props.example !== userInput) {
+    if (props.example && props.example !== userInput.value) {
       init();
     }
   }
