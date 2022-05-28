@@ -27,16 +27,12 @@
       <ByteInput
         v-else-if="format === 'byte' || label.includes('base64')"
         :base64str="userInput"
+        :name="label"
         @update="(newVal) => updateInput(newVal)"
       />
-      <!-- <q-input
-        v-else-if="format === 'byte' || label.includes('base64')"
-        outlined
-        dense
-        type="textarea"
-        v-model="userInput"
-        @update:model-value="useEmitInput()"
-      /> -->
+
+      <ObjectInput v-else-if="objectTypes.includes(type)" :object="userInput" />
+
       <!-- Fall Back -->
       <q-input
         v-else
@@ -62,6 +58,7 @@
 import { ref, onMounted, watch } from "vue";
 
 import ByteInput from "./ByteInput.vue";
+import ObjectInput from "./ObjectInput.vue";
 
 const props = defineProps({
   // Label of the input field
@@ -89,6 +86,8 @@ const textTypes = ["string"];
 
 // Todo: console log warning text if the numType is not part of open api specification
 const numTypes = ["number", "float", "integer"];
+
+const objectTypes = ["object", "array"];
 
 const init = () => {
   // calculateDataType();

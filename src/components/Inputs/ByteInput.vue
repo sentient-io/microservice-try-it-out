@@ -16,10 +16,17 @@
         >
           <q-tooltip> Upload Binary File </q-tooltip>
         </q-btn>
-        <q-btn icon="link" flat dense color="primary">
+        <!-- TODO: To enable link uploader feature -->
+        <!-- <q-btn icon="link" flat dense color="primary">
           <q-tooltip> Upload File Via Link</q-tooltip>
-        </q-btn>
-        <q-btn icon="preview" flat dense color="primary">
+        </q-btn> -->
+        <q-btn
+          icon="preview"
+          flat
+          dense
+          color="primary"
+          @click="showBase64Viewer = true"
+        >
           <q-tooltip> Preview base64 media </q-tooltip>
         </q-btn>
       </div>
@@ -71,7 +78,7 @@
           @cancel="showEditWindow = false"
           @update="
             (newBase64Str) => {
-              showEditWindow.value = false;
+              showEditWindow = false;
               emitUpdate(newBase64Str);
             }
           "
@@ -93,18 +100,42 @@
         />
       </q-card>
     </q-dialog>
+
+    <!-- Base64 Viewer -->
+    <q-dialog v-model="showBase64Viewer">
+      <q-card class="q-pa-xs full-width text-center">
+        <h6 class="q-ma-sm">Base64 media preview</h6>
+        <div
+          v-if="base64str"
+          class="q-mx-auto row justify-center q-pa-sm q-mb-md"
+          style="
+            width: clamp(280px, 100%, 400px);
+            background-color: rgba(155, 155, 155, 0.25);
+          "
+        >
+          <Base64Viewer :base64str="base64str" />
+        </div>
+        <q-btn label="Close" flat @click="showBase64Viewer = false" />
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script setup>
+/**
+ * TODO: To enable upload via link feature
+ */
 import { ref, onMounted, watch } from "vue";
 
 import ByteEditor from "./ByteEditor.vue";
 import BinaryUploader from "./BinaryUploader.vue";
+import Base64Viewer from "src/components/Parsers/Base64Viewer.vue";
 
 const props = defineProps({
   base64str: {},
   trim: { default: 200 },
+  // This will help to identify the type of base64 string
+  name: {},
 });
 
 const emit = defineEmits(["update"]);
@@ -112,6 +143,7 @@ const emit = defineEmits(["update"]);
 const showEditPopupAlert = ref();
 const showEditWindow = ref();
 const showUploader = ref();
+const showBase64Viewer = ref();
 
 const clippedStr = ref();
 

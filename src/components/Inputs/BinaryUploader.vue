@@ -2,29 +2,11 @@
   <div>
     <h6 class="q-mb-md q-mt-sm">Upload file as base64</h6>
     <div
-      v-if="fileUrl"
-      class="q-mx-auto row justify-center"
-      style="max-width: 400px"
+      v-if="base64"
+      class="q-mx-auto row justify-center q-pa-sm"
+      style="max-width: 400px; background-color: rgba(155, 155, 155, 0.25)"
     >
-      <img
-        class="fit"
-        :src="fileUrl"
-        v-if="fileType.includes('image')"
-        style="border: 5px solid rgba(155, 155, 155, 0.5)"
-      />
-      <video
-        controls
-        class="fit"
-        :src="base64"
-        v-else-if="fileType.includes('video')"
-        style="border: 5px solid rgba(155, 155, 155, 0.5)"
-      ></video>
-      <audio
-        controls
-        v-else-if="fileType.includes('audio')"
-        :src="base64"
-      ></audio>
-      <p v-else></p>
+      <Base64Viewer :base64str="base64" />
     </div>
     <q-file
       class="full-width q-py-md"
@@ -50,8 +32,9 @@
 
 <script setup>
 import { useQuasar } from "quasar";
-
 import { ref } from "vue";
+
+import Base64Viewer from "src/components/Parsers/Base64Viewer.vue";
 
 const $q = useQuasar();
 

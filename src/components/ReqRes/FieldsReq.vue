@@ -13,10 +13,10 @@
             :label="param['name']"
             :type="param['schema']['type'] ?? 'text'"
             :description="param['description'] ?? ''"
-            :example="genExample(param?.['example'], param['schema']['type'])"
+            :example="getExample(param?.['example'], param['schema']['type'])"
             :_in="param['in']"
             :format="param?.['format'] ?? ''"
-            @input="(paramExam) => emitUpdatedParams(param['name'], paramExam)"
+            @input="(paramExam) => emitUpdateParams(param['name'], paramExam)"
           />
         </div>
       </div>
@@ -38,7 +38,7 @@
           <FieldInput
             :label="name"
             :description="property['description'] ?? ''"
-            :example="genExample(property?.['example'], property['type'])"
+            :example="getExample(property?.['example'], property['type'])"
             :type="property['type'] ?? ''"
             :format="property?.['format'] ?? ''"
             @input="(bdyExam) => emitUpdatedReqBdy(name, bdyExam)"
@@ -83,7 +83,7 @@ const setReqSchema = () => {
   }
 };
 
-const emitUpdatedParams = (paramName, paramExam) => {
+const emitUpdateParams = (paramName, paramExam) => {
   // Deep copy the existing parameter
   // const newParams = deepCopy(props.parameters);
 
@@ -112,7 +112,7 @@ const init = () => {
   // setReqProperties();
 };
 
-const genExample = (example = null, type = "string") => {
+const getExample = (example = null, type = "string") => {
   // Generate an example based on provided example val and type
   if (example !== null && example !== undefined) {
     return example;
