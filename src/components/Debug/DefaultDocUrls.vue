@@ -57,6 +57,11 @@ const defaultDocUrls = [
       "https://raw.githubusercontent.com/sentient-io/microservice-docs/master/voice/automatic_speech_recognition_eng.yaml",
   },
   // next : 6
+  {
+    label: "Few Shots Object Detection",
+    value:
+      "https://raw.githubusercontent.com/sentient-io/microservice-docs/dev/computer_vision/few_shots_object_detection.yaml",
+  },
 ];
 const currDocUrl = ref({});
 
@@ -65,7 +70,7 @@ const emitSelectDocUrl = () => {
 };
 
 const setDefault = () => {
-  currDocUrl.value = defaultDocUrls[5];
+  currDocUrl.value = defaultDocUrls[6];
 };
 
 onMounted(() => {

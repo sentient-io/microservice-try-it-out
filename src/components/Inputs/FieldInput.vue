@@ -1,6 +1,6 @@
 <template>
   <div class="row items-center no-wrap">
-    <div class="column" style="width: clamp(160px, 100%, 200px)">
+    <div class="column col-4 col-sm-3 col-lg-2">
       <b>{{ label }}</b>
 
       <small class="text-grey-6">
@@ -10,7 +10,7 @@
       <small v-if="_in">(in {{ _in }})</small>
     </div>
 
-    <div class="full-width">
+    <div class="col-8 col-sm-9 col-lg-10">
       <q-checkbox
         v-if="type == 'boolean'"
         v-model="userInput"
@@ -31,7 +31,11 @@
         @update="(newVal) => updateInput(newVal)"
       />
 
-      <ObjectInput v-else-if="objectTypes.includes(type)" :object="userInput" />
+      <ObjectInput
+        v-else-if="objectTypes.includes(type)"
+        :object="userInput"
+        @update="(newVal) => updateInput(newVal)"
+      />
 
       <!-- Fall Back -->
       <q-input
@@ -42,14 +46,10 @@
         v-model="userInput"
         @update:model-value="useEmitInput()"
       />
-    </div>
-  </div>
-  <div class="row q-mb-md no-wrap">
-    <div class="column" style="width: clamp(160px, 100%, 200px)">
-      <!-- This is a place holder for the alignment purpose -->
-    </div>
-    <div class="full-width">
-      <small>{{ description }}</small>
+
+      <div class="full-width q-px-sm">
+        <small>{{ description }}</small>
+      </div>
     </div>
   </div>
 </template>

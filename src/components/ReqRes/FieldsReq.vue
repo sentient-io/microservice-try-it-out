@@ -34,7 +34,11 @@
     <h5>Request body</h5>
     <div class="row no-wrap">
       <div class="full-width">
-        <div v-for="(property, name, idx) in reqProperties" :key="idx">
+        <div
+          v-for="(property, name, idx) in reqProperties"
+          :key="idx"
+          class="q-mb-md"
+        >
           <FieldInput
             :label="name"
             :description="property['description'] ?? ''"
@@ -46,9 +50,9 @@
         </div>
       </div>
 
-      <!-- <div class="col-6"> -->
-      <!-- <pre>{{ reqSchema }}</pre> -->
-      <!-- </div> -->
+      <!-- <div class="col-6">
+        <pre>{{ reqSchema }}</pre>
+      </div> -->
     </div>
   </div>
 </template>

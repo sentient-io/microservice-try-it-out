@@ -1,10 +1,14 @@
 <template>
   <div>
     <div class="row no-wrap items-stretch">
-      <div class="base64_preview_area">
-        <p @click="showEditPopupAlert = true" class="q-ma-none">
+      <div
+        class="base64_preview_area full-width"
+        @click="showEditPopupAlert = true"
+      >
+        <p class="q-ma-none" v-if="clippedStr">
           {{ clippedStr }}
         </p>
+        <p v-else class="text-grey-5">No Data</p>
       </div>
       <div class="q-px-xs column justify-center q-gutter-md">
         <q-btn
@@ -29,6 +33,7 @@
         >
           <q-tooltip> Preview base64 media </q-tooltip>
         </q-btn>
+        <slot name="operations"></slot>
       </div>
     </div>
 
@@ -123,6 +128,34 @@
 
 <script setup>
 /**
+ * @author                                                        zq
+ * @lastUpdate                                           2022-May-29
+ * -----------------------------------------------------------------
+ * A component that allows user to directly edit a long bse64 string
+ * optomised for browser to display long strings.      User can also
+ * choose to upload a file as base64 or preview the file.
+ *
+ * User will interactive with popup windows for most of the time.
+ * -----------------------------------------------------------------
+ * @dependency ByteEditor.vue  - edit large base64 string
+ * @dependency BinaryUpoloader.vue - upload a file as base64 str
+ * @dependency Base64Viewer.vue - preview of a base64
+ *             (only when media header is provided)
+ * -----------------------------------------------------------------
+ * @slot operations - insert a small operation button at right side
+ *       use an icon-only button.Refer to the 2 button style in this
+ *       component right on top of the <slot> tag
+ * -----------------------------------------------------------------
+ * @props base64str - The raw base64 string,  will be clipped before
+ *        display
+ * @props trim (default:200) - determine the length of base64 string
+ *        to trim, throught this way, we can save viewing space also
+ *        not to slow down the browser by rendering long text.
+ * -----------------------------------------------------------------
+ * @emit update - emit the updated base64 string to parent component
+ *
+ */
+/**
  * TODO: To enable upload via link feature
  */
 import { ref, onMounted, watch } from "vue";
@@ -178,8 +211,6 @@ onMounted(() => init());
 
 <style lang="scss" scoped>
 .base64_preview_area {
-  white-space: pre-wrap;
-  line-break: anywhere;
   border: 1px solid rgba(128, 128, 128, 0.3);
   padding: 0.7rem;
   border-radius: 4px;
@@ -192,6 +223,8 @@ onMounted(() => init());
   box-shadow: 0px;
 }
 .base64_preview_area p {
+  white-space: pre-wrap;
+  line-break: anywhere;
   font-size: 0.8rem;
   border: 1px solid rgba(0, 0, 0, 0);
 }
