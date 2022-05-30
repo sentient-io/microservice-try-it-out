@@ -181,7 +181,8 @@ const showBase64Viewer = ref();
 const clippedStr = ref();
 
 const init = () => {
-  if (props.base64str) {
+  const invalidVals = [null, undefined];
+  if (!invalidVals.includes(props.base64str)) {
     clippedStr.value = clipStr(props.base64str, props.trim);
   }
 };

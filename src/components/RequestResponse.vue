@@ -24,6 +24,9 @@
             @update-parameters="(k, v) => useSetParamExample(k, v)"
             @update-request-body="(k, v) => updateReqBdyExample(k, v)"
           />
+          <div class="row justify-center">
+            <TryItOutBtn />
+          </div>
         </q-tab-panel>
 
         <q-tab-panel name="response">
@@ -49,6 +52,7 @@ import {
 
 import FieldsReq from "src/components/ReqRes/FieldsReq.vue";
 import PrettyRes from "src/components/ReqRes/PrettyRes.vue";
+import TryItOutBtn from "src/components/TryItOutBtn.vue";
 
 const tab = ref();
 

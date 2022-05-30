@@ -1,7 +1,11 @@
 <template>
-  <div class="row items-center no-wrap">
+  <div class="row items-center no-wrap q-mb-md">
     <div class="column col-4 col-sm-3 col-lg-2">
       <b>{{ label }}</b>
+
+      <small class="text-orange-6" v-if="required">
+        <i>* Required</i>
+      </small>
 
       <small class="text-grey-6">
         <b>{{ type }}{{ format ? " - " + format : "" }} </b>
@@ -15,6 +19,7 @@
         v-if="type == 'boolean'"
         v-model="userInput"
         :label="userInput?.toString() || ''"
+        @update:model-value="useEmitInput()"
       />
       <q-input
         v-else-if="numTypes.includes(type)"
@@ -24,6 +29,7 @@
         v-model="userInput"
         @update:model-value="useEmitInput()"
       />
+      <!-- TODO: to remove the label.includes base64 condition, not OAS3.0 -->
       <ByteInput
         v-else-if="format === 'byte' || label.includes('base64')"
         :base64str="userInput"
@@ -31,11 +37,13 @@
         @update="(newVal) => updateInput(newVal)"
       />
 
-      <ObjectInput
-        v-else-if="objectTypes.includes(type)"
-        :object="userInput"
-        @update="(newVal) => updateInput(newVal)"
-      />
+      <div v-else-if="objectTypes.includes(type)">
+        <ObjectInput
+          :object="userInput"
+          :object-type="type"
+          @update="(newVal) => updateInput(newVal)"
+        />
+      </div>
 
       <!-- Fall Back -->
       <q-input
@@ -82,7 +90,7 @@ const emit = defineEmits(["input"]);
 
 const userInput = ref();
 
-const textTypes = ["string"];
+// const textTypes = ["string"];
 
 // Todo: console log warning text if the numType is not part of open api specification
 const numTypes = ["number", "float", "integer"];

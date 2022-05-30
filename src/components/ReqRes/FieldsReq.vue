@@ -9,24 +9,40 @@
     <div class="row no-wrap">
       <div class="full-width">
         <div v-for="(param, idx) in parameters" :key="idx">
+          <!-- !!CRITICAL!! -->
+          <!-- This is for the elastic search "filterdata" fileds -->
           <FieldInput
+            v-if="param['name'] == 'filterdata'"
+            type="object"
+            :label="param['name']"
+            :description="param['description'] ?? ''"
+            :example="getExample(param?.['example'], param['schema']['type'])"
+            :_in="param['in']"
+            :format="param?.['format'] ?? ''"
+            :required="param?.['required'] ?? false"
+            @input="
+              (paramExam) =>
+                emitUpdateParams(param['name'], JSON.stringify(paramExam))
+            "
+          />
+          <!-- For all the other param fields -->
+          <FieldInput
+            v-else
             :label="param['name']"
             :type="param['schema']['type'] ?? 'text'"
             :description="param['description'] ?? ''"
             :example="getExample(param?.['example'], param['schema']['type'])"
             :_in="param['in']"
             :format="param?.['format'] ?? ''"
+            :required="param?.['required'] ?? false"
             @input="(paramExam) => emitUpdateParams(param['name'], paramExam)"
           />
         </div>
       </div>
 
-      <div class="col-6">
-        <pre
-          >{{ parameters }}
-      </pre
-        >
-      </div>
+      <!-- <div class="col-6">
+        <pre>{{ parameters }}</pre>
+      </div> -->
     </div>
   </div>
 
@@ -34,17 +50,14 @@
     <h5>Request body</h5>
     <div class="row no-wrap">
       <div class="full-width">
-        <div
-          v-for="(property, name, idx) in reqProperties"
-          :key="idx"
-          class="q-mb-md"
-        >
+        <div v-for="(property, name, idx) in reqProperties" :key="idx">
           <FieldInput
             :label="name"
             :description="property['description'] ?? ''"
             :example="getExample(property?.['example'], property['type'])"
             :type="property['type'] ?? ''"
             :format="property?.['format'] ?? ''"
+            :required="reqRequired?.includes(name)"
             @input="(bdyExam) => emitUpdatedReqBdy(name, bdyExam)"
           />
         </div>
@@ -75,6 +88,7 @@ const emit = defineEmits(["updateParameters", "updateRequestBody"]);
 
 const reqSchema = ref();
 const reqProperties = ref();
+const reqRequired = ref();
 
 const setReqSchema = () => {
   // console.log("setReqSchema");
@@ -84,6 +98,14 @@ const setReqSchema = () => {
     reqSchema.value = content[props.contentType]["schema"];
 
     reqProperties.value = reqSchema.value["properties"];
+    setReqRequired();
+  }
+};
+
+const setReqRequired = () => {
+  reqRequired.value = null;
+  if (reqSchema.value?.["required"]) {
+    reqRequired.value = reqSchema.value["required"];
   }
 };
 

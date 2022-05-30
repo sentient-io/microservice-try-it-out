@@ -68,6 +68,8 @@ import {
   setContentType,
 } from "src/services/apiService";
 
+import { setEndpoint } from "src/services/tryItOutService";
+
 import DocUrlField from "src/components/DocUrlField.vue";
 import BeforeYouStart from "src/components/BeforeYouStart.vue";
 import ApiKeyField from "src/components/ApiKeyFiled.vue";
@@ -157,7 +159,10 @@ watch(apiPath, () => {
   // console.log("Watching apiPath change");
 
   const path = apiPath.value;
-  if (path) useSetApis(path);
+  if (path) {
+    useSetApis(path);
+    setEndpoint(serverStr.value, path);
+  }
 });
 </script>
 

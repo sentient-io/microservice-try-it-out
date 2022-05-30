@@ -22,11 +22,7 @@
             no-caps
             size="sm"
             color="grey-7"
-            @click="
-              () => {
-                dataType = type;
-              }
-            "
+            @click="setDataType(type)"
           />
         </div>
       </q-btn-dropdown>
@@ -110,7 +106,7 @@ const emitCancel = () => {
 };
 
 const emitUpdate = () => {
-  console.log("ArrayEditor emitUpdate\n", arrayObj.value);
+  // console.log("ArrayEditor emitUpdate\n", arrayObj.value);
   emit("update", arrayObj.value);
 };
 
@@ -150,13 +146,15 @@ const checkArrayDataType = () => {
       dataType.value = "string";
     }
     return;
+  } else if (Array.isArray(arrItem)) {
+    dataType.value = "array";
   } else {
     dataType.value = typeof arrItem;
   }
 };
 
 const updateArrByIndex = (newVal, index) => {
-  console.log("updateArrByIndex\n", typeof newVal, index);
+  // console.log("updateArrByIndex\n", typeof newVal, index);
   arrayObj.value[index] = newVal;
 };
 
@@ -166,14 +164,22 @@ const removeItemByIndex = (index) => {
   arrayEditorKey.value++; // Trigger area re-draw
 };
 
+const setDataType = (type) => {
+  dataType.value = type;
+};
+
 const init = () => {
   /**
    * Make a deep copy here so the arrayObj is not reactive
    * Only save the updated value when user  click save btn
    */
-  if (props.array !== null && props.array !== undefined) {
+  console.log("ArrayEditor init", props.array);
+  const invalidArrs = [null, undefined, ""];
+  if (!invalidArrs.includes(props.array)) {
     arrayObj.value = JSON.parse(JSON.stringify(props.array));
     checkArrayDataType();
+  } else {
+    arrayObj.value = [];
   }
 };
 

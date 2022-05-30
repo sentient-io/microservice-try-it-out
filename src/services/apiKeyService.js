@@ -1,9 +1,10 @@
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
-const apiKey = ref();
+const apiKeyRef = ref();
+const apiKey = computed(() => apiKeyRef.value);
 
 const setApiKey = (key) => {
-  apiKey.value = key;
+  apiKeyRef.value = key;
 };
 
 export { apiKey, setApiKey };

@@ -56,7 +56,7 @@
         type="number"
         v-model="item"
         class="full-width"
-        @update:model-value="emitUpdate()"
+        @update:model-value="(newVal) => handleUpdate(newVal)"
       />
       <!-- Handle string -->
       <q-input
