@@ -22,11 +22,19 @@
         @update:model-value="useEmitInput()"
       />
       <q-input
-        v-else-if="numTypes.includes(type)"
-        outlined
         dense
+        outlined
         type="number"
         v-model="userInput"
+        v-else-if="numTypes.includes(type)"
+        @update:model-value="useEmitInput()"
+      />
+      <q-file
+        dense
+        outlined
+        v-model="userInput"
+        label="Click to upload a file"
+        v-else-if="format == 'binary' && type == 'string'"
         @update:model-value="useEmitInput()"
       />
       <!-- TODO: to remove the label.includes base64 condition, not OAS3.0 -->

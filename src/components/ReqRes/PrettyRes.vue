@@ -1,7 +1,11 @@
 <template>
-  <div>Pretty Response</div>
+  <div>
+    <pre>{{ apiResponse }}</pre>
+  </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { apiResponse } from "src/services/apiCallService";
+</script>
 
 <style lang="scss" scoped></style>

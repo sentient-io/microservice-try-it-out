@@ -20,12 +20,9 @@ import {
   parameters,
 } from "src/services/apiService";
 
-import { apiKey } from "src/services/apiKeyService";
-
 import {
   setReqBdyExamples,
   setParamExamples,
-  setHeaders,
   makeApiCall,
 } from "src/services/tryItOutService";
 
@@ -40,7 +37,6 @@ const triggerTryItOut = () => {
     setReqBdyExamples();
   }
   setParamExamples(parameters.value);
-  setHeaders(contentType.value, apiKey.value);
   makeApiCall(method.value);
 };
 </script>

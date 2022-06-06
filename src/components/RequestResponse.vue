@@ -50,6 +50,8 @@ import {
   setParamExample,
 } from "src/services/apiService";
 
+import { apiResponse } from "src/services/apiCallService";
+
 import FieldsReq from "src/components/ReqRes/FieldsReq.vue";
 import PrettyRes from "src/components/ReqRes/PrettyRes.vue";
 import TryItOutBtn from "src/components/TryItOutBtn.vue";
@@ -71,6 +73,12 @@ const updateReqBdyExample = (bdyName, bdyExam) => {
 
 onMounted(() => {
   init();
+});
+
+watch(apiResponse, () => {
+  if (apiResponse.value) {
+    tab.value = "response";
+  }
 });
 </script>
 

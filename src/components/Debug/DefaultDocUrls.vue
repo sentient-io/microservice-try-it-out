@@ -62,6 +62,11 @@ const defaultDocUrls = [
     value:
       "https://raw.githubusercontent.com/sentient-io/microservice-docs/dev/computer_vision/few_shots_object_detection.yaml",
   },
+  {
+    label: "CSV-JSON convertor",
+    value:
+      "https://raw.githubusercontent.com/sentient-io/microservice-docs/master/utility/csv-json_convertor.yaml",
+  },
 ];
 const currDocUrl = ref({});
 
@@ -70,7 +75,7 @@ const emitSelectDocUrl = () => {
 };
 
 const setDefault = () => {
-  currDocUrl.value = defaultDocUrls[6];
+  currDocUrl.value = defaultDocUrls[2];
 };
 
 onMounted(() => {

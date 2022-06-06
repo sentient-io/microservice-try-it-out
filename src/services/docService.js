@@ -8,6 +8,8 @@ const rawDoc = ref();
 const doc = ref();
 const docErr = ref("");
 
+const securitySchemes = ref();
+
 const loadDoc = async (docUrl) => {
   _resetDoc();
   Loading.show();
@@ -37,6 +39,12 @@ const initDoc = async (docJson) => {
   rawDoc.value = docJson;
   const parsedDoc = await _resolveJsonRef(docJson);
   doc.value = parsedDoc;
+  setSecuritySchemes();
+};
+
+const setSecuritySchemes = () => {
+  securitySchemes.value = null; // init value
+  securitySchemes.value = doc.value["components"]["securitySchemes"];
 };
 
 const getApiPaths = () => {
@@ -109,6 +117,7 @@ export {
   loadDoc,
   doc,
   docErr,
+  securitySchemes,
   getApiPaths,
   getServerStr,
   getApiObjsByPath,

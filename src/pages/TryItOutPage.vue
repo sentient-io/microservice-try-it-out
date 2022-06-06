@@ -10,6 +10,8 @@
     <BeforeYouStart />
 
     <DocUrlField />
+    <!-- TODO: To build a authorize component, which should be able to take multiple types of authentication -->
+    <!-- {{ securitySchemes }} -->
     <ApiKeyField @setApiKey="(apiKey) => setApiKey(apiKey)" />
     <ApiPathSelector
       :api-paths="apiPaths"
@@ -48,6 +50,7 @@ import {
   loadDoc,
   doc,
   docErr,
+  securitySchemes,
   getApiPaths,
   getServerStr,
   getApiObjsByPath,

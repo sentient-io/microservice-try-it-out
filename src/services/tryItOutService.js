@@ -1,5 +1,11 @@
 import { ref } from "vue";
 
+import { contentType } from "src/services/apiService";
+import { apiKey } from "src/services/apiKeyService";
+import { securitySchemes } from "src/services/docService";
+
+import { postCall, getCall } from "./apiCallService";
+
 const endpoint = ref();
 
 const reqBdyExamples = ref();
@@ -13,9 +19,6 @@ const queryStr = ref(); // Actual query str
 const headerRefObj = ref(); // Parameter in header
 const pathRefObj = ref(); // Parameter in path
 const cookie = ref(); // Don't know how to use yet
-
-const contentType = ref(); //
-const apiKey = ref(); //
 
 const setEndpoint = (server, path) => {
   // console.log("tryItOutService setEndpoint", server, path);
@@ -53,7 +56,7 @@ const setParamExamples = (params) => {
         break;
       case "cookie":
         console.warn(
-          `Parameter ${param.name} is meant to send as a cookie which should be done at server side, we are not able to try this parameter in current try it out`
+          `Parameter ${param.name} is meant to send as a cookie, which should be done at server side, we are not able to try this parameter in current try it out`
         );
         break;
       case "query":
@@ -116,41 +119,68 @@ const getQueryStr = (param) => {
   return queryStrPart;
 };
 
-const setHeaders = (cntntType, _apiKey) => {
-  console.log("setHeaders\n", cntntType, apiKey);
-  contentType.value = null;
-  if (cntntType) {
-    contentType.value = cntntType;
+const getHeaders = () => {
+  console.log("getHeaders");
+  const headers = {};
+
+  // Set api key field
+  if (securitySchemes.value) {
+    Object.values(securitySchemes.value).forEach((scheme) => {
+      if (scheme["in"] == "header" && scheme["type"] == "apiKey") {
+        const authKeyName = scheme["name"];
+        headers[authKeyName] = apiKey.value;
+      }
+    });
   }
-  if (_apiKey) {
-    apiKey.value = _apiKey;
-  } else {
-    // TODO No API key provided, please authorize with api key
+
+  /**
+   * Set content type field
+   * For multipart/form-data, DO NOT set the Request Header, else will
+   * keep getting error. Refer to :
+   * https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
+   */
+  if (contentType.value !== "multipart/form-data") {
+    headers["content-type"] = contentType.value;
   }
+
+  return headers;
+};
+
+const getArgs = () => {
+  const args = {};
+  args.endpoint = endpoint.value;
+  if (queryStr.value) {
+    args.endpoint + "?" + queryStr.value;
+  }
+
+  args.data = reqBdyExamples.value;
+  args.headers = getHeaders();
+  return args;
 };
 
 const makeApiCall = (method) => {
   console.log("makeApiCall", method);
-  console.log(
-    method,
-    "\n---\n",
-    endpoint.value,
-    "\n---\n",
-    contentType.value,
-    "\n---\n",
-    apiKey.value,
-    "\n---\n",
-    reqBdyExamples.value,
-    "\n---\n",
-    queryStr.value
-  );
-  // TODO: format endpoint with pathRefObj
+
+  const args = getArgs();
+
+  const repeat = 60;
+  console.log("=".repeat(repeat) + "\n");
+  console.log("-".repeat(repeat) + "\n");
+  for (const [k, v] of Object.entries(args)) {
+    console.log(k + ":\n", v);
+    console.log("-".repeat(repeat) + "\n");
+  }
+  console.log("=".repeat(repeat) + "\n");
+
+  // TODO: Currently only supporting get and post method
+  switch (method) {
+    case "get":
+      getCall(args);
+      break;
+    case "post":
+    default:
+      postCall(args);
+  }
 };
 
-export {
-  setEndpoint,
-  setReqBdyExamples,
-  setParamExamples,
-  setHeaders,
-  makeApiCall,
-};
+export { setEndpoint, makeApiCall, setParamExamples, setReqBdyExamples };
