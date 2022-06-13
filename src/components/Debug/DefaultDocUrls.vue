@@ -92,7 +92,7 @@ const emitSelectDocUrl = () => {
 
 const setDefault = () => {
   // Set the default yaml to use
-  currDocUrl.value = defaultDocUrls[8];
+  currDocUrl.value = defaultDocUrls[9];
 };
 
 onMounted(() => {

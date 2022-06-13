@@ -176,7 +176,30 @@ const getArgs = () => {
   }
   // TODO handle header param and path param input
 
-  args.data = reqBdyExamples.value;
+  // Handle "multipart/form-data", file input
+  if (contentType.value == "multipart/form-data") {
+    const formData = new FormData();
+    let HARD_CODED_FILE = null;
+    for (const [k, v] of Object.entries(reqBdyExamples.value)) {
+      if (k == "file") {
+        console.warn(
+          "IMPORTANT, the order of binary file have been moved to the last element in the Form data. Else will cause unknown error."
+        );
+        HARD_CODED_FILE = v;
+      } else {
+        formData.append(k, v);
+      }
+    }
+
+    if (HARD_CODED_FILE) {
+      formData.append("file", HARD_CODED_FILE);
+    }
+
+    args.data = formData;
+  } else {
+    args.data = reqBdyExamples.value;
+  }
+
   args.headers = getHeaders();
   return args;
 };

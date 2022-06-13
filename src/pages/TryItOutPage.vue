@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { onMounted, watch, ref } from "vue";
+import { onMounted, watch, ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import { apiKey, setApiKey } from "src/services/apiKeyService";
 
@@ -62,7 +62,7 @@ import {
 
 import {
   // apis,
-  // api,
+  api,
   methods,
   method,
   contentTypes,
@@ -116,8 +116,16 @@ const extractDocDetails = () => {
    */
   apiPaths.value = getApiPaths();
   serverStr.value = getServerStr();
-
   initApiPath();
+};
+
+const serverStrOverride = () => {
+  // console.log("serverStrOverride\n", api.value);
+  if (api.value?.["servers"]) {
+    serverStr.value = api.value?.["servers"][0]["url"];
+  } else {
+    serverStr.value = getServerStr();
+  }
 };
 
 const initApiPath = () => {
@@ -162,11 +170,12 @@ watch(
 );
 
 watch(apiPath, () => {
-  // console.log("Watching apiPath change\n", apiPath.value);
+  console.log("Watching apiPath change\n", apiPath.value);
 
   const path = apiPath.value;
   if (path) {
     useSetApis(path);
+    serverStrOverride();
     setEndpoint(serverStr.value, path);
   } else {
     initApis();
