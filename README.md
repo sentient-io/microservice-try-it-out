@@ -4,6 +4,8 @@ Sentient.io's API try out platform
 
 ## Install the dependencies
 
+DO NOT USE YARN, not sure how it appeared there.
+
 ```bash
 # yarn
 # or
