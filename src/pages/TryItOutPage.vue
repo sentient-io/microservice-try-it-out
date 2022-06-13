@@ -32,10 +32,12 @@
     />
 
     <!-- !!Critical Component!! -->
-    <RequestResponse />
+    <RequestResponse v-if="doc" />
   </div>
 
   <InlineError :error-message="docErr" v-if="docErr" />
+  <!-- TODO Use swagger style of warning box -->
+  <InlineError :error-message="yamlErr" v-if="yamlErr" />
 
   <!-- <pre class="bg-grey-2">{{ api }}</pre> -->
 </template>
@@ -50,6 +52,7 @@ import {
   loadDoc,
   doc,
   docErr,
+  yamlErr,
   securitySchemes,
   getApiPaths,
   getServerStr,
@@ -159,12 +162,14 @@ watch(
 );
 
 watch(apiPath, () => {
-  // console.log("Watching apiPath change");
+  // console.log("Watching apiPath change\n", apiPath.value);
 
   const path = apiPath.value;
   if (path) {
     useSetApis(path);
     setEndpoint(serverStr.value, path);
+  } else {
+    initApis();
   }
 });
 </script>

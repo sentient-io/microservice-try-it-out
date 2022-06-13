@@ -15,6 +15,10 @@
       label="Choose file to upload as base64"
       @update:model-value="handleFileUpload()"
     />
+    <q-checkbox
+      label="Keep base64 data URI header"
+      v-model="keepBase64Header"
+    />
     <div class="row justify-center q-gutter-lg">
       <q-btn no-caps label="Cancel" flat @click="emitCancel()" />
       <q-btn
@@ -32,9 +36,9 @@
 
 <script setup>
 import { useQuasar } from "quasar";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
-import Base64Viewer from "src/components/Parsers/Base64Viewer.vue";
+import Base64Viewer from "src/components/Viewers/Base64Viewer.vue";
 
 const $q = useQuasar();
 
@@ -43,7 +47,16 @@ const fileName = ref();
 const fileType = ref();
 
 const fileUrl = ref();
+
 const base64 = ref();
+
+const headerLessBase64 = computed(() => {
+  let regx = /data:(.*)\;base64\,/;
+  return base64.value.replace(regx, "");
+});
+
+// Decide if uploading image with base64 header
+const keepBase64Header = ref(false);
 
 const emit = defineEmits(["cancel", "update"]);
 
@@ -74,7 +87,11 @@ const emitCancel = () => {
 };
 
 const emitUpdate = () => {
-  emit("update", base64.value);
+  if (keepBase64Header.value) {
+    emit("update", base64.value);
+  } else {
+    emit("update", headerLessBase64.value);
+  }
 
   $q.notify(`File ${fileName.value} been uploaded as base64 string.`);
 };

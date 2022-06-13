@@ -67,6 +67,22 @@ const defaultDocUrls = [
     value:
       "https://raw.githubusercontent.com/sentient-io/microservice-docs/master/utility/csv-json_convertor.yaml",
   },
+  {
+    label: "HDB Flat Ownership Duration (SG)",
+    value:
+      "https://raw.githubusercontent.com/sentient-io/microservice-docs/master/data/flat_ownership_hdb_sg.yaml",
+  },
+  // next: 9
+  {
+    label: "ASR with Voice Activity Detection ENG (Large File)",
+    value:
+      "https://raw.githubusercontent.com/sentient-io/microservice-docs/master/voice/asr_with_voice_activity_detection_eng_large_file.yaml",
+  },
+  {
+    label: "Google ASR (Large File)",
+    value:
+      "https://raw.githubusercontent.com/sentient-io/microservice-docs/dev/voice/google_asr_large_file.yaml",
+  },
 ];
 const currDocUrl = ref({});
 
@@ -75,7 +91,8 @@ const emitSelectDocUrl = () => {
 };
 
 const setDefault = () => {
-  currDocUrl.value = defaultDocUrls[2];
+  // Set the default yaml to use
+  currDocUrl.value = defaultDocUrls[8];
 };
 
 onMounted(() => {

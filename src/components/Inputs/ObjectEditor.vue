@@ -19,7 +19,7 @@
           dense
           no-caps
           size="sm"
-          label="Reset JSON"
+          label="Reset"
           class="q-px-xs"
           color="grey-7"
           icon="restart_alt"
@@ -132,7 +132,7 @@ watch(
   font-size: 0.8rem;
   width: clac(300px, 100%, 600px);
   height: 50vh;
-  overflow: scroll;
-  cursor: pointer;
+  overflow: auto;
+  cursor: text;
 }
 </style>

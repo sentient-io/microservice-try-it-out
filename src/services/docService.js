@@ -7,6 +7,7 @@ import { Loading } from "quasar";
 const rawDoc = ref();
 const doc = ref();
 const docErr = ref("");
+const yamlErr = ref("");
 
 const securitySchemes = ref();
 
@@ -37,8 +38,11 @@ const initDoc = async (docJson) => {
   // console.log("initDoc\n", docJson);
 
   rawDoc.value = docJson;
-  const parsedDoc = await _resolveJsonRef(docJson);
+  const parsedDoc = await _resolveJsonRef(docJson).catch((err) => {
+    console.log("Resolve JSON Error\n", err);
+  });
   doc.value = parsedDoc;
+  console.log(parsedDoc);
   setSecuritySchemes();
 };
 
@@ -76,6 +80,7 @@ const _resetDoc = () => {
   rawDoc.value = "";
   doc.value = "";
   docErr.value = "";
+  yamlErr.value = "";
 };
 
 const _getUrlType = (url) => {
@@ -93,7 +98,12 @@ const _processDocResponse = (docResponse, docType = "") => {
    */
   let docJson;
   if (docType == "yaml" || docType == "yml") {
-    docJson = yaml.load(docResponse);
+    try {
+      docJson = yaml.load(docResponse);
+    } catch (err) {
+      console.error("Yaml error\n", err);
+      yamlErr.value = err;
+    }
   } else if (typeof docResponse == "string") {
     docJson = JSON.parse(docResponse);
   } else {
@@ -117,6 +127,7 @@ export {
   loadDoc,
   doc,
   docErr,
+  yamlErr,
   securitySchemes,
   getApiPaths,
   getServerStr,

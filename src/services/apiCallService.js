@@ -1,23 +1,41 @@
 import { ref } from "vue";
-import { api } from "boot/axios";
+import * as axios from "boot/axios";
 import { Loading } from "quasar";
 
 const apiResponse = ref();
 
-const init = () => {
+const initApiResponse = () => {
   apiResponse.value = null;
+};
+
+const _catchErr = (err) => {
+  if (err.response) {
+    setApiResponse(err.response);
+    console.log(err.response);
+  } else {
+    // Possible due to invalid endpoint string
+    setApiResponse(err);
+    console.log(err);
+  }
+};
+
+const _handelRes = (res) => {
+  setApiResponse(res);
+  console.log(res);
 };
 
 const postCall = (args) => {
   console.log("postCall");
   Loading.show();
-  init();
+  initApiResponse();
   const headers = { headers: args.headers };
-  api
+  axios.api
     .post(args.endpoint, args.data, headers)
     .then((res) => {
-      setApiResponse(res);
-      console.log(res);
+      _handelRes(res);
+    })
+    .catch((err) => {
+      _catchErr(err);
     })
     .finally(() => {
       Loading.hide();
@@ -27,13 +45,15 @@ const postCall = (args) => {
 const getCall = (args) => {
   console.log("getCall");
   Loading.show();
-  init();
+  initApiResponse();
   const headers = { headers: args.headers };
-  api
+  axios.api
     .get(args.endpoint, headers)
     .then((res) => {
-      console.log(res);
-      setApiResponse(res);
+      _handelRes(res);
+    })
+    .catch((err) => {
+      _catchErr(err);
     })
     .finally(() => {
       Loading.hide();
@@ -44,4 +64,4 @@ const setApiResponse = (res) => {
   apiResponse.value = res;
 };
 
-export { postCall, getCall, apiResponse };
+export { postCall, getCall, apiResponse, initApiResponse };

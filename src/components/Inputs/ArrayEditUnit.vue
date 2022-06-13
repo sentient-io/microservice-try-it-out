@@ -185,7 +185,7 @@ onMounted(() => init());
   border-radius: 4px;
   font-size: 0.8rem;
   width: clac(300px, 100%, 600px);
-  overflow-y: scroll;
+  overflow-y: auto;
   cursor: pointer;
 }
 </style>

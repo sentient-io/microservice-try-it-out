@@ -162,7 +162,7 @@ import { ref, onMounted, watch } from "vue";
 
 import ByteEditor from "./ByteEditor.vue";
 import BinaryUploader from "./BinaryUploader.vue";
-import Base64Viewer from "src/components/Parsers/Base64Viewer.vue";
+import Base64Viewer from "src/components/Viewers/Base64Viewer.vue";
 
 const props = defineProps({
   base64str: {},

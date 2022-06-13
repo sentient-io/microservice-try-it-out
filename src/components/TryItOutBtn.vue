@@ -20,23 +20,11 @@ import {
   parameters,
 } from "src/services/apiService";
 
-import {
-  setReqBdyExamples,
-  setParamExamples,
-  makeApiCall,
-} from "src/services/tryItOutService";
+import { makeApiCall } from "src/services/tryItOutService";
 
 const triggerTryItOut = () => {
-  // console.log("triggerTryItOut\n");
-  if (requestBody.value?.["content"]) {
-    const reqBdyContent = requestBody.value["content"];
-    const reqBdySchema = reqBdyContent?.[contentType.value]?.["schema"] || "";
-    const reqBdyProps = reqBdySchema?.["properties"] || "";
-    setReqBdyExamples(reqBdyProps);
-  } else {
-    setReqBdyExamples();
-  }
-  setParamExamples(parameters.value);
+  console.log("triggerTryItOut\n");
+
   makeApiCall(method.value);
 };
 </script>

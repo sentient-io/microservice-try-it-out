@@ -8,7 +8,7 @@
       </small>
 
       <small class="text-grey-6">
-        <b>{{ type }}{{ format ? " - " + format : "" }} </b>
+        <b>{{ displayType }}{{ format ? " - " + format : "" }} </b>
       </small>
 
       <small v-if="_in">(in {{ _in }})</small>
@@ -16,7 +16,7 @@
 
     <div class="col-8 col-sm-9 col-lg-10">
       <q-checkbox
-        v-if="type == 'boolean'"
+        v-if="dataType == 'boolean'"
         v-model="userInput"
         :label="userInput?.toString() || ''"
         @update:model-value="useEmitInput()"
@@ -24,9 +24,9 @@
       <q-input
         dense
         outlined
-        type="number"
+        dataType="number"
         v-model="userInput"
-        v-else-if="numTypes.includes(type)"
+        v-else-if="numTypes.includes(dataType)"
         @update:model-value="useEmitInput()"
       />
       <q-file
@@ -34,7 +34,7 @@
         outlined
         v-model="userInput"
         label="Click to upload a file"
-        v-else-if="format == 'binary' && type == 'string'"
+        v-else-if="format == 'binary' && dataType == 'string'"
         @update:model-value="useEmitInput()"
       />
       <!-- TODO: to remove the label.includes base64 condition, not OAS3.0 -->
@@ -45,10 +45,10 @@
         @update="(newVal) => updateInput(newVal)"
       />
 
-      <div v-else-if="objectTypes.includes(type)">
+      <div v-else-if="objectTypes.includes(dataType)">
         <ObjectInput
           :object="userInput"
-          :object-type="type"
+          :object-type="dataType"
           @update="(newVal) => updateInput(newVal)"
         />
       </div>
@@ -63,15 +63,20 @@
         @update:model-value="useEmitInput()"
       />
 
-      <div class="full-width q-px-sm">
-        <small>{{ description }}</small>
+      <div
+        class="full-width q-ma-sm"
+        style="max-height: 100px; overflow-y: auto"
+      >
+        <q-markdown content-class="fields-description">{{
+          description
+        }}</q-markdown>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 
 import ByteInput from "./ByteInput.vue";
 import ObjectInput from "./ObjectInput.vue";
@@ -104,6 +109,26 @@ const userInput = ref();
 const numTypes = ["number", "float", "integer"];
 
 const objectTypes = ["object", "array"];
+
+const dataType = computed(() => {
+  if (props.type == "string-object") {
+    return "object";
+  } else {
+    return props.type;
+  }
+});
+
+const displayType = computed(() => {
+  /**
+   * This is to handle when particular data is easier to process
+   * and edit as an Object, but the essential data type is str.
+   */
+  if (props.type == "string-object") {
+    return "string";
+  } else {
+    return props.type;
+  }
+});
 
 const init = () => {
   // calculateDataType();
@@ -138,4 +163,12 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss">
+.fields-description {
+  color: rgba(99, 99, 99, 0.65);
+  font-size: 12px;
+}
+.fields-description p {
+  font-size: 12px;
+}
+</style>

@@ -13,7 +13,7 @@
           <!-- This is for the elastic search "filterdata" fileds -->
           <FieldInput
             v-if="param['name'] == 'filterdata'"
-            type="object"
+            type="string-object"
             :label="param['name']"
             :description="param['description'] ?? ''"
             :example="getExample(param?.['example'], param['schema']['type'])"
@@ -31,7 +31,13 @@
             :label="param['name']"
             :type="param['schema']['type'] ?? 'text'"
             :description="param['description'] ?? ''"
-            :example="getExample(param?.['example'], param['schema']['type'])"
+            :example="
+              getExample(
+                param?.['example'],
+                param['schema']['type'],
+                param['name']
+              )
+            "
             :_in="param['in']"
             :format="param?.['format'] ?? ''"
             :required="param?.['required'] ?? false"
@@ -54,7 +60,7 @@
           <FieldInput
             :label="name"
             :description="property['description'] ?? ''"
-            :example="getExample(property?.['example'], property['type'])"
+            :example="getExample(property?.['example'], property['type'], name)"
             :type="property['type'] ?? ''"
             :format="property?.['format'] ?? ''"
             :required="reqRequired?.includes(name)"
@@ -138,11 +144,18 @@ const init = () => {
   // setReqProperties();
 };
 
-const getExample = (example = null, type = "string") => {
-  // Generate an example based on provided example val and type
+const getExample = (example = null, type = "string", _key = "") => {
+  /**
+   * Incase the example is not supported in the documentation
+   * Generate examples based on provided example val and type
+   */
+
   if (example !== null && example !== undefined) {
     return example;
   } else {
+    console.warn(
+      `Field ${_key} doesn't has an example field, please check the documentation.`
+    );
     return "";
   }
 };

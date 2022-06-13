@@ -1,7 +1,7 @@
 <template>
   <div
     class="row items-center justify-center text-grey no-wrap"
-    style="min-height: 200px"
+    style="min-height: 100px"
   >
     <q-icon name="error_outline" class="q-mx-sm" size="1.25rem" />
     <p class="q-ma-none">

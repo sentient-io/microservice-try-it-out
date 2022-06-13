@@ -1,7 +1,11 @@
 <template>
   <div>
     <div class="row no-wrap items-stretch">
-      <div class="object_preview_area full-width" @click="showEditPopup = true">
+      <div
+        class="object_preview_area full-width"
+        :style="displayStyle"
+        @click="showEditPopup = true"
+      >
         <pre class="q-ma-none">{{ object }}</pre>
       </div>
       <!-- TODOS: Going to add in edit as JSON and edit as Fields feature, as well as take object from url -->
@@ -34,7 +38,7 @@
           />
         </div>
         <div v-else>
-          <h6 class="q-ma-none">Edit Object</h6>
+          <h6 class="q-ma-none">Edit JSON</h6>
           <ObjectEditor
             :object="object"
             @cancel="showEditPopup = false"
@@ -52,6 +56,39 @@
 </template>
 
 <script setup>
+/**
+ * @author                                                        zq
+ * @lastUpdate                                           2022-Jun-12
+ * -----------------------------------------------------------------
+ * ObjectInput.vue
+ * This conponent creates a preview of a formatted json object. User
+ * can click the display area and launch a popup widnow - - the JSON
+ * Editor.
+ *
+ * Inside the JSON Editor user can input raw strings, and format, or
+ * indent the string as JSON, as long as the provided string follows
+ * JSON syntax.
+ * -----------------------------------------------------------------
+ * @dependency ObjectEditor.vue - Providing UI and Editing functions
+ * of the JSON data.  Will also validate if user's input follows the
+ * JSON styntax.
+ *
+ * @dependency ArrayEditor.vue -  Providing UI and editing functions
+ * for an array of data. For now,it only takes an array of SAME data
+ * type. Multiple data type in single array is NOT SUPPORTED.
+ * -----------------------------------------------------------------
+ * @props object - The JSON object to display.Must be valid JSON Obj
+ *
+ * @props objectType - Optional 'object' or'array', it will identify
+ * if an array is provided and launch the Array Editor.
+ *
+ * @props displayStyle -Provide some basic style override from props
+ * -----------------------------------------------------------------
+ * @slot No slot
+ * -----------------------------------------------------------------
+ * @emit update - Pass the updated value from ObjectEditor and Array
+ * editor to the partent element.
+ */
 import { onMounted, ref, watch } from "vue";
 
 import ObjectEditor from "./ObjectEditor.vue";
@@ -60,6 +97,7 @@ import ArrayEditor from "./ArrayEditor.vue";
 const props = defineProps({
   object: {},
   objectType: {},
+  displayStyle: {},
 });
 const emit = defineEmits(["update"]);
 
@@ -98,7 +136,7 @@ watch(
   border-radius: 4px;
   max-height: 140px;
   padding: 0.7rem;
-  overflow-y: scroll;
+  overflow-y: auto;
   cursor: pointer;
 }
 .object_preview_area:hover {

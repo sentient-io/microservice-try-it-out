@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 import { contentType } from "src/services/apiService";
 import { apiKey } from "src/services/apiKeyService";
@@ -14,11 +14,28 @@ const reqBdyExamples = ref();
  * Reference :
  * https://swagger.io/specification/#parameter-object
  */
-const queryStrArr = ref(); // Params for querty in arr
-const queryStr = ref(); // Actual query str
-const headerRefObj = ref(); // Parameter in header
-const pathRefObj = ref(); // Parameter in path
+
+const queryParamObj = ref({}); // Params for query in an obj
+
+const headerParamObj = ref(); //// Parameter in header
+// const headerParamObj = ref(); // Parameter in header
+const pathParamObj = ref(); // Parameter in path
 const cookie = ref(); // Don't know how to use yet
+
+const queryStrArr = computed(() => {
+  // Form an array of queryStr Parts from queryParamObj
+  const theQuertStrArr = [];
+  if (!queryParamObj.value) return [];
+  for (let [k, v] of Object.entries(queryParamObj.value)) {
+    const queryStrPart = encodeURIComponent(k) + "=" + encodeURIComponent(v);
+    theQuertStrArr.push(queryStrPart);
+  }
+  return theQuertStrArr;
+});
+
+const queryStr = computed(() => {
+  return queryStrArr.value.join("&");
+}); // Actual query str
 
 const setEndpoint = (server, path) => {
   // console.log("tryItOutService setEndpoint", server, path);
@@ -26,11 +43,11 @@ const setEndpoint = (server, path) => {
 };
 
 const setReqBdyExamples = (reqBdyProps = null) => {
-  // console.log("setReqBdyExamples\n", reqBdyProps);
+  console.log("setReqBdyExamples\n", reqBdyProps);
   reqBdyExamples.value = {};
   if (reqBdyProps) {
     for (const [k, v] of Object.entries(reqBdyProps)) {
-      const invalidVals = ["", null, undefined];
+      const invalidVals = [null, undefined];
       if (!invalidVals.includes(v["example"]))
         reqBdyExamples.value[k] = v["example"];
     }
@@ -39,20 +56,20 @@ const setReqBdyExamples = (reqBdyProps = null) => {
   }
 };
 
-const setParamExamples = (params) => {
+const setParamExamples = (params = null) => {
   // console.log("setParamExamples\n", params);
   resetParamExamples();
-  if (!params) return;
+  if (params == null) return;
   params.forEach((param) => {
-    console.log(param);
+    // console.log(param);
     switch (param["in"]) {
       case "header":
-        checkHeaderRefObj();
-        headerRefObj.value[param["name"]] = param["example"];
+        checkheaderParamObj();
+        headerParamObj.value[param["name"]] = param["example"];
         break;
       case "path":
-        checkPathRefObj();
-        pathRefObj.value[param["name"]] = param["example"];
+        checkpathParamObj();
+        pathParamObj.value[param["name"]] = param["example"];
         break;
       case "cookie":
         console.warn(
@@ -60,8 +77,10 @@ const setParamExamples = (params) => {
         );
         break;
       case "query":
-        checkQueryStrArr();
-        queryStrArr.value.push(getQueryStr(param));
+        checkQueryParamObj();
+        _setQueryParamElem(param);
+        // console.log("queryParamObj", queryParamObj.value);
+        // queryStrArr.value.push(getQueryStr(param));
         break;
       default:
         console.warn(
@@ -69,58 +88,53 @@ const setParamExamples = (params) => {
         );
     }
   });
-  joinQueryArr();
-  // console.log(queryStr.value, headerRefObj.value, pathRefObj.value);
+
+  console.log(queryStr.value);
+
+  // console.log(queryStr.value, headerParamObj.value, pathParamObj.value);
 };
 
 const resetParamExamples = () => {
-  queryStrArr.value = null;
-  queryStr.value = null;
-  headerRefObj.value = null;
-  pathRefObj.value = null;
+  queryParamObj.value = null;
+  headerParamObj.value = null;
+  pathParamObj.value = null;
   cookie.value = null;
 };
 
-const checkPathRefObj = () => {
-  if (!pathRefObj.value) {
-    pathRefObj.value = {};
+const checkpathParamObj = () => {
+  if (!pathParamObj.value) {
+    pathParamObj.value = {};
   }
 };
 
-const checkHeaderRefObj = () => {
-  if (!headerRefObj.value) {
-    headerRefObj.value = {};
+const checkheaderParamObj = () => {
+  if (!headerParamObj.value) {
+    headerParamObj.value = {};
   }
 };
 
-const checkQueryStrArr = () => {
+const checkQueryParamObj = () => {
   /**
    * Check if queryStrArr already exist, if not
    * create empty array
    */
-  if (!queryStrArr.value) {
-    queryStrArr.value = [];
+  if (!queryParamObj.value) {
+    queryParamObj.value = {};
   }
 };
 
-const joinQueryArr = () => {
-  // Form query string from an array
-  if (queryStrArr.value) {
-    queryStr.value = queryStrArr.value.join("&");
-    console.log(queryStr.value);
+const _setQueryParamElem = (param) => {
+  console.log("setQueryParamElem");
+  const paramName = param["name"];
+  const paramVal = param["example"];
+  if (paramVal !== null) {
+    queryParamObj.value[paramName] = paramVal;
   }
-};
-
-const getQueryStr = (param) => {
-  const queryStrPart =
-    encodeURIComponent(param["name"]) +
-    "=" +
-    encodeURIComponent(param["example"]);
-  return queryStrPart;
+  // console.log(paramName, paramVal, param);
 };
 
 const getHeaders = () => {
-  console.log("getHeaders");
+  // console.log("getHeaders");
   const headers = {};
 
   // Set api key field
@@ -146,12 +160,21 @@ const getHeaders = () => {
   return headers;
 };
 
+const setReqBdyExamplesObj = (reqBdyEgObj) => {
+  reqBdyExamples.value = reqBdyEgObj;
+};
+
+const setQueryParamObj = (newQueryParam) => {
+  queryParamObj.value = newQueryParam;
+};
+
 const getArgs = () => {
   const args = {};
   args.endpoint = endpoint.value;
   if (queryStr.value) {
-    args.endpoint + "?" + queryStr.value;
+    args.endpoint = args.endpoint + "?" + queryStr.value;
   }
+  // TODO handle header param and path param input
 
   args.data = reqBdyExamples.value;
   args.headers = getHeaders();
@@ -163,16 +186,17 @@ const makeApiCall = (method) => {
 
   const args = getArgs();
 
-  const repeat = 60;
-  console.log("=".repeat(repeat) + "\n");
-  console.log("-".repeat(repeat) + "\n");
+  const dividerRepeat = 60;
+  console.log("=".repeat(dividerRepeat) + "\n");
+  console.log("-".repeat(dividerRepeat) + "\n");
   for (const [k, v] of Object.entries(args)) {
     console.log(k + ":\n", v);
-    console.log("-".repeat(repeat) + "\n");
+    console.log("-".repeat(dividerRepeat) + "\n");
   }
-  console.log("=".repeat(repeat) + "\n");
+  console.log("=".repeat(dividerRepeat) + "\n");
 
   // TODO: Currently only supporting get and post method
+
   switch (method) {
     case "get":
       getCall(args);
@@ -183,4 +207,16 @@ const makeApiCall = (method) => {
   }
 };
 
-export { setEndpoint, makeApiCall, setParamExamples, setReqBdyExamples };
+export {
+  setEndpoint,
+  makeApiCall,
+  queryStr,
+  queryParamObj,
+  headerParamObj,
+  pathParamObj,
+  reqBdyExamples,
+  setQueryParamObj,
+  setParamExamples,
+  setReqBdyExamples,
+  setReqBdyExamplesObj,
+};

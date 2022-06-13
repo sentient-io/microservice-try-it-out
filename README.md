@@ -38,6 +38,16 @@ npm run format
 quasar build
 ```
 
+### Deployment
+
+Double check .firebaserc's project.
+For dev, use : try-it-out-dev
+For prod, awating for the final URL
+
+```bash
+firebase deploy --only hosting
+```
+
 ### Customize the configuration
 
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js).
@@ -51,3 +61,12 @@ To parse the "$ref" from the yaml docs to direct callable object.
 #### **js-yaml** (https://www.npmjs.com/package/js-yaml)
 
 Yaml parser. Convert yaml doc to json object
+
+#### **export-from-json** (https://www.npmjs.com/package/export-from-json)
+
+Export to plain text, css, html, json, csv, xls, xml files from JSON.
+
+#### **qmarkdown** (https://qmarkdown.netlify.app/)
+
+Markdown viewer. Installed with command
+`$ quasar ext add @quasar/qmarkdown@next`

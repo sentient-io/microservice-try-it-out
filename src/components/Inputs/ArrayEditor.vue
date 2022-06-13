@@ -36,7 +36,7 @@
       -->
     <div
       v-if="arrayObj"
-      style="overflow-y: scroll; max-height: 50vh"
+      style="overflow-y: auto; max-height: 50vh"
       :key="arrayEditorKey"
     >
       <div class="q-mb-sm" v-for="(obj, index) in arrayObj" :key="index">
@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <div class="row q-my-xs q-gutter-sm">
+    <div class="row q-mb-md q-gutter-sm justify-center">
       <q-btn
         outline
         dense
@@ -58,7 +58,7 @@
         size="sm"
         label="Insert Array Item"
         class="q-px-xs"
-        color="grey-7"
+        color="green-7"
         icon="playlist_add"
         @click="insertArrItem"
       />
@@ -80,6 +80,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
+import { isBase64 } from "src/services/utils";
 
 import ArrayEditUnit from "./ArrayEditUnit.vue";
 
@@ -131,15 +132,9 @@ const insertArrItem = () => {
 };
 
 const checkArrayDataType = () => {
-  /**
-   * TODO: to add in the proper base64 converting function
-   * Currently the base64 format is detected by content length
-   * the actual process of checking base64 should be use the
-   * regx pattern match
-   */
   const arrItem = arrayObj.value[0];
   if (typeof arrItem == "string") {
-    if (arrItem.length > 8000) {
+    if (isBase64(arrItem)) {
       dataType.value = "base64";
       return;
     } else {
