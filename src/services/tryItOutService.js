@@ -153,9 +153,10 @@ const getHeaders = () => {
    * keep getting error. Refer to :
    * https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
    */
-  if (contentType.value !== "multipart/form-data") {
-    headers["content-type"] = contentType.value;
-  }
+  headers["content-type"] = contentType.value;
+  // if (contentType.value !== "multipart/form-data") {
+  //   headers["content-type"] = contentType.value;
+  // }
 
   return headers;
 };
@@ -186,6 +187,12 @@ const getArgs = () => {
           "IMPORTANT, the order of binary file have been moved to the last element in the Form data. Else will cause unknown error."
         );
         HARD_CODED_FILE = v;
+      } else if (k == "content-type") {
+        console.warn(
+          "IMPORTANT, Hard coded 'content-type' in to 'Content-Type' or prevent some google error. This is for TESTING only."
+        );
+        const HARD_CODED_CONTENT_TYPE = "Content-Type";
+        formData.append(HARD_CODED_CONTENT_TYPE, v);
       } else {
         formData.append(k, v);
       }

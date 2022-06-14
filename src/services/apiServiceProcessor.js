@@ -74,7 +74,7 @@ const _flatNestedReqBdyPropExample = (props) => {
       example[k] = _flatNestedReqBdyPropExample(v["properties"]);
     } else {
       // No more nested props, assign example
-      example[k] = v?.["example"] || null;
+      example[k] = v?.["example"] ?? null;
     }
   }
   return example;
