@@ -9,8 +9,18 @@
         Content Type: <b>{{ resContentType }}</b>
       </div>
     </div>
+    <!-- Preview media -->
+    <div
+      v-if="guessedMediaBase64[0]"
+    class="full-width row justify-center q-py-md"
+    >
+      <Base64Viewer :base64str="guessedMediaBase64[0]" />
+    </div>
     <div v-if="response">
-      <PrettyObjViewer :object="response.data" />
+      <PrettyObjViewer
+        :object="response?.data || response"
+        @guessed-media="(guessedBase64) => setGuessedMediaBase64(guessedBase64)"
+      />
     </div>
     <div v-else>
       <p class="q-mt-md text-grey-6 text-center">
@@ -21,9 +31,10 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 
 import PrettyObjViewer from "src/components/Viewers/PrettyObjViewer.vue";
+import Base64Viewer from "src/components/Viewers/Base64Viewer.vue";
 
 const props = defineProps({
   response: {},
@@ -37,6 +48,9 @@ const status = computed(() => {
   }
 });
 
+// This will try to get the media content and dislay as preview
+const guessedMediaBase64 = ref([]);
+
 const statusText = computed(() => {
   if (props.response?.statusText) {
     return props.response.statusText;
@@ -45,12 +59,29 @@ const statusText = computed(() => {
   }
 });
 
+const setGuessedMediaBase64 = (mediaBase64) => {
+  guessedMediaBase64.value.push(mediaBase64);
+  if (guessedMediaBase64.value.length > 1) {
+    console.warn(
+      "Detected more than 1 possible base64 media returned from the response. Only the 1st detected base64 media will be displayed."
+    );
+  }
+};
+
 const resContentType = computed(() => {
   if (props.response?.headers?.["content-type"]) {
     return props.response.headers["content-type"];
   } else {
     return "";
   }
+});
+
+const init = () => {
+  guessedMediaBase64.value = [];
+};
+
+watch(props.response, () => {
+  init();
 });
 </script>
 

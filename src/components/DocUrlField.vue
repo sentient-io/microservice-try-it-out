@@ -48,12 +48,12 @@ const getDocUrlFromRoute = () => {
 };
 
 const pushUrlToRoute = (url) => {
+  // console.log("pushUrlToRoute\n", encodeURI(url));
   router.push({
     query: {
       docUrl: encodeURI(url),
     },
   });
-  console.log("pushUrlToRoute\n", encodeURI(url));
 };
 
 onMounted(() => getDocUrlFromRoute());

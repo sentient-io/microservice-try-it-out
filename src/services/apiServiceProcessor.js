@@ -1,13 +1,13 @@
 const { deepCopy } = require("./utils");
 
 const processReqBdy = (originalReqBdy) => {
-  console.log("Deep copy request body value to make it reactive");
+  // console.log("Deep copy request body value to make it reactive");
   /**
    * This is additional process to make request body's structure
    * easier for user to try it out.  Some data modification will
    * happened here, and may cause potential bug.
    *
-   * To debug,go to apiService.js _setRequsetBody() function and
+   * To debug,go to apiService.js _setRequestBody() function and
    * follow the debugging instruction.
    */
   const deepCopiedReqBdy = deepCopy(originalReqBdy);
@@ -15,7 +15,7 @@ const processReqBdy = (originalReqBdy) => {
 
   // This process used a lot of hard coded keys, a bit dangerous
   try {
-    const content = deepCopiedReqBdy["content"];
+    const content = processedReqBdy["content"];
     const contentTypes = Object.keys(content);
     contentTypes.forEach((contentType) => {
       const schema = content[contentType]["schema"];
@@ -25,6 +25,30 @@ const processReqBdy = (originalReqBdy) => {
       properties.forEach((propKey) => {
         const property = propertiesObj[propKey];
         const nestedProps = property?.["properties"] || null;
+
+        if (property?.["format"] == "binary") {
+          // console.log("detected binary input");
+          /**
+           * !! Critical !!
+           * Forced binary type's example as empty file  to prevent
+           * a vue warning in console. Because the original example
+           * of a binary file can only be a string, and vue doesn't
+           * allow that. So I have created an empty file object and
+           * set the name as the example string value.
+           *
+           * It is ok to completely disable this line if necessary.
+           */
+          property["example"] = new File([""], property["example"]);
+
+          if (propKey == "file_name") {
+            console.error(
+              "Input fileds key 'file_type' been documented as binary file, supposed to be a string. Try It Out will automarically correct it, but please fix this on the yaml file."
+            );
+            delete property["format"];
+            property["example"] = "";
+          }
+        }
+
         // If no nested property, do nothing
         if (!nestedProps) return;
         if (!property?.["example"]) {
@@ -46,7 +70,7 @@ const processReqBdy = (originalReqBdy) => {
     console.error(err);
   }
 
-  console.log(deepCopiedReqBdy);
+  // console.log(deepCopiedReqBdy);
 
   return processedReqBdy;
 };

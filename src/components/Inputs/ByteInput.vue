@@ -33,6 +33,18 @@
         >
           <q-tooltip> Preview base64 media </q-tooltip>
         </q-btn>
+
+        <!-- if base64 media type is audio -->
+        <q-btn
+          v-if="mediaType == 'audio'"
+          icon="mic"
+          flat
+          dense
+          color="primary"
+          @click="showVoiceRecorder = true"
+        >
+          <q-tooltip> Record Voice </q-tooltip>
+        </q-btn>
         <slot name="operations"></slot>
       </div>
     </div>
@@ -118,9 +130,24 @@
             background-color: rgba(155, 155, 155, 0.25);
           "
         >
-          <Base64Viewer :base64str="base64str" />
+          <Base64Viewer :base64str="guessedBase64 || base64str" />
         </div>
         <q-btn label="Close" flat @click="showBase64Viewer = false" />
+      </q-card>
+    </q-dialog>
+
+    <!-- Audio Recorder -->
+    <q-dialog v-model="showVoiceRecorder" persistent>
+      <q-card class="q-pa-md full-width">
+        <RtcAudioRecorder
+          @cancel="showVoiceRecorder = false"
+          @base64update="
+            (newBase64Str) => {
+              showVoiceRecorder = false;
+              emitUpdate(newBase64Str);
+            }
+          "
+        />
       </q-card>
     </q-dialog>
   </div>
@@ -141,6 +168,8 @@
  * @dependency BinaryUpoloader.vue - upload a file as base64 str
  * @dependency Base64Viewer.vue - preview of a base64
  *             (only when media header is provided)
+ * @dependency guessBase64UriByName.js - help to guess media type of
+ *             the base64 string (if there is no media header)
  * -----------------------------------------------------------------
  * @slot operations - insert a small operation button at right side
  *       use an icon-only button.Refer to the 2 button style in this
@@ -151,6 +180,8 @@
  * @props trim (default:200) - determine the length of base64 string
  *        to trim, throught this way, we can save viewing space also
  *        not to slow down the browser by rendering long text.
+ * @props label - the possible key value of this field, help to guess
+ *        the type of base64 media
  * -----------------------------------------------------------------
  * @emit update - emit the updated base64 string to parent component
  *
@@ -158,17 +189,23 @@
 /**
  * TODO: To enable upload via link feature
  */
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
+
+import {
+  guessBase64UriByName,
+  guessBase64MediaType,
+} from "src/services/guessedObjProcessor";
 
 import ByteEditor from "./ByteEditor.vue";
 import BinaryUploader from "./BinaryUploader.vue";
+import RtcAudioRecorder from "./RtcAudioRecorder.vue";
 import Base64Viewer from "src/components/Viewers/Base64Viewer.vue";
 
 const props = defineProps({
   base64str: {},
   trim: { default: 200 },
   // This will help to identify the type of base64 string
-  name: {},
+  label: {},
 });
 
 const emit = defineEmits(["update"]);
@@ -177,8 +214,17 @@ const showEditPopupAlert = ref();
 const showEditWindow = ref();
 const showUploader = ref();
 const showBase64Viewer = ref();
+const showVoiceRecorder = ref();
 
 const clippedStr = ref();
+
+const guessedBase64 = computed(() => {
+  return guessBase64UriByName(props.label, props.base64str);
+});
+
+const mediaType = computed(() => {
+  return guessBase64MediaType(props.label, props.base64str);
+});
 
 const init = () => {
   const invalidVals = [null, undefined];

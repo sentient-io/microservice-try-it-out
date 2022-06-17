@@ -6,7 +6,7 @@
         <span v-show="statusText">- ({{ statusText }})</span>
       </div>
       <div v-if="resContentType">
-        Content Type: <b>{{ resContentType }}</b>
+        Response Content Type: <b>{{ resContentType }}</b>
       </div>
     </div>
 

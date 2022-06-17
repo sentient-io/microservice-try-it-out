@@ -35,7 +35,7 @@ const defaultDocUrls = ref([]);
 const currDocUrl = ref({});
 
 const emitSelectDocUrl = () => {
-  console.log("selectDocUrl", currDocUrl.value.value);
+  // console.log("selectDocUrl", currDocUrl.value.value);
   emit("selectDocUrl", currDocUrl.value.value);
 };
 
@@ -43,7 +43,6 @@ const setDefault = () => {
   // Set the default yaml to use
   currDocUrl.value = defaultDocUrls.value[8];
   api.get(docListSrc).then((res) => {
-    console.log(res.data);
     res.data.split(/\n/).forEach((elem) => {
       const urlObj = {};
       urlObj.label = elem.split(",")[0];

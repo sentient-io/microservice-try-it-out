@@ -55,8 +55,9 @@ const _getApiObjsMethods = (apiObjs) => {
 };
 
 const setApiByMethod = (method) => {
-  // console.log("setApiByMethod\n", method);
+  // console.log("setApiByMethod\n", method, api.value);
   api.value = apis.value[method];
+  // console.log(api.value);
 };
 
 const setMethod = (meth) => {
@@ -78,6 +79,16 @@ const initApis = () => {
   parameters.value = null;
   contentTypes.value = null;
   contentType.value = null;
+};
+
+const initApi = () => {
+  // console.log("initing api");
+  api.value = null;
+};
+
+const resetUserInputs = () => {
+  _setRequestBody();
+  _setParameters();
 };
 
 const setReqBdyExample = (bdyName, bdyExam) => {
@@ -139,9 +150,10 @@ const setParamExample = (paramName, paramExam) => {
 };
 
 import { processReqBdy } from "./apiServiceProcessor";
+import { isSentientLargeFileMs } from "./docService";
 
 const _setRequestBody = () => {
-  console.log("_setRequestBody");
+  // console.log("_setRequestBody");
   requestBody.value = null;
 
   if (api.value["requestBody"]) {
@@ -161,8 +173,6 @@ const _setRequestBody = () => {
      * the original data structure from api
      */
     // requestBody.value = deepCopy(api.value["requestBody"])
-
-    console.log(requestBody.value);
   }
 };
 
@@ -209,14 +219,16 @@ const _useSetParamExamples = () => {
 
 watch(api, () => {
   // console.log("Watching api change");
-  // console.log(api.value);
   if (api.value) {
     // console.log("Api value has changed");
 
     _setRequestBody();
     _setParameters();
     _getContentTypes();
-    initApiResponse();
+
+    if (!isSentientLargeFileMs.value) {
+      initApiResponse();
+    }
   }
 });
 
@@ -241,9 +253,12 @@ export {
   requestBody,
   parameters,
   setApis,
+  initApi,
   initApis,
   setMethod,
+  setApiByMethod,
   setContentType,
+  resetUserInputs,
   setParamExample,
   setReqBdyExample,
   reqBdyExamplesToNull,

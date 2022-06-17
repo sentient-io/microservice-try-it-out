@@ -8,6 +8,7 @@
         v-model="apiKey"
         label="API Key"
         class="full-width"
+        @update:model-value="isAuthorized = false"
       />
 
       <!-- Toggle hide/show Api Key -->
@@ -24,10 +25,12 @@
       <ApiKeyHelpPopyp />
 
       <q-btn
+        :disable="isAuthorized"
         no-caps
-        color="primary"
-        label="Authorize"
         type="submit"
+        :color="isAuthorized ? 'green-5' : 'primary'"
+        :label="isAuthorized ? 'Authorized' : 'Authorize'"
+        :icon="isAuthorized ? 'lock_open' : 'key'"
         style="min-width: 150px"
       />
     </div>
@@ -49,6 +52,8 @@ import ApiKeyHelpPopyp from "src/components/ApiKeyHelpPopup.vue";
 const apiKey = ref();
 const showApiKey = ref(false);
 
+const isAuthorized = ref(false);
+
 const router = useRouter();
 const route = useRoute();
 const emit = defineEmits(["setApiKey"]);
@@ -66,7 +71,10 @@ const initApiKey = () => {
     // Get api key from local storage
     apiKey.value = localGetApiKey();
   }
-  emitSetApiKey();
+
+  if (apiKey.value) {
+    emitSetApiKey();
+  }
 };
 
 const localStoreApiKey = () => {
@@ -79,12 +87,15 @@ const localGetApiKey = () => {
 };
 
 const authorizeApiKey = () => {
-  localStoreApiKey();
-  emitSetApiKey();
+  if (apiKey.value) {
+    localStoreApiKey();
+    emitSetApiKey();
+  }
 };
 
 const emitSetApiKey = () => {
   // Pass the api key to parent component
+  isAuthorized.value = true;
   emit("setApiKey", apiKey.value);
 };
 

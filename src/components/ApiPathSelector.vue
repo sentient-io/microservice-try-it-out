@@ -9,11 +9,17 @@
         dense
         options-dense
         class="apiPathSelector q-pl-xs"
-        v-model="selectedPath"
+        v-model="userSelectedPath"
         :options="apiPaths"
-        @update:model-value="emitSelectPath"
+        @update:model-value="emitUserSelectPath"
       />
-      <span v-else>{{ selectedPath }}</span>
+      <span v-else>{{ userSelectedPath }}</span>
+    </div>
+    <div v-if="serverStrDescription" class="q-mt-xs">
+      <b class="q-pr-xs" style="visibility: hidden">Endpoint:</b>
+      <small class="text-grey-6"
+        >(<b>URL Description:</b> {{ serverStrDescription }})
+      </small>
     </div>
   </div>
 </template>
@@ -30,20 +36,24 @@ import { onMounted, watch, ref } from "vue";
 const props = defineProps({
   apiPaths: { type: Array },
   serverStr: { type: String },
+  selectedPath: {},
+  serverStrDescription: { type: String },
 });
 
 const emit = defineEmits(["selectPath"]);
 
-const selectedPath = ref();
+const userSelectedPath = ref();
 
 const init = () => {
-  if (props?.apiPaths?.[0]) {
-    selectedPath.value = props.apiPaths[0];
+  if (props.selectedPath) {
+    userSelectedPath.value = props.selectedPath;
+  } else if (props?.apiPaths?.[0]) {
+    userSelectedPath.value = props.apiPaths[0];
   }
 };
 
-const emitSelectPath = () => {
-  emit("selectPath", selectedPath.value);
+const emitUserSelectPath = () => {
+  emit("selectPath", userSelectedPath.value);
 };
 
 onMounted(() => init());

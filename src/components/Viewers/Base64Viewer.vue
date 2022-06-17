@@ -1,5 +1,5 @@
 <template>
-  <div class="fit row items-center">
+  <div class="fit row items-center justify-center">
     <img class="fit" :src="fmtedBase64Str" v-if="mediaType == 'image'" />
     <audio controls v-else-if="mediaType == 'audio'">
       <source :src="fmtedBase64Str" />

@@ -28,6 +28,7 @@
           <h6 class="q-ma-none">Edit Array</h6>
           <ArrayEditor
             :array="object"
+            :label="label"
             @cancel="showEditPopup = false"
             @update="
               (newArrObj) => {
@@ -98,6 +99,7 @@ const props = defineProps({
   object: {},
   objectType: {},
   displayStyle: {},
+  label: {},
 });
 const emit = defineEmits(["update"]);
 
@@ -147,6 +149,7 @@ watch(
 .object_preview_area pre {
   white-space: pre-wrap;
   line-break: anywhere;
+  max-width: 1100px;
   font-size: 0.8rem;
   border: 1px solid rgba(0, 0, 0, 0);
 }

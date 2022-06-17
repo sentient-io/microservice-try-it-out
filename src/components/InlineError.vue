@@ -15,7 +15,7 @@
  * @props errorMessage - string of error message to display
  */
 const props = defineProps({
-  errorMessage: String,
+  errorMessage: {},
 });
 </script>
 

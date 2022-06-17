@@ -14,14 +14,14 @@ const _catchErr = (err) => {
     console.log(err.response);
   } else {
     // Possible due to invalid endpoint string
-    setApiResponse(err);
+    setApiResponse(String(err));
     console.log(err);
   }
 };
 
 const _handelRes = (res) => {
   setApiResponse(res);
-  console.log(res);
+  console.log("Api Call Response\n", res);
 };
 
 const postCall = (args) => {

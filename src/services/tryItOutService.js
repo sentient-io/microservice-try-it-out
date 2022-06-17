@@ -43,7 +43,7 @@ const setEndpoint = (server, path) => {
 };
 
 const setReqBdyExamples = (reqBdyProps = null) => {
-  console.log("setReqBdyExamples\n", reqBdyProps);
+  // console.log("setReqBdyExamples\n", reqBdyProps);
   reqBdyExamples.value = {};
   if (reqBdyProps) {
     for (const [k, v] of Object.entries(reqBdyProps)) {
@@ -89,8 +89,6 @@ const setParamExamples = (params = null) => {
     }
   });
 
-  console.log(queryStr.value);
-
   // console.log(queryStr.value, headerParamObj.value, pathParamObj.value);
 };
 
@@ -124,7 +122,7 @@ const checkQueryParamObj = () => {
 };
 
 const _setQueryParamElem = (param) => {
-  console.log("setQueryParamElem");
+  // console.log("setQueryParamElem");
   const paramName = param["name"];
   const paramVal = param["example"];
   if (paramVal !== null) {
@@ -238,13 +236,14 @@ const makeApiCall = (method) => {
 };
 
 export {
-  setEndpoint,
-  makeApiCall,
+  endpoint,
   queryStr,
+  pathParamObj,
   queryParamObj,
   headerParamObj,
-  pathParamObj,
   reqBdyExamples,
+  setEndpoint,
+  makeApiCall,
   setQueryParamObj,
   setParamExamples,
   setReqBdyExamples,

@@ -1,8 +1,11 @@
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
 import axios from "axios";
 import yaml from "js-yaml";
+
 import { Resolver } from "@stoplight/json-ref-resolver";
 import { Loading } from "quasar";
+
+import { checkSentientLargeFileMs } from "./largeFileService";
 
 const rawDoc = ref();
 const doc = ref();
@@ -11,11 +14,13 @@ const yamlErr = ref("");
 
 const securitySchemes = ref();
 
+const isSentientLargeFileMs = ref();
+
 const loadDoc = async (docUrl) => {
   _resetDoc();
   Loading.show();
   try {
-    console.log("Loading doc from ", docUrl);
+    console.log("Loading doc from:\n" + docUrl);
 
     const loadDocResponse = await axios.get(docUrl);
     const docResponse = loadDocResponse.data;
@@ -39,10 +44,9 @@ const initDoc = async (docJson) => {
 
   rawDoc.value = docJson;
   const parsedDoc = await _resolveJsonRef(docJson).catch((err) => {
-    console.log("Resolve JSON Error\n", err);
+    console.error("Resolve JSON Error\n", err);
   });
   doc.value = parsedDoc;
-  console.log(parsedDoc);
   setSecuritySchemes();
 };
 
@@ -52,12 +56,34 @@ const setSecuritySchemes = () => {
 };
 
 const getApiPaths = () => {
-  const apiPaths = Object.keys(doc.value["paths"]);
-  return apiPaths;
+  const _apiPaths = Object.keys(doc.value["paths"]);
+  return _apiPaths;
+};
+
+const getServerObjs = () => {
+  const serverObjs = doc.value?.["servers"];
+  return serverObjs;
 };
 
 const getServerStr = () => {
-  const serverStr = doc.value?.["servers"]?.[0]?.["url"] || doc.value?.["host"];
+  const serverObjs = doc.value?.["servers"];
+  const serverStr = serverObjs?.[0] || doc.value?.["host"];
+  if (doc.value?.["host"]) {
+    console.warn('"host" tag detected, this is not part of OAS3.0.');
+  }
+  /**
+   * !IMPORTANT!
+   * Based on OAS3.0, a server can take more than one element.
+   * Current version of try it out will only take the first server
+   * element,   and user selecting function is not enabled till we
+   * have such microservices (multiple server microservice)
+   * 2022 15 Jun by ZQ
+   */
+  if (serverObjs.length > 1) {
+    console.warn(
+      "Multiple server element detected. Current version of try it out is not able to handle this."
+    );
+  }
   return serverStr;
 };
 
@@ -101,7 +127,7 @@ const _processDocResponse = (docResponse, docType = "") => {
     try {
       docJson = yaml.load(docResponse);
     } catch (err) {
-      console.error("Yaml error\n", err);
+      console.error("Yaml error. Please fix the yaml documentation.\n", err);
       yamlErr.value = err;
     }
   } else if (typeof docResponse == "string") {
@@ -123,14 +149,28 @@ const _resolveJsonRef = async (jsonObj) => {
   return resolvedJson.result;
 };
 
+watch(doc, async () => {
+  // console.log("watching doc change");
+  if (doc.value) {
+    isSentientLargeFileMs.value = await checkSentientLargeFileMs(doc.value);
+  }
+});
+
+const apiPaths = computed(() => {
+  return Object.keys(doc.value["paths"]);
+});
+
 export {
-  loadDoc,
   doc,
   docErr,
   yamlErr,
+  apiPaths,
   securitySchemes,
+  isSentientLargeFileMs,
+  loadDoc,
   getApiPaths,
   getServerStr,
+  getServerObjs,
   getApiObjsByPath,
   getMethodListByPath,
 };

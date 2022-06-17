@@ -5,4 +5,8 @@ const isInIframe = window.location !== window.parent.location;
 
 const prettyResExpandAll = ref(false);
 
-export { isInIframe, prettyResExpandAll };
+const initPrettyResExpandAll = ()=>{
+	prettyResExpandAll.value = false
+}
+
+export { isInIframe, prettyResExpandAll , initPrettyResExpandAll};

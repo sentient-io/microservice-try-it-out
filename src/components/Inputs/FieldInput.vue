@@ -1,18 +1,13 @@
 <template>
-  <div class="row items-center no-wrap q-mb-md">
-    <div class="column col-4 col-sm-3 col-lg-2">
-      <b>{{ label }}</b>
-
-      <small class="text-orange-6" v-if="required">
-        <i>* Required</i>
-      </small>
-
-      <small class="text-grey-6">
-        <b>{{ displayType }}{{ format ? " - " + format : "" }} </b>
-      </small>
-
-      <small v-if="_in">(in {{ _in }})</small>
-    </div>
+  <div class="row items-center q-mb-sm">
+    <FieldInputLabel
+      class="col-4 col-sm-3 col-lg-2"
+      :label="label"
+      :type="displayType"
+      :required="required"
+      :format="format"
+      :_in="_in"
+    />
 
     <div class="col-8 col-sm-9 col-lg-10">
       <q-checkbox
@@ -41,7 +36,7 @@
       <ByteInput
         v-else-if="format === 'byte' || label.includes('base64')"
         :base64str="userInput"
-        :name="label"
+        :label="label"
         @update="(newVal) => updateInput(newVal)"
       />
 
@@ -49,6 +44,7 @@
         <ObjectInput
           :object="userInput"
           :object-type="dataType"
+          :label="label"
           @update="(newVal) => updateInput(newVal)"
         />
       </div>
@@ -62,15 +58,20 @@
         v-model="userInput"
         @update:model-value="useEmitInput()"
       />
+    </div>
+  </div>
+  <!-- Descriptions -->
+  <div class="row items-center no-wrap q-mb-md">
+    <!-- Element below is not visible, just to fill up the space -->
+    <div class="col-4 col-sm-3 col-lg-2"></div>
 
-      <div
-        class="full-width q-ma-sm"
-        style="max-height: 100px; overflow-y: auto"
-      >
-        <q-markdown content-class="fields-description">{{
-          description
-        }}</q-markdown>
-      </div>
+    <div
+      class="full-width q-my-none"
+      style="max-height: 100px; overflow-y: auto"
+    >
+      <q-markdown content-class="fields-description">{{
+        description
+      }}</q-markdown>
     </div>
   </div>
 </template>
@@ -80,6 +81,7 @@ import { ref, onMounted, watch, computed } from "vue";
 
 import ByteInput from "./ByteInput.vue";
 import ObjectInput from "./ObjectInput.vue";
+import FieldInputLabel from "./FieldInputLabel.vue";
 
 const props = defineProps({
   // Label of the input field

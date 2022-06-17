@@ -35,8 +35,8 @@
 </template>
 
 <script setup>
-import { useQuasar } from "quasar";
 import { computed, ref } from "vue";
+import { useQuasar } from "quasar";
 
 import Base64Viewer from "src/components/Viewers/Base64Viewer.vue";
 

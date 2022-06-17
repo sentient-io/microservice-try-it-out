@@ -4,6 +4,7 @@
       <!-- Handle base64 input -->
       <ByteInput
         :base64str="item"
+        :label="label"
         @update="(newBase64Str) => handleUpdate(newBase64Str)"
       >
         <template #operations>
@@ -90,6 +91,7 @@ const props = defineProps({
   arrayItem: {},
   dataType: {},
   index: {},
+  label: {},
 });
 const emit = defineEmits(["update", "removeItem"]);
 
@@ -178,14 +180,19 @@ onMounted(() => init());
 
 <style lang="scss" scoped>
 .any_type_edit_area {
+  overflow-y: auto;
+
   white-space: pre-wrap;
   line-break: anywhere;
+
   border: 1px solid rgba(128, 128, 128, 0.3);
-  padding: 0.7rem;
   border-radius: 4px;
-  font-size: 0.8rem;
+
+  max-width: 100%;
   width: clac(300px, 100%, 600px);
-  overflow-y: auto;
+  padding: 0.7rem;
+
+  font-size: 0.8rem;
   cursor: pointer;
 }
 </style>

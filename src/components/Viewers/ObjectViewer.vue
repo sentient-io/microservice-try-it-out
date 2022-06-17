@@ -24,6 +24,7 @@ const props = defineProps({
 
 .object_preview_area pre {
   white-space: pre-wrap;
+  max-width: 1200px;
   line-break: anywhere;
   font-size: 0.8rem;
   border: 1px solid rgba(0, 0, 0, 0);

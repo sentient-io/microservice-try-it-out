@@ -16,3 +16,13 @@ p {
 	.bg-#{$k} {background-color: $c}
   .text-#{$k} {color: $c}
 }
+
+// use classe .dense_selector to make the selector very dense
+.dense_selector.q-field__control,
+.dense_selector.q-field--auto-height.q-field--dense .q-field__native,
+.dense_selector.q-field--auto-height.q-field--dense .q-field__control,
+.dense_selector.q-field--dense .q-field__marginal {
+  height: 26px;
+  min-height: 26px;
+  line-height: 0px;
+}

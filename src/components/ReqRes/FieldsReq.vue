@@ -53,10 +53,16 @@
   </div>
 
   <div v-if="reqSchema">
-    <h5>Request body</h5>
+    <div class="row items-center justify-between">
+      <h5>Request body</h5>
+      <div v-if="contentType">
+        Content Type: <b>{{ contentType }}</b>
+      </div>
+    </div>
     <div class="row no-wrap">
       <div class="full-width">
-        <div v-for="(property, name, idx) in reqProperties" :key="idx">
+        <slot name="request-body-file-uploader"></slot>
+        <div v-for="(property, name, idx) in reqProperties" :key="idx + name">
           <FieldInput
             :label="name"
             :description="property['description'] ?? ''"
@@ -77,6 +83,32 @@
 </template>
 
 <script setup>
+/**
+ * @author                                                        zq
+ * @lastUpdate                                           2022-Jun-16
+ * -----------------------------------------------------------------
+ * Field requests for both requests and parameters
+ * -----------------------------------------------------------------
+ * @dependency FieldInput.vue -Individual input field,takes multiple
+ *             input content type.
+ * -----------------------------------------------------------------
+ * @slot request-body-file-uploader - For now, this only used in the
+ *       large file microservices .  This will display an additional
+ *       file uploader. Return the file name and file size.
+ * -----------------------------------------------------------------
+ * @props requestBody - the whole requestBody object, reqSchema will
+ *        then be extracted from the requestBody. reqProperties will
+ *        be used as the input element for the FieldInput component.
+ * @props contentType - display of the request body content type
+ * @props parameters - data required for get request,can be place as
+ *        query string, path of headers.
+ * @props method - RESTful api method.
+ * -----------------------------------------------------------------
+ * @emit updateParameters - emit the updated parameter to the parent
+ * @emit updateRequestBody -in react to user input action.Update the
+ *       user input value to parent component.
+ */
+
 import { ref, watch, onMounted } from "vue";
 
 import FieldInput from "src/components/Inputs/FieldInput.vue";
@@ -176,7 +208,10 @@ watch(
 
 watch(
   () => props.requestBody,
-  () => setReqSchema()
+  () => {
+    // console.log("Watching props.requestBody change");
+    setReqSchema();
+  }
 );
 </script>
 

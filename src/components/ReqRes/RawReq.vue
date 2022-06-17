@@ -35,7 +35,12 @@
   </div>
 
   <div v-if="reqBdyExamples">
-    <h5>Request body</h5>
+    <div class="row items-center justify-between">
+      <h5>Request body</h5>
+      <div v-if="contentType">
+        Content Type: <b>{{ contentType }}</b>
+      </div>
+    </div>
     <ObjectInput
       :object="reqBdyExamples"
       display-style="max-height:50vh"
@@ -52,6 +57,7 @@ const props = defineProps({
   queryParams: {},
   method: {},
   queryString: {},
+  contentType: {},
 });
 
 const emit = defineEmits(["updateRequestBody", "updateQueryParams"]);
@@ -82,6 +88,7 @@ h5 {
 
 .query_str_preview_area pre {
   white-space: pre-wrap;
+  max-width: 1200px;
   line-break: anywhere;
   font-size: 0.8rem;
   border: 1px solid rgba(0, 0, 0, 0);

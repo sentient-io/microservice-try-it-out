@@ -42,6 +42,7 @@
       <div class="q-mb-sm" v-for="(obj, index) in arrayObj" :key="index">
         <ArrayEditUnit
           :array-item="arrayObj[index]"
+          :label="label"
           :index="index"
           :data-type="dataType"
           @update="(newVal) => updateArrByIndex(newVal, index)"
@@ -86,6 +87,7 @@ import ArrayEditUnit from "./ArrayEditUnit.vue";
 
 const props = defineProps({
   array: {},
+  label: {},
 });
 const emit = defineEmits(["cancel", "update"]);
 

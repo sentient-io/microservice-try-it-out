@@ -72,3 +72,11 @@ Export to plain text, css, html, json, csv, xls, xml files from JSON.
 
 Markdown viewer. Installed with command
 `$ quasar ext add @quasar/qmarkdown@next`
+
+#### **papaparse** (https://www.npmjs.com/package/papaparse)
+
+CSV to JSON
+
+#### **recordrtc** (https://www.npmjs.com/package/recordrtc)
+
+For audio recording and return as base64 string
