@@ -1,6 +1,6 @@
 import { ref, computed } from "vue";
 
-import { contentType } from "src/services/apiService";
+import { api, contentType, method } from "src/services/apiService";
 import { apiKey } from "src/services/apiKeyService";
 import { securitySchemes } from "src/services/docService";
 
@@ -132,15 +132,23 @@ const _setQueryParamElem = (param) => {
 };
 
 const getHeaders = () => {
-  // console.log("getHeaders");
+  console.log("getHeaders");
   const headers = {};
 
+  // api.security will override the global securitySchemes
+  const securityScheme = api.value?.["security"];
+
+  console.log(securityScheme);
   // Set api key field
-  if (securitySchemes.value) {
-    Object.values(securitySchemes.value).forEach((scheme) => {
-      if (scheme["in"] == "header" && scheme["type"] == "apiKey") {
-        const authKeyName = scheme["name"];
+  if (securityScheme) {
+    Object.values(securityScheme).forEach((scheme) => {
+      try {
+        const schemeElemKey = Object.keys(scheme)[0];
+        const schemeElem = securitySchemes.value[schemeElemKey];
+        const authKeyName = schemeElem["name"];
         headers[authKeyName] = apiKey.value;
+      } catch (err) {
+        console.log(err);
       }
     });
   }
@@ -167,9 +175,25 @@ const setQueryParamObj = (newQueryParam) => {
   queryParamObj.value = newQueryParam;
 };
 
+const getEndpint = () => {
+  if (api.value?.["servers"]?.[0]) {
+    try {
+      let overrideServerUrl = api.value["servers"][0]["url"];
+      console.warn(
+        "Server url overriding. For trying out purpose, the path is NOT applied to the endpoint, however, this is not follow OAS3.0, refer to: https://swagger.io/specification/#server-object and https://swagger.io/specification/#operation-object"
+      );
+      // overrideServerUrl = "https://lp_user_space_prod.storage.googleapis.com/";
+      return overrideServerUrl;
+    } catch (err) {
+      console.error("Server item in api element contains error.");
+    }
+  }
+  return endpoint.value;
+};
+
 const getArgs = () => {
   const args = {};
-  args.endpoint = endpoint.value;
+  args.endpoint = getEndpint();
   if (queryStr.value) {
     args.endpoint = args.endpoint + "?" + queryStr.value;
   }
@@ -209,8 +233,9 @@ const getArgs = () => {
   return args;
 };
 
-const makeApiCall = (method) => {
-  console.log("makeApiCall", method);
+const makeApiCall = () => {
+  const _method = method.value;
+  console.log("makeApiCall");
 
   const args = getArgs();
 
@@ -225,7 +250,7 @@ const makeApiCall = (method) => {
 
   // TODO: Currently only supporting get and post method
 
-  switch (method) {
+  switch (_method) {
     case "get":
       getCall(args);
       break;
@@ -242,6 +267,7 @@ export {
   queryParamObj,
   headerParamObj,
   reqBdyExamples,
+  getArgs,
   setEndpoint,
   makeApiCall,
   setQueryParamObj,

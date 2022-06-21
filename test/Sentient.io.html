@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<!-- saved from url=(0036)https://sentient.io/upload/form.html -->
+<html><grammarly-extension data-grammarly-shadow-root="true" style="position: absolute; top: 0px; left: 0px; pointer-events: none;" class="cGcvT"></grammarly-extension><grammarly-extension data-grammarly-shadow-root="true" style="mix-blend-mode: darken; position: absolute; top: 0px; left: 0px; pointer-events: none;" class="cGcvT"></grammarly-extension><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<script src="./Sentient.io_files/jquery.min.js"></script>
+<link rel="stylesheet" href="./Sentient.io_files/bootstrap.min.css">
+<script src="./Sentient.io_files/bootstrap.min.js"></script>
+<link rel="shortcut icon" id="favicon" href="https://sentient.io/img/favicon.ico" type="image/x-icon">
+<title>Sentient.io</title>
+<style>
+table {border-collapse: collapse;}
+td    {padding: 6px;}
+</style>
+</head>
+<body data-new-gr-c-s-check-loaded="14.1063.0" data-gr-ext-installed="" data-new-gr-c-s-loaded="14.1063.0">
+
+<div class="container">
+	<img src="./Sentient.io_files/download.png" width="180" height="25" style="margin-top:20px">
+	<h3 align="center">File Upload Form</h3>
+	<div id="showJson">
+	<p align="center">Paste JSON data output from the response of the "getuploadurl" API</p>
+    <div class="form-group">
+      <textarea class="form-control" rows="15" id="json" spellcheck="false"></textarea>
+    </div>
+	<div class="p-3 mb-4">
+		<div class="text-center">
+			<button class="btn btn-success" onclick="myFunction()">OK </button>
+		</div>
+	</div>
+	</div>
+	<form method="post" enctype="multipart/form-data" id="showForm" style="display: none;">
+		<table class="form-group">
+		<tbody><tr>
+			<td>
+			<label>Content-Type  </label>
+			</td>
+			<td width="80%">
+			<input type="text" name="Content-Type" id="Content-Type" value="" class="form-control">
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<label>key  </label>
+			</td>
+			<td>
+			<input type="text" name="key" id="key" value="" class="form-control">
+			</td>
+		</tr>
+		
+		<tr>
+			<td>
+			<label>policy  </label>
+			</td>
+			<td>
+			<input type="text" name="policy" id="policy" value="" class="form-control">
+			</td>
+		</tr>
+		<tr>
+			<td>		
+			<label>x-goog-algorithm  </label>
+			</td>
+			<td>
+			<input type="text" name="x-goog-algorithm" id="x-goog-algorithm" value="" class="form-control">
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<label>x-goog-credential  </label>
+			</td>
+			<td>
+			<input type="text" name="x-goog-credential" id="x-goog-credential" value="" class="form-control">
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<label>x-goog-date  </label>
+			</td>
+			<td>
+			<input type="text" name="x-goog-date" id="x-goog-date" value="" class="form-control">
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<label>x-goog-meta-additional_param  </label>
+			</td>
+			<td>
+			<input type="text" name="x-goog-meta-additional_param" id="x-goog-meta-additional_param" value="" class="form-control">
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<label>x-goog-meta-oid  </label>
+			</td>
+			<td>
+			<input type="text" name="x-goog-meta-oid" id="x-goog-meta-oid" value="" class="form-control">
+			</td>
+		</tr>
+		<tr>
+			<td>	
+			<label>x-goog-meta-uid  </label>
+			</td>
+			<td>
+			<input type="text" name="x-goog-meta-uid" id="x-goog-meta-uid" value="" class="form-control">
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<label>x-goog-meta-uuid  </label>
+			</td>
+			<td>
+			<input type="text" name="x-goog-meta-uuid" id="x-goog-meta-uuid" value="" class="form-control">
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<label>x-goog-signature  </label>
+			</td>
+			<td>
+			<input type="text" name="x-goog-signature" id="x-goog-signature" value="" class="form-control">
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<label>x-goog-meta-uploader  </label>
+			</td>
+			<td>
+			<input type="text" name="x-goog-meta-uploader" id="x-goog-meta-uploader" value="" class="form-control">
+			</td>
+		</tr>
+		<tr>
+			<td>		
+			<label>Bucket  </label>
+			</td>
+			<td>
+			<input type="text" name="bucket" id="bucket" value="lp_user_space_prod" class="form-control">
+			</td>
+		</tr>
+		<tr style="border: 1px solid #fff;background: #efeed7">
+			<td>
+			<label>File  </label>
+			</td>
+			<td>
+			<input name="file" type="file" id="file" class="form-control" style="background: #efeed7 !important">
+			</td>
+		</tr>
+		<tr>
+			<td>
+			
+			</td>
+			<td>
+			<input type="button" value="Upload" onclick="submitForm()" class="btn btn-success">
+			<input type="button" value="Cancel" class="btn btn-default" onclick="cancel()" style="margin-left:20px">
+			</td>
+		</tr>
+		
+		</tbody></table>
+	</form>
+	<p align="center" style="color: green; display: none;" id="showUpload">Uploading file....</p>
+	<p align="center" style="color: green; display: none;" id="showSuccess"></p>
+</div>
+
+<script>
+	$('#showUpload').hide();
+	$('#showForm').hide();
+	$('#showSuccess').hide();
+	$('#showJson').show();
+	var jobid="";
+	function myFunction(){
+		$('#showSuccess').hide();
+		var jsondata=$('#json').val();
+		var validJson=IsJsonString(jsondata);
+		
+		if(validJson){
+			$('#showJson').hide();
+			$('#showForm').show();
+			
+			formData=JSON.parse(jsondata).results.fields;
+			$('#Content-Type').val(formData["content-type"]);
+			$('#key').val(formData["key"]);
+			$('#policy').val(formData["policy"]);
+			$('#x-goog-algorithm').val(formData["x-goog-algorithm"]);
+			$('#x-goog-credential').val(formData["x-goog-credential"]);
+			$('#x-goog-date').val(formData["x-goog-date"]);
+			$('#x-goog-meta-additional_param').val(formData["x-goog-meta-additional_param"]);
+			$('#x-goog-meta-oid').val(formData["x-goog-meta-oid"]);
+			$('#x-goog-meta-uid').val(formData["x-goog-meta-uid"]);
+			$('#x-goog-meta-uuid').val(formData["x-goog-meta-uuid"]);
+			jobid=formData["x-goog-meta-uuid"];
+			$('#x-goog-signature').val(formData["x-goog-signature"]);
+			$('#x-goog-meta-uploader').val(formData["x-goog-meta-uploader"]);
+			
+			
+		}else{
+			alert("Invalid JSON format");
+		}
+	}
+	
+	
+	if($('#json').val()!=undefined &&  $('#json').val()!=''){
+		myFunction();
+	}
+	
+	function IsJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
+function submitForm(){
+	$('#showUpload').show();
+	var form = $('#showForm')[0]; // You need to use standard javascript object here
+	var formData = new FormData(form);
+	
+	for (var pair of formData.entries()) {
+		console.log(pair[0]+ ', ' + pair[1]); 
+	}
+	
+	console.log(formData);
+  $.ajax({
+    url: 'https://lp_user_space_prod.storage.googleapis.com/',
+    data: formData,
+    type: 'POST',
+	enctype: 'multipart/form-data',
+    contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+    processData: false, // NEEDED, DON'T OMIT THIS
+	cache: false,
+	timeout: 600000,
+    // ... Other options like success and etc
+	success: function(msg) {
+		console.log("Success");
+		console.log(msg);
+		$('#showUpload').hide();
+		$('#showSuccess').html("File has been Uploaded Successfully. Please copy this id for get file status <b>"+jobid+"</b>");
+		$('#showSuccess').show();
+		clearform();
+	},
+	error: function(msg) {
+		console.log("Error");
+		console.log(msg);
+		$('#showUpload').hide();
+	}
+});
+}
+
+function myGreeting() {
+  $('#showSuccess').show();
+}
+
+function clearform(){
+	$('#Content-Type').val("");
+	$('#key').val("");
+	$('#policy').val("");
+	$('#x-goog-algorithm').val("");
+	$('#x-goog-credential').val("");
+	$('#x-goog-date').val("");
+	$('#x-goog-meta-additional_param').val("");
+	$('#x-goog-meta-oid').val("");
+	$('#x-goog-meta-uid').val("");
+	$('#x-goog-meta-uuid').val("");
+	$('#x-goog-signature').val("");
+	$('#x-goog-meta-uploader').val("");
+	$('#file').val(null);
+	jobid="";
+}
+
+function cancel() {
+    $('#showJson').show();
+	$('#showForm').hide();
+}
+</script>
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration><grammarly-mirror data-grammarly-shadow-root="true" class="cGcvT"></grammarly-mirror></html>

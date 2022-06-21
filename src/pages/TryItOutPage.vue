@@ -95,7 +95,10 @@ import {
   methods,
   method,
   setApis,
+  apiPath,
+  apiPaths,
   initApis,
+  serverObj,
   setMethod,
   requestBody,
   contentType,
@@ -120,7 +123,6 @@ import LargeFile from "src/components/Plus/LargeFile.vue";
 import LargeFileSwitcher from "src/components/Plus/LargeFileSwitcher.vue";
 
 const route = useRoute();
-const serverObj = ref();
 
 // The pre-fix server string
 const serverStr = computed(() => {
@@ -131,10 +133,10 @@ const serverStrDescription = computed(() => {
   return serverObj.value?.["description"] ?? "";
 });
 
-// A list of paths under the ['paths'] tag
-const apiPaths = ref();
-// The path for current selected API
-const apiPath = ref();
+// // A list of paths under the ['paths'] tag
+// const apiPaths = ref();
+// // The path for current selected API
+// const apiPath = ref();
 
 const tryAsLargeFile = ref(false);
 
@@ -147,10 +149,12 @@ const useLoadDoc = async () => {
   }
 };
 
+// TODO move this function to API service
 const setApiPath = (path) => {
   apiPath.value = path;
 };
 
+// TODO move this function to API service
 const extractDocDetails = () => {
   /**
    * !!! Critical Function !!!
@@ -161,6 +165,7 @@ const extractDocDetails = () => {
   initApiPath();
 };
 
+// TODO move this function to API service
 const serverStrOverride = () => {
   // console.log("serverStrOverride\n", api.value);
   if (api.value?.["servers"]) {

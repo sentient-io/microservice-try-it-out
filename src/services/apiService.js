@@ -6,11 +6,21 @@ import { deepCopy } from "src/services/utils";
 import { setReqBdyExamples, setParamExamples } from "./tryItOutService";
 import { initApiResponse } from "./apiCallService";
 
+import { processReqBdy } from "./apiServiceProcessor";
+import { isSentientLargeFileMs } from "./docService";
+
 // Apis are all the details inside the path
 const apis = ref();
 
 // An api is the detail under single method
 const api = ref();
+
+// A list of paths under the ['paths'] tag
+const apiPaths = ref();
+// The path for current selected API
+const apiPath = ref();
+
+const serverObj = ref();
 
 const methods = ref();
 const method = ref();
@@ -56,7 +66,9 @@ const _getApiObjsMethods = (apiObjs) => {
 
 const setApiByMethod = (method) => {
   // console.log("setApiByMethod\n", method, api.value);
+
   api.value = apis.value[method];
+
   // console.log(api.value);
 };
 
@@ -96,6 +108,7 @@ const setReqBdyExample = (bdyName, bdyExam) => {
    * When user change the request body fields, update
    * the user input value to the example value.
    */
+  // console.log("setReqBdyExample\n", requestBody.value);
   const content = requestBody.value["content"];
   const schema = content[contentType.value]["schema"];
   const reqProps = schema["properties"];
@@ -148,9 +161,6 @@ const setParamExample = (paramName, paramExam) => {
 
   _useSetParamExamples();
 };
-
-import { processReqBdy } from "./apiServiceProcessor";
-import { isSentientLargeFileMs } from "./docService";
 
 const _setRequestBody = () => {
   // console.log("_setRequestBody");
@@ -244,14 +254,17 @@ watch(parameters, () => {
 });
 
 export {
-  apis,
   api,
-  methods,
+  apis,
   method,
-  contentTypes,
-  contentType,
-  requestBody,
+  methods,
+  apiPath,
+  apiPaths,
+  serverObj,
   parameters,
+  requestBody,
+  contentType,
+  contentTypes,
   setApis,
   initApi,
   initApis,

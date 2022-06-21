@@ -123,7 +123,7 @@ const isJsonInput = ref(false);
 const handleInputMthdSwitch = () => {
   if (!isJsonInput.value) {
     // Switched to fields input
-    console.log("Handle input method switch. switched to fields input");
+    // console.log("Handle input method switch. switched to fields input");
     rawReqBdyObjToReqBdy();
     newQueryParamToParams();
   }
@@ -163,20 +163,32 @@ const useSetReqBdyEgObj = (rawReqBdyObj) => {
 };
 
 const useSetQueryParamObj = (newQueryParam) => {
-  console.log("useSetQueryParamObj", newQueryParam);
+  // console.log("useSetQueryParamObj", newQueryParam);
   setQueryParamObj(newQueryParam);
 };
 
 const applyRequestBodyExampleObj = () => {
   const reqBdyExObj = props.requestBodyExampleObj;
+  let reqBdyExampleIsResetted = false; // Define indicator
   for (const [k, v] of Object.entries(reqBdyExObj)) {
-    console.log(k, v);
-    setReqBdyExample(k, v);
+    // console.log(k, v);
+    if (v && !reqBdyExampleIsResetted) {
+      reqBdyExampleIsResetted = true;
+      /**
+       * Only reset request body examples when there is
+       * at least one valid input.
+       */
+      reqBdyExamplesToNull();
+    }
+
+    if (v) {
+      setReqBdyExample(k, v);
+    }
   }
 };
 
 onMounted(() => {
-  console.log("RequestComp Mounted");
+  // console.log("RequestComp Mounted\n", props.requestBodyExampleObj);
   if (props.requestBodyExampleObj) {
     applyRequestBodyExampleObj();
   }

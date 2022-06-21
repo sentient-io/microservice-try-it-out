@@ -1,4 +1,4 @@
-const { deepCopy } = require("./utils");
+import { deepCopy } from "./utils";
 
 const processReqBdy = (originalReqBdy) => {
   // console.log("Deep copy request body value to make it reactive");
@@ -38,7 +38,7 @@ const processReqBdy = (originalReqBdy) => {
            *
            * It is ok to completely disable this line if necessary.
            */
-          property["example"] = new File([""], property["example"]);
+          property["example"] = new File([""], property?.["example"]);
 
           if (propKey == "file_name") {
             console.error(
@@ -63,7 +63,7 @@ const processReqBdy = (originalReqBdy) => {
             propKey + "."
           );
         }
-        _flatNestedReqBdyProps(property);
+        // _flatNestedReqBdyProps(property);
       });
     });
   } catch (err) {

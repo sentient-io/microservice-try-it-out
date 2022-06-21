@@ -83,6 +83,12 @@ const defaultDocUrls = [
     value:
       "https://raw.githubusercontent.com/sentient-io/microservice-docs/dev/voice/google_asr_large_file.yaml",
   },
+  {
+    label: "Automatic Speech Recognition CHI (Large File)",
+    value:
+      "https://raw.githubusercontent.com/sentient-io/microservice-docs/master/voice/automatic_speech_recognition_chi_large_file.yaml",
+  },
+  // next: 12
 ];
 const currDocUrl = ref({});
 
@@ -92,7 +98,7 @@ const emitSelectDocUrl = () => {
 
 const setDefault = () => {
   // Set the default yaml to use
-  currDocUrl.value = defaultDocUrls[9];
+  currDocUrl.value = defaultDocUrls[11];
 };
 
 onMounted(() => {

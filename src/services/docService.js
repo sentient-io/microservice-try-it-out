@@ -12,6 +12,10 @@ const doc = ref();
 const docErr = ref("");
 const yamlErr = ref("");
 
+const docTitle = computed(() => {
+  return doc.value?.["info"]?.["title"];
+});
+
 const securitySchemes = ref();
 
 const isSentientLargeFileMs = ref();
@@ -165,6 +169,7 @@ export {
   docErr,
   yamlErr,
   apiPaths,
+  docTitle,
   securitySchemes,
   isSentientLargeFileMs,
   loadDoc,

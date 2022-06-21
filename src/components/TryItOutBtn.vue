@@ -13,11 +13,10 @@
 
 <script setup>
 import {
-  requestBody,
   api,
-  method,
-  contentType,
   parameters,
+  contentType,
+  requestBody,
 } from "src/services/apiService";
 
 import { makeApiCall } from "src/services/tryItOutService";
@@ -25,7 +24,7 @@ import { makeApiCall } from "src/services/tryItOutService";
 const triggerTryItOut = () => {
   console.log("triggerTryItOut\n");
 
-  makeApiCall(method.value);
+  makeApiCall();
 };
 </script>
 

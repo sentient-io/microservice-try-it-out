@@ -11,7 +11,7 @@
     <q-icon name="emoji_people" size="lg" class="q-mr-sm text-beige" />
     <p class="q-ma-none">
       Before you start, please make sure you have subscribed this microservice,
-      and paste your api key in the field below.
+      and authorize your api key from the field below.
     </p>
   </div>
 </template>

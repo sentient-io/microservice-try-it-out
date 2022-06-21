@@ -45,9 +45,13 @@
  * @emits setApiKey: emit an event pass the api key to parent component
  */
 import { ref, onMounted, watch } from "vue";
+import { useQuasar } from "quasar";
+
 import { useRouter, useRoute } from "vue-router";
 
 import ApiKeyHelpPopyp from "src/components/ApiKeyHelpPopup.vue";
+
+const $q = useQuasar();
 
 const apiKey = ref();
 const showApiKey = ref(false);
@@ -77,13 +81,17 @@ const initApiKey = () => {
   }
 };
 
+/**
+ * Quasar's local storage, refer to
+ * https://quasar.dev/quasar-plugins/web-storage
+ */
 const localStoreApiKey = () => {
-  localStorage.setItem("SentientApiKey", apiKey.value);
+  $q.localStorage.set("SentientApiKey", apiKey.value);
 };
 
 const localGetApiKey = () => {
   // console.log("Local getting api key");
-  return localStorage.getItem("SentientApiKey");
+  return $q.localStorage.getItem("SentientApiKey");
 };
 
 const authorizeApiKey = () => {
