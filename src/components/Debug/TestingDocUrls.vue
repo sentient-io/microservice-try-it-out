@@ -11,6 +11,8 @@
         :options="defaultDocUrls"
         @update:model-value="emitSelectDocUrl"
       />
+
+      <doc-obj-viewer />
     </div>
 
     <a
@@ -25,6 +27,8 @@
 import { ref, onMounted } from "vue";
 
 import { api } from "boot/axios";
+
+import DocObjViewer from "./DocsObjViewer.vue";
 
 const docListSrc =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRQ8xbzHxNCmVlidFQ6O8CH6Twk5iHkBkK7uP5dV04VoZ7LQyz0nfxftDAw-oQrHPUxGD5NtqpyhpYo/pub?gid=0&single=true&output=csv";
