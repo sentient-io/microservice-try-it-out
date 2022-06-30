@@ -1,12 +1,23 @@
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
+import { useRoute } from "vue-router";
+const route = useRoute();
 /** Check if the page opened in iframe */
 const isInIframe = window.location !== window.parent.location;
 
+const debugMode = ref(false);
+
 const prettyResExpandAll = ref(false);
 
-const initPrettyResExpandAll = ()=>{
-	prettyResExpandAll.value = false
-}
+const initPrettyResExpandAll = () => {
+  prettyResExpandAll.value = false;
+};
 
-export { isInIframe, prettyResExpandAll , initPrettyResExpandAll};
+window.addEventListener("keypress", (e) => {
+  if (e.ctrlKey && e.shiftKey && e.key == "D") {
+    debugMode.value = !debugMode.value;
+    // TODO notification debug mode is activated
+  }
+});
+
+export { isInIframe, prettyResExpandAll, initPrettyResExpandAll, debugMode };

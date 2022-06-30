@@ -1,6 +1,9 @@
 <template>
   <DefaultDocUrls @select-doc-url="(url) => pushUrlToRoute(url)" />
-  <TestingDocUrls @select-doc-url="(url) => pushUrlToRoute(url)" />
+  <TestingDocUrls
+    @select-doc-url="(url) => pushUrlToRoute(url)"
+    v-if="debugMode"
+  />
   <q-form @submit="pushDocUrlToRoute">
     <div class="row full-width no-wrap items-center q-gutter-sm">
       <q-input
@@ -24,6 +27,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { debugMode } from "src/services/appService";
 
 import DefaultDocUrls from "src/components/Debug/DefaultDocUrls.vue";
 import TestingDocUrls from "src/components/Debug/TestingDocUrls.vue";

@@ -75,7 +75,7 @@
     </div>
 
     <div class="row justify-center q-py-sm">
-      <TryItOutBtn />
+      <TryItOutBtn :label="tryItOutBtnLabel" />
     </div>
   </div>
 </template>
@@ -116,6 +116,7 @@ const props = defineProps({
   showEndpointAndMethod: { default: false },
   isSentientLargeFileMs: { default: false },
   requestBodyExampleObj: {},
+  tryItOutBtnLabel: { type: String, default: "Try It Out" },
 });
 
 const isJsonInput = ref(false);

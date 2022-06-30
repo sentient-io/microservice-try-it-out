@@ -27,6 +27,7 @@
            -->
           <RequestsComp
             :show-endpoint-and-method="true"
+            try-it-out-btn-label="Get Policy"
             :is-sentient-large-file-ms="true"
           />
         </q-tab-panel>
@@ -62,6 +63,7 @@
             <!-- Append both file value and upload policy response -->
             <RequestsComp
               :show-endpoint-and-method="true"
+              try-it-out-btn-label="Upload File"
               :request-body-example-obj="{
                 ...fieldsForUploadApi,
                 ...{ file: largeFile },
@@ -97,7 +99,10 @@
           </div>
           <div>
             <LargeFileHistory :doc-title="docTitle" class="q-mb-md" />
-            <RequestsComp :show-endpoint-and-method="true" />
+            <RequestsComp
+              :show-endpoint-and-method="true"
+              try-it-out-btn-label="Get Status"
+            />
           </div>
         </q-tab-panel>
 
@@ -168,7 +173,7 @@ const tabs = {
   getUploadPolicy: { label: "Get Upload Policy" },
   uploadFile: { label: "Upload File" },
   status: { label: "Status" },
-  response: { label: "Response" },
+  // response: { label: "Response" },
 };
 
 const isRawResponse = ref(false);
@@ -249,7 +254,7 @@ const setGetUploadPolicyRes = () => {
 const setUploadFileRes = () => {
   console.log("setUploadFileRes", apiResponse.value);
   const apiResFields = apiResponse.value;
-  if (apiResFields?.["status"] == "204") {
+  if (apiResFields?.["status"] == "204" || "200") {
     const apiResFieldsCopy = deepCopy(apiResFields);
     assignUploadFileRes(apiResFieldsCopy);
 
@@ -282,7 +287,9 @@ watch(apiResponse, () => {
     const currentTabIndex = tabsArr.findIndex((elem) => {
       return elem == tab.value;
     });
-    tab.value = tabsArr[currentTabIndex + 1];
+    if (tab.value !== tabsArr[2]) {
+      tab.value = tabsArr[currentTabIndex + 1];
+    }
 
     // If move from 1st api call to 2nd api call
     if (tab.value == tabsArr[1]) setGetUploadPolicyRes();

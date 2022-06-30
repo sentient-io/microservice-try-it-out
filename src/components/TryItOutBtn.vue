@@ -4,7 +4,7 @@
       no-caps
       size="1.1rem"
       color="green-6"
-      label="Try It Out"
+      :label="label"
       style="font-weight: bold"
       @click="triggerTryItOut()"
     />
@@ -20,6 +20,10 @@ import {
 } from "src/services/apiService";
 
 import { makeApiCall } from "src/services/tryItOutService";
+
+const props = defineProps({
+  label: { type: String, default: "Try It Out" },
+});
 
 const triggerTryItOut = () => {
   console.log("triggerTryItOut\n");

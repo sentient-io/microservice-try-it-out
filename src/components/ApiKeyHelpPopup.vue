@@ -18,7 +18,7 @@
             class="text-green-8"
             >Sentient.io</a
           >
-          Platform, search for the microservice your want to try out. If you
+          Platform, search for the microservice that you want to try out. If you
           already subscribed the microservice, your api key will be at the top
           section of the miroservice page.
         </p>

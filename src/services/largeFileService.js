@@ -5,12 +5,17 @@ import * as axios from "boot/axios";
 
 import { deepCopy } from "./utils";
 import { docTitle } from "./docService";
+
 import { sentientLargeFileMsDetailsFallback } from "src/configs/fallbackConfigs";
+
 import { getArgs } from "./tryItOutService";
 import { initApiResponse } from "./apiCallService";
-import { setParamExample } from "./apiService";
+import { setParamExample, parameters } from "./apiService";
+import { debugMode } from "./appService";
 
 const MS_NAME_KEY = "MicroserviceName";
+
+const LARGE_FILE_EXPIRE_DAYS = 7;
 
 const sentientLargeFileMsDetails = ref();
 
@@ -170,11 +175,16 @@ const assignGetUploadPolicyRes = (gtUpldPoliRes) => {
 const storeLargeFileJobHistory = () => {
   const largeFileHistoryElem = _genLgFileJobHistElem();
   const currHistory = deepCopy(largeFileJobHistory.value);
-
+  let jobId;
   if (!currHistory[docTitle.value]) {
     currHistory[docTitle.value] = {};
   }
-  currHistory[docTitle.value][largeFileJobId.value] = largeFileHistoryElem;
+  jobId = largeFileJobId.value;
+  if (!jobId) {
+    jobId = parameters.value[0]["example"];
+  }
+
+  currHistory[docTitle.value][jobId] = largeFileHistoryElem;
 
   LocalStorage.set("Sentient Large File Api History", currHistory);
   getLargeFileJobHistory();
@@ -186,6 +196,7 @@ const updateLargeFileStatusToHistory = (jId, status) => {
   if (!currDocHistry) {
     currHistory[docTitle.value] = {};
   }
+
   const currJobHist = currDocHistry?.[jId];
 
   if (!currJobHist) {
@@ -194,7 +205,7 @@ const updateLargeFileStatusToHistory = (jId, status) => {
     );
     currJobHist[jId] = {};
   }
-  console.log(currJobHist[jId], jId, status);
+  // console.log(currJobHist[jId], jId, status);
 
   try {
     currJobHist["Last Updated"] = status?.["last_updated"] || "";
@@ -211,6 +222,7 @@ const updateLargeFileStatusToHistory = (jId, status) => {
 };
 
 const getLargeFileStatusByJid = (jId) => {
+  console.log("getLargeFileStatusByJid", jId);
   // Set request body example
   setParamExample("jid", jId);
 
@@ -226,6 +238,12 @@ const getLargeFileStatusByJid = (jId) => {
       updateLargeFileStatusToHistory(jId, res.data);
     })
     .catch((err) => {
+      /**
+       * Have to catch this from error, the response is an error
+       * message but contains useful info.    May need to change
+       * from the API level.
+       */
+      setExpiredStateById(jId);
       console.error(err);
     })
     .finally(() => {
@@ -233,7 +251,40 @@ const getLargeFileStatusByJid = (jId) => {
     });
 };
 
+const setExpiredStateById = (jId) => {
+  /**
+   * This will set the jId passed in to Job expired state.
+   * Will maintain the linking url from last response. But
+   * likely the URL is also expired.
+   */
+  // console.log("setExpiredStateById\n", jId);
+  const currHistory = deepCopy(largeFileJobHistory.value);
+  const currDocHist = currHistory?.[docTitle.value];
+  if (!currDocHist) return;
+  const currJobHist = currDocHist?.[jId];
+  if (!currJobHist) return;
+
+  /**
+   * Hard coded rules applied here, if there is already output url
+   * later on the satate changed to error,means the job is expired
+   * if there s no Output URL yet, and the state is error,mearning
+   * the job has not started yet.  This may cause issues in future
+   */
+  if (currJobHist["Output URL"]) {
+    currJobHist["State"] = "JobId Expired";
+  } else {
+    currJobHist["State"] = "Job Not Started Yet.";
+  }
+  if (debugMode.value) {
+    console.log("setExpiredStateById\n", currJobHist);
+  }
+
+  LocalStorage.set("Sentient Large File Api History", currHistory);
+  getLargeFileJobHistory();
+};
+
 const assignUploadFileRes = (upldFileRes) => {
+  console.log("assignUploadFileRes\n", upldFileRes);
   uploadFileRes.value = upldFileRes;
   uploadFileResState.value = "success";
   storeLargeFileJobHistory();
@@ -268,17 +319,38 @@ const deleteLargeFileHistByJid = (jId) => {
   getLargeFileJobHistory();
 };
 
+const calcLargeFileExpireDays = (lastUpdate) => {
+  // console.log(lastUpdate);
+  let expireDays = 0;
+  const lastUpdateDate = date.extractDate(lastUpdate, "YYYY-MM-DD HH:mm:ss");
+  const daysDiff = date.getDateDiff(new Date(), lastUpdateDate, "days");
+  // console.log(lastUpdateDate, daysDiff);
+  if (daysDiff <= LARGE_FILE_EXPIRE_DAYS) {
+    expireDays = LARGE_FILE_EXPIRE_DAYS - daysDiff;
+  }
+  return expireDays;
+};
+
 const _genLgFileJobHistElem = () => {
+  console.log("_genLgFileJobHistElem\n", uploadFileRes);
   const configurations = _getGetPolicyResConfig();
   try {
     return {
       "File Name": largeFile.value?.name || "unknown file",
+      //
       "Upload On": date.formatDate(Date.now(), "YYYY-MM-DD HH:MM:SS"),
-      // Pending process, Processing, Completed, Expired
-      State: "Pending process",
+      // Try to get the state from upload file response, else, set to pending
+      State: uploadFileRes.value?.["data"]?.["message"] || "Pending process",
+      //
       "File Size": largeFile.value?.size || "unknown size",
+      //
       Configurations: configurations,
-      Cost: getUploadPolicyRes.value["data"]["results"]["request_cost"],
+      //
+      Cost:
+        getUploadPolicyRes.value?.["data"]?.["results"]?.["request_cost"] ||
+        "unknown",
+      // Tty to get the Output url, only useful when user direcly input Job id 
+      "Output URL": uploadFileRes.value?.["data"]?.["output_url"] || "",
     };
   } catch (err) {
     console.error(err);
@@ -323,6 +395,7 @@ export {
   getLargeFilePathByTag,
   initLargeFileResponses,
   getLargeFileStatusByJid,
+  calcLargeFileExpireDays,
   assignGetUploadPolicyRes,
   checkSentientLargeFileMs,
   deleteLargeFileHistByJid,

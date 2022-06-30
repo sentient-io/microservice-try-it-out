@@ -5,9 +5,12 @@
     below. Simply input your subscribed API key, and you’ll be able to test the
     input with the fields and check the output below.
   </p>
-  <BeforeYouStart />
 
-  <div class="column q-gutter-lg q-my-md">
+  <div class="column q-gutter-lg q-mb-md">
+    <BeforeYouStart />
+
+    <DebugModeInfo v-if="debugMode" />
+
     <DocUrlField />
     <!-- TODO: To build a authorize component, which should be able to take multiple types of authentication -->
     <!-- {{ securitySchemes }} -->
@@ -108,6 +111,8 @@ import {
 
 import { setEndpoint } from "src/services/tryItOutService";
 
+import { debugMode } from "src/services/appService";
+
 import DocUrlField from "src/components/DocUrlField.vue";
 import BeforeYouStart from "src/components/BeforeYouStart.vue";
 import ApiKeyField from "src/components/ApiKeyFiled.vue";
@@ -117,6 +122,8 @@ import RequestResponse from "src/components/RequestResponse.vue";
 import VersionNum from "src/components/UI/VersionNum.vue";
 
 import ListSelector from "src/modules/ListSelector/ListSelector.vue";
+
+import DebugModeInfo from "src/components/Debug/DebugModeInfo.vue";
 
 // Components for Large File Microservices
 import LargeFile from "src/components/Plus/LargeFile.vue";

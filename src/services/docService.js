@@ -21,42 +21,30 @@ const securitySchemes = ref();
 const isSentientLargeFileMs = ref();
 
 const loadDoc = async (docUrl) => {
+  console.log("Loading doc from:\n" + docUrl);
+
   _resetDoc();
   Loading.show();
   try {
-    console.log("Loading doc from:\n" + docUrl);
-
-    const loadDocResponse = await axios.get(docUrl);
-    const docResponse = loadDocResponse.data;
+    const docRes = await _getDoc(docUrl);
     const docType = _getUrlType(docUrl);
-    const docJson = await _processDocResponse(docResponse, docType);
+    const docJson = await _processDocRes(docRes, docType);
+    _chkOpenApi3(docJson);
+    const parsedDoc = await _parseDocJson(docJson);
 
-    await initDoc(docJson);
+    // Keep a copy of original docJson for debugging purpose
+    rawDoc.value = docJson;
+    doc.value = parsedDoc;
+
+    _setSecuritySchemes();
+
+    console.log("docJson\n", docJson);
   } catch (err) {
-    _handleLoadDocError(docUrl);
+    console.error(err);
+    docErr.value = err;
   }
+
   Loading.hide();
-};
-
-const initDoc = async (docJson) => {
-  /**
-   * Initiate valid documentation object. Also keep an copy
-   * as rawDoc ,  this rawDoc should not expose to anywhere
-   * outside of this file.   It is used to reset user inout
-   */
-  // console.log("initDoc\n", docJson);
-
-  rawDoc.value = docJson;
-  const parsedDoc = await _resolveJsonRef(docJson).catch((err) => {
-    console.error("Resolve JSON Error\n", err);
-  });
-  doc.value = parsedDoc;
-  setSecuritySchemes();
-};
-
-const setSecuritySchemes = () => {
-  securitySchemes.value = null; // init value
-  securitySchemes.value = doc.value["components"]["securitySchemes"];
 };
 
 const getApiPaths = () => {
@@ -102,8 +90,31 @@ const getMethodListByPath = (path) => {
   return methodList;
 };
 
-const _handleLoadDocError = (docUrl) => {
-  docErr.value = "An error occured, dococument failed load from url: " + docUrl;
+const _getDoc = async (url) => {
+  const getDocResponse = await axios.get(url).catch((err) => {
+    console.error(err);
+    throw new Error("Failed to load documentation from url " + url);
+  });
+  try {
+    return getDocResponse.data;
+  } catch {
+    throw new Error(
+      "Failed to process loaded documentation, this is likely Try It Out platform's error."
+    );
+  }
+};
+
+const _parseDocJson = async (docJson) => {
+  /**
+   * Initiate valid documentation object. Also keep an copy
+   * as rawDoc ,  this rawDoc should not expose to anywhere
+   * outside of this file.   It is used to reset user inout
+   */
+  // console.log("_parseDocJson\n", docJson);
+  const parsedDoc = await _resolveJsonRef(docJson).catch((err) => {
+    console.error("Resolve JSON Error\n", err);
+  });
+  return parsedDoc;
 };
 
 const _resetDoc = () => {
@@ -111,17 +122,26 @@ const _resetDoc = () => {
   doc.value = "";
   docErr.value = "";
   yamlErr.value = "";
+  securitySchemes.value = null; // init value
 };
 
 const _getUrlType = (url) => {
   /**
    * Extract the extention after "." from url to identify
-   * the type of url (json / yaml / yml)
+   * the type of url
    */
-  return url.match(/.*\.(.*)$/)[1];
+  const urlType = url.match(/.*\.(.*)$/)[1];
+  const urlTypes = ["json", "yaml", "yml"];
+  if (urlTypes.includes(urlType)) {
+    return urlType;
+  } else {
+    throw new Error(
+      `Invalid documentation url, expect an url targeting to 'json', 'yaml' or 'yml' document.`
+    );
+  }
 };
 
-const _processDocResponse = (docResponse, docType = "") => {
+const _processDocRes = (docResponse, docType = "") => {
   /**
    * This function takes any format of API documentation
    * and convert to valid JSON object.
@@ -131,8 +151,8 @@ const _processDocResponse = (docResponse, docType = "") => {
     try {
       docJson = yaml.load(docResponse);
     } catch (err) {
-      console.error("Yaml error. Please fix the yaml documentation.\n", err);
-      yamlErr.value = err;
+      const errMsg = "Yaml error. Please fix the yaml documentation. " + err;
+      throw errMsg;
     }
   } else if (typeof docResponse == "string") {
     docJson = JSON.parse(docResponse);
@@ -151,6 +171,20 @@ const _resolveJsonRef = async (jsonObj) => {
   const resolver = new Resolver();
   const resolvedJson = await resolver.resolve(jsonObj);
   return resolvedJson.result;
+};
+
+const _chkOpenApi3 = (docJson) => {
+  console.log(docJson?.["openapi"]?.[0]);
+  const isOpenApi3 = docJson?.["openapi"]?.[0] == "3";
+  if (!isOpenApi3) {
+    throw new Error(
+      "Provided API documentation is not OpenAPI Specification V3."
+    );
+  }
+};
+
+const _setSecuritySchemes = () => {
+  securitySchemes.value = doc.value?.["components"]?.["securitySchemes"] || "";
 };
 
 watch(doc, async () => {

@@ -21,6 +21,9 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 const emit = defineEmits(["selectDocUrl"]);
 
@@ -102,8 +105,10 @@ const setDefault = () => {
 };
 
 onMounted(() => {
-  setDefault();
-  emitSelectDocUrl();
+  if (!route.query.docUrl) {
+    setDefault();
+    emitSelectDocUrl();
+  }
 });
 </script>
 

@@ -60,6 +60,10 @@
             <span v-for="(v, k) in props.value.split(' ')" :key="k">
               {{ v }}
             </span>
+            <small class="text-amber-9"
+              >Expire in
+              {{ calcLargeFileExpireDays(props.value) }} day(s)</small
+            >
           </div>
           <div v-else>
             {{ props.value }}
@@ -106,9 +110,29 @@
         </q-td>
       </template>
 
+      <!-- Actions -->
+      <!-- Since all action are based on job id, this is essentially another cell for job id, but display something else -->
       <template #body-cell-actions="props">
         <q-td :props="props">
-          <div>
+          <div class="row no-wrap">
+            <q-btn
+              round
+              flat
+              icon="refresh"
+              size="0.6rem"
+              color="green"
+              @click="getLargeFileStatusByJid(props.value)"
+              ><q-tooltip>
+                <template #default>
+                  <p
+                    style="max-width: 300px; font-size: 14px"
+                    class="q-my-none"
+                  >
+                    Fetch the latest job state.
+                  </p>
+                </template>
+              </q-tooltip></q-btn
+            >
             <q-btn
               round
               flat
@@ -142,6 +166,7 @@ import { copyToClipboard, useQuasar } from "quasar";
 
 import {
   largeFileJobHistory,
+  calcLargeFileExpireDays,
   getLargeFileStatusByJid,
   deleteLargeFileHistByJid,
 } from "src/services/largeFileService";
@@ -174,7 +199,7 @@ const table_cols = [
     field: "lastUpdated",
     align: "center",
   },
-  { name: "state", label: "Starte", field: "state", align: "center" },
+  { name: "state", label: "State", field: "state", align: "center" },
   {
     name: "outputUrl",
     label: "Output URL",

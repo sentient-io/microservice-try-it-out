@@ -1,10 +1,10 @@
 <template>
-  <div class="q-px-md">
-    <q-btn label="View Documentation" no-caps dense />
+  <div class="q-px-md bg-white">
+    <!-- <q-btn label="View Documentation" no-caps dense />
 
     <q-dialog v-model="showDocObj">
       <PrettyObjViewer />
-    </q-dialog>
+    </q-dialog> -->
   </div>
 </template>
 

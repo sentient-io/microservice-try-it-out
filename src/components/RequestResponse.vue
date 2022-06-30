@@ -104,6 +104,7 @@
           </div>
           <RawRes v-if="isRawResponse" :response="apiResponse" />
           <PrettyRes v-else :response="apiResponse" />
+          <ApiResReport />
         </q-tab-panel>
       </q-tab-panels>
     </div>
@@ -145,6 +146,7 @@ import RawRes from "src/components/ReqRes/RawRes.vue";
 import FieldsReq from "src/components/ReqRes/FieldsReq.vue";
 import PrettyRes from "src/components/ReqRes/PrettyRes.vue";
 import RequestsComp from "src/components/ReqRes/RequestsComp.vue";
+import ApiResReport from "src/components/Debug/ApiResReport.vue";
 
 const tab = ref();
 const isJsonInput = ref(false);

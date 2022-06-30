@@ -50,6 +50,14 @@ For prod, awating for the final URL
 firebase deploy --only hosting
 ```
 
+### Integration
+
+@params docUrl - Important, the url point to a yaml or json file for try
+it out to read the documentation .
+
+@params apiKey - Feed an API key to try it out, this will disable the UI
+for the API key input.
+
 ### Customize the configuration
 
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js).

@@ -4,8 +4,11 @@ import { Loading } from "quasar";
 
 const apiResponse = ref();
 
+const apiReport = ref({});
+
 const initApiResponse = () => {
   apiResponse.value = null;
+  apiReport.value = {};
 };
 
 const _catchErr = (err) => {
@@ -29,6 +32,7 @@ const postCall = (args) => {
   Loading.show();
   initApiResponse();
   const headers = { headers: args.headers };
+  const startTime = Date.now();
   axios.api
     .post(args.endpoint, args.data, headers)
     .then((res) => {
@@ -38,6 +42,7 @@ const postCall = (args) => {
       _catchErr(err);
     })
     .finally(() => {
+      setApiReport(startTime, args.endpoint, args.data, headers);
       Loading.hide();
     });
 };
@@ -47,6 +52,7 @@ const getCall = (args) => {
   Loading.show();
   initApiResponse();
   const headers = { headers: args.headers };
+  const startTime = Date.now();
   axios.api
     .get(args.endpoint, headers)
     .then((res) => {
@@ -56,12 +62,27 @@ const getCall = (args) => {
       _catchErr(err);
     })
     .finally(() => {
+      setApiReport(startTime, args.endpoint, "", headers);
       Loading.hide();
     });
+};
+
+const setApiReport = (startTime, endpoint, reqBdy, headers) => {
+  // console.log('setApiReport')
+  const stopTime = Date.now();
+  let requestBodyStr = "";
+  try {
+    requestBodyStr = JSON.stringify(reqBdy);
+  } catch (err) {}
+  apiReport.value["Ednpoint"] = endpoint;
+  apiReport.value["Headers"] = headers;
+  apiReport.value["Request Body"] = requestBodyStr;
+  apiReport.value["Response Time"] = `${stopTime - startTime} ms`;
+  console.log(apiReport.value);
 };
 
 const setApiResponse = (res) => {
   apiResponse.value = res;
 };
 
-export { postCall, getCall, apiResponse, initApiResponse };
+export { postCall, getCall, apiResponse, apiReport, initApiResponse };

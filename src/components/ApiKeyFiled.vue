@@ -1,5 +1,5 @@
 <template>
-  <q-form @submit="authorizeApiKey">
+  <q-form @submit="authorizeApiKey" v-show="!isApiKeyInParam">
     <div class="row full-width no-wrap items-center q-gutter-sm">
       <q-input
         outlined
@@ -44,7 +44,7 @@
  *
  * @emits setApiKey: emit an event pass the api key to parent component
  */
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { useQuasar } from "quasar";
 
 import { useRouter, useRoute } from "vue-router";
@@ -57,9 +57,11 @@ const apiKey = ref();
 const showApiKey = ref(false);
 
 const isAuthorized = ref(false);
+const isApiKeyInParam = ref(false);
 
 const router = useRouter();
 const route = useRoute();
+
 const emit = defineEmits(["setApiKey"]);
 
 const initApiKey = () => {
@@ -71,6 +73,7 @@ const initApiKey = () => {
     // Get api key from route and store to local storage
     apiKey.value = route.query.apiKey;
     localStoreApiKey(apiKey.value);
+    isApiKeyInParam.value = true;
   } else {
     // Get api key from local storage
     apiKey.value = localGetApiKey();
