@@ -12,8 +12,8 @@
 import { ref, onMounted } from "vue";
 
 const versionHistObj = ref({});
-const version = "1.0.0 Alpha";
-const lastUpdate = "14 Jun 2022";
+const version = "1.0.0 Beta";
+const lastUpdate = "01 Jul 2022";
 
 const setVersionHistObj = (version, lastUpdate) => {
   versionHistObj.value["version"] = version;
