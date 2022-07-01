@@ -40,9 +40,15 @@ const processReqBdy = (originalReqBdy) => {
            */
           property["example"] = new File([""], property?.["example"]);
 
+          // !! Critical !!
+          /**
+           * Below rule should never be triggered again.  This may
+           * cause future error, once all errors are corrected  in
+           * the documentation, update this rule to pure warning.
+           */
           if (propKey == "file_name") {
             console.error(
-              "Input fileds key 'file_type' been documented as binary file, supposed to be a string. Try It Out will automarically correct it, but please fix this on the yaml file."
+              "Input fileds key 'file_type' been documented as binary file, supposed to be a string. Try It Out will automatically correct it, but please fix this on the yaml file."
             );
             delete property["format"];
             property["example"] = "";

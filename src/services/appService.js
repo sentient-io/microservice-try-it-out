@@ -6,6 +6,7 @@ const route = useRoute();
 const isInIframe = window.location !== window.parent.location;
 
 const debugMode = ref(false);
+// const debugMode = ref(true); // For testing
 
 const prettyResExpandAll = ref(false);
 

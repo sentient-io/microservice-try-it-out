@@ -119,7 +119,7 @@ const forceValueCorrection = (originalVal, type) => {
   }
 
   if (type == "object") {
-    console.log("forceValueCorrection", originalVal);
+    // console.log("forceValueCorrection", originalVal);
     try {
       correctedVal = JSON.parse(originalVal);
     } catch (err) {
@@ -131,9 +131,9 @@ const forceValueCorrection = (originalVal, type) => {
 };
 
 const emitUpdate = () => {
-  console.log("ArrayEditUnit emitUpdate\n", typeof item.value, props.dataType);
+  // console.log("ArrayEditUnit emitUpdate\n", typeof item.value, props.dataType);
   let valueToEmit = forceValueCorrection(item.value, props.dataType);
-  console.log(typeof valueToEmit, valueToEmit);
+  // console.log(typeof valueToEmit, valueToEmit);
   emit("update", valueToEmit);
 };
 

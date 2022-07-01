@@ -1,10 +1,7 @@
 <template>
   <div>
     <div v-if="!(typeof object == 'object')">
-      <p
-        class="q-pa-md q-my-md"
-        style="border: 1px solid rgba(128, 128, 128, 0.25)"
-      >
+      <p class="q-pa-md q-my-md local-css-p local-css-border">
         {{ object }}
       </p>
     </div>
@@ -14,8 +11,7 @@
         <q-expansion-item
           dense
           dense-toggle
-          class="q-my-xs"
-          style="border: 1px solid rgba(128, 128, 128, 0.25)"
+          class="q-my-xs local-css-border"
           :model-value="isExpandLocal"
           :caption="countChildElem(val)"
           :label="(Array.isArray(object) ? '(Array item) ' : '') + key"
@@ -68,7 +64,7 @@
 
               <!-- Default, text display -->
               <div v-else>
-                <p class="q-ma-none">{{ val }}</p>
+                <p class="q-ma-none local-css-p">{{ val }}</p>
               </div>
             </div>
           </div>
@@ -123,7 +119,7 @@ export default defineComponent({
     };
 
     watch(prettyResExpandAll, () => {
-      console.log("watching prettyResExpandAll", prettyResExpandAll.value);
+      // console.log("watching prettyResExpandAll", prettyResExpandAll.value);
       if (prettyResExpandAll.value) {
         isExpandLocal.value = true;
       } else {
@@ -160,4 +156,13 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.local-css-border {
+  border: 1px solid rgba(128, 128, 128, 0.25);
+}
+
+.local-css-p {
+  white-space: pre-wrap;
+  line-break: anywhere;
+}
+</style>

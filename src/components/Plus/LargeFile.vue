@@ -202,7 +202,7 @@ const getUploadPolicyResMsg = computed(() => {
 });
 
 const uploadFileResMsg = computed(() => {
-  console.log(apiResponse.value);
+  // console.log(apiResponse.value);
   const apiFailure = apiResponse.value == "Error: Network Error";
   if (getUploadPolicyRes.value) {
     return "Response from previous API call be applied to current request body.";
@@ -227,7 +227,7 @@ const handleUserSelectTab = (tabName) => {
 };
 
 const setGetUploadPolicyRes = () => {
-  console.log("setGetUploadPolicyRes\n", apiResponse.value);
+  // console.log("setGetUploadPolicyRes\n", apiResponse.value);
   const isSuccessResponse =
     apiResponse.value?.["data"]?.["results"]?.["fields"];
   if (isSuccessResponse) {
@@ -252,7 +252,7 @@ const setGetUploadPolicyRes = () => {
 };
 
 const setUploadFileRes = () => {
-  console.log("setUploadFileRes", apiResponse.value);
+  // console.log("setUploadFileRes", apiResponse.value);
   const apiResFields = apiResponse.value;
   if (apiResFields?.["status"] == "204" || "200") {
     const apiResFieldsCopy = deepCopy(apiResFields);

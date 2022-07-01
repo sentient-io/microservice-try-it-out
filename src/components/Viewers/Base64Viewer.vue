@@ -117,10 +117,10 @@ const mapMediaType = (type) => {
 };
 
 const applySelectedMediaType = () => {
-  console.log("applySelectedMediaType");
+  // console.log("applySelectedMediaType");
   mediaType.value = mapMediaType(selectedMediaType.value);
   fmtedBase64Str.value = `data:${selectedMediaType.value};base64,${props.base64str}`;
-  console.log(fmtedBase64Str.value, mediaType.value);
+  // console.log(fmtedBase64Str.value, mediaType.value);
 };
 
 const init = () => {

@@ -15,11 +15,19 @@
       <doc-obj-viewer />
     </div>
 
-    <a
-      href="https://docs.google.com/spreadsheets/d/161ZTY_vnndHTEhFOMWOhK61kA45KcPqEfXFpbtcrl1w/edit?usp=sharing"
-      target="_blank"
-      >Testing Doc Source</a
-    >
+    <div class="row q-gutter-md">
+      <a
+        href="https://docs.google.com/spreadsheets/d/1WK3USTdQ3SseZNgiVoNuW7ZBYyUY2W-ALB_YThk24O4/edit?usp=sharing"
+        target="_blank"
+        >Doc Configs</a
+      >
+
+      <a
+        href="https://docs.google.com/spreadsheets/d/161ZTY_vnndHTEhFOMWOhK61kA45KcPqEfXFpbtcrl1w/edit?usp=sharing"
+        target="_blank"
+        >Testing Doc Source</a
+      >
+    </div>
   </div>
 </template>
 

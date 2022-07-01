@@ -110,6 +110,7 @@ const checkLargeFileMsPathMapping = () => {
    * If they are not matching, do some force correction and log warning
    * messages.
    */
+  // console.log("checkLargeFileMsPathMapping\n", currentLargeFileMsPaths.value);
   for (const [key, path] of Object.entries(currentLargeFileMsPaths.value)) {
     // console.log(path, apiPaths.value);
     if (key == MS_NAME_KEY) continue;
@@ -149,9 +150,8 @@ const findApiPathByIndicator = (indicator) => {
 };
 
 const getLargeFilePathByTag = (tag) => {
-  console.log("getLargeFilePathByTag");
+  // console.log("getLargeFilePathByTag");
   const largeFilePath = currentLargeFileMsPaths.value[tag];
-  console.log(largeFilePath);
   return largeFilePath;
 };
 
@@ -222,7 +222,7 @@ const updateLargeFileStatusToHistory = (jId, status) => {
 };
 
 const getLargeFileStatusByJid = (jId) => {
-  console.log("getLargeFileStatusByJid", jId);
+  // console.log("getLargeFileStatusByJid", jId);
   // Set request body example
   setParamExample("jid", jId);
 
@@ -276,7 +276,7 @@ const setExpiredStateById = (jId) => {
     currJobHist["State"] = "Job Not Started Yet.";
   }
   if (debugMode.value) {
-    console.log("setExpiredStateById\n", currJobHist);
+    // console.log("setExpiredStateById\n", currJobHist);
   }
 
   LocalStorage.set("Sentient Large File Api History", currHistory);
@@ -284,7 +284,7 @@ const setExpiredStateById = (jId) => {
 };
 
 const assignUploadFileRes = (upldFileRes) => {
-  console.log("assignUploadFileRes\n", upldFileRes);
+  // console.log("assignUploadFileRes\n", upldFileRes);
   uploadFileRes.value = upldFileRes;
   uploadFileResState.value = "success";
   storeLargeFileJobHistory();
@@ -332,7 +332,7 @@ const calcLargeFileExpireDays = (lastUpdate) => {
 };
 
 const _genLgFileJobHistElem = () => {
-  console.log("_genLgFileJobHistElem\n", uploadFileRes);
+  // console.log("_genLgFileJobHistElem\n", uploadFileRes);
   const configurations = _getGetPolicyResConfig();
   try {
     return {
@@ -349,7 +349,7 @@ const _genLgFileJobHistElem = () => {
       Cost:
         getUploadPolicyRes.value?.["data"]?.["results"]?.["request_cost"] ||
         "unknown",
-      // Tty to get the Output url, only useful when user direcly input Job id 
+      // Tty to get the Output url, only useful when user direcly input Job id
       "Output URL": uploadFileRes.value?.["data"]?.["output_url"] || "",
     };
   } catch (err) {

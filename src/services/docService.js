@@ -21,6 +21,7 @@ const securitySchemes = ref();
 const isSentientLargeFileMs = ref();
 
 const loadDoc = async (docUrl) => {
+  // Do not disable below console log
   console.log("Loading doc from:\n" + docUrl);
 
   _resetDoc();
@@ -38,7 +39,8 @@ const loadDoc = async (docUrl) => {
 
     _setSecuritySchemes();
 
-    console.log("docJson\n", docJson);
+    // Do not disable below console log
+    console.log("Raw Documentation\n", docJson);
   } catch (err) {
     console.error(err);
     docErr.value = err;
@@ -174,7 +176,6 @@ const _resolveJsonRef = async (jsonObj) => {
 };
 
 const _chkOpenApi3 = (docJson) => {
-  console.log(docJson?.["openapi"]?.[0]);
   const isOpenApi3 = docJson?.["openapi"]?.[0] == "3";
   if (!isOpenApi3) {
     throw new Error(

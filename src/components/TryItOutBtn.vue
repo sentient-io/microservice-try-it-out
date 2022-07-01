@@ -26,8 +26,7 @@ const props = defineProps({
 });
 
 const triggerTryItOut = () => {
-  console.log("triggerTryItOut\n");
-
+  // console.log("triggerTryItOut\n");
   makeApiCall();
 };
 </script>

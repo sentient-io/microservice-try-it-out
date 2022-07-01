@@ -5,6 +5,7 @@ import { apiKey } from "src/services/apiKeyService";
 import { securitySchemes } from "src/services/docService";
 
 import { postCall, getCall } from "./apiCallService";
+import { debugMode } from "./appService";
 
 const endpoint = ref();
 
@@ -132,13 +133,12 @@ const _setQueryParamElem = (param) => {
 };
 
 const getHeaders = () => {
-  console.log("getHeaders");
+  // console.log("getHeaders");
   const headers = {};
 
   // api.security will override the global securitySchemes
   const securityScheme = api.value?.["security"];
 
-  console.log(securityScheme);
   // Set api key field
   if (securityScheme) {
     Object.values(securityScheme).forEach((scheme) => {
@@ -148,7 +148,7 @@ const getHeaders = () => {
         const authKeyName = schemeElem["name"];
         headers[authKeyName] = apiKey.value;
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     });
   }
@@ -235,18 +235,21 @@ const getArgs = () => {
 
 const makeApiCall = () => {
   const _method = method.value;
-  console.log("makeApiCall");
 
   const args = getArgs();
 
   const dividerRepeat = 60;
-  console.log("=".repeat(dividerRepeat) + "\n");
-  console.log("-".repeat(dividerRepeat) + "\n");
-  for (const [k, v] of Object.entries(args)) {
-    console.log(k + ":\n", v);
+
+  if (debugMode.value) {
+    console.log(`Making ${_method} api call.`);
+    console.log("=".repeat(dividerRepeat) + "\n");
     console.log("-".repeat(dividerRepeat) + "\n");
+    for (const [k, v] of Object.entries(args)) {
+      console.log(k + ":\n", v);
+      console.log("-".repeat(dividerRepeat) + "\n");
+    }
+    console.log("=".repeat(dividerRepeat) + "\n");
   }
-  console.log("=".repeat(dividerRepeat) + "\n");
 
   // TODO: Currently only supporting get and post method
 
