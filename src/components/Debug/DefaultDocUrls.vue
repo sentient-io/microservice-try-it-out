@@ -105,7 +105,7 @@ const setDefault = () => {
 };
 
 onMounted(() => {
-  if (!route.query.docUrl) {
+  if (!route.query.docUrl && !route.query.docPath) {
     setDefault();
     emitSelectDocUrl();
   }

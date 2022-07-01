@@ -4,6 +4,7 @@
       <div
         class="object_preview_area full-width"
         :style="displayStyle"
+        v-show="!showEditPopup"
         @click="showEditPopup = true"
       >
         <pre class="q-ma-none">{{ object }}</pre>
@@ -20,10 +21,11 @@
           <q-tooltip> Upload Binary File </q-tooltip>
         </q-btn>
       </div> -->
-    </div>
-
-    <q-dialog v-model="showEditPopup" persistent>
-      <q-card class="q-pa-md" style="width: clamp(280px, 100%, 450px)">
+      <div
+        v-if="showEditPopup"
+        class="full-width q-pa-sm"
+        style="border: 1px solid rgba(128, 128, 128, 0.3)"
+      >
         <div v-if="objectType == 'array'">
           <h6 class="q-ma-none">Edit Array</h6>
           <ArrayEditor
@@ -51,8 +53,13 @@
             "
           />
         </div>
+      </div>
+    </div>
+
+    <!-- <q-dialog v-model="showEditPopup" persistent>
+      <q-card class="q-pa-md" style="width: clamp(280px, 100%, 450px)">
       </q-card>
-    </q-dialog>
+    </q-dialog> -->
   </div>
 </template>
 

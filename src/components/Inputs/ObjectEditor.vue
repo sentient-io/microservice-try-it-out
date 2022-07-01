@@ -131,7 +131,7 @@ watch(
   border-radius: 4px;
   font-size: 0.8rem;
   width: clac(300px, 100%, 600px);
-  height: 50vh;
+  height: 400px;
   overflow: auto;
   cursor: text;
 }

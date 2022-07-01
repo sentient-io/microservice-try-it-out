@@ -64,7 +64,12 @@
 
               <!-- Default, text display -->
               <div v-else>
-                <p class="q-ma-none local-css-p">{{ val }}</p>
+                <p
+                  class="q-ma-none local-css-p"
+                  style="max-height: 400px; overflow-y: scroll"
+                >
+                  {{ val }}
+                </p>
               </div>
             </div>
           </div>

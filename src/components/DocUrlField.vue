@@ -48,6 +48,8 @@ const pushDocUrlToRoute = () => {
 const getDocUrlFromRoute = () => {
   if (route.query.docUrl) {
     docUrl.value = decodeURI(route.query.docUrl);
+  } else if (route.query.docPath) {
+    docUrl.value = decodeURI(route.query.docPath);
   }
 };
 
@@ -64,6 +66,11 @@ onMounted(() => getDocUrlFromRoute());
 
 watch(
   () => route.query.docUrl,
+  () => getDocUrlFromRoute()
+);
+
+watch(
+  () => route.query.docPath,
   () => getDocUrlFromRoute()
 );
 </script>

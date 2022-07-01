@@ -1,4 +1,11 @@
 <template>
+  <!-- 
+      This will listen to window size change 
+      and update parent latest  height (when 
+      try it out been accessed via iframe) 
+      -->
+  <q-resize-observer @resize="postWindowHeight" />
+
   <h5 style="margin: 0; font-size: 20px; font-weight: 700">Try It Out</h5>
   <p style="max-width: 800px">
     You can test the input / output of Sentient.io API with the tool we provided
@@ -111,7 +118,7 @@ import {
 
 import { setEndpoint } from "src/services/tryItOutService";
 
-import { debugMode } from "src/services/appService";
+import { debugMode, isInIframe } from "src/services/appService";
 
 import DocUrlField from "src/components/DocUrlField.vue";
 import BeforeYouStart from "src/components/BeforeYouStart.vue";
@@ -149,7 +156,15 @@ const tryAsLargeFile = ref(false);
 
 const useLoadDoc = async () => {
   init();
-  const docUrl = decodeURI(route.query.docUrl);
+  let docUrl;
+
+  docUrl = decodeURI(route.query.docUrl);
+
+  // Will be depreciated on Q3 2022
+  if (route.query.docPath) {
+    docUrl = route.query.docPath;
+  }
+
   await loadDoc(docUrl);
   if (doc.value) {
     extractDocDetails();
@@ -226,14 +241,54 @@ const init = () => {
   initApis();
 };
 
+const postWindowHeight = () => {
+  /**
+   * This function useful when embedding try it out as iframe
+   * try it out  will consistantpy posting window size to the
+   * parent frame.
+   */
+  const pageContainer = document.getElementsByClassName("q-page-container")[0];
+
+  let message = {
+    // height: document.body.scrollHeight,
+    height: pageContainer.scrollHeight,
+    width: pageContainer.scrollWidth,
+    // completed: apiResponse.status,
+  };
+
+  // window.top refers to parent window
+  window.top.postMessage(message, "*");
+};
+
+if (isInIframe) {
+  /**
+   * Disable scroll bar on body element if the page is opened in iframe, This will
+   * prevent  flashing  scroll  bar  when  user toggle Fields inout and JSON input
+   * */
+  document.getElementsByTagName("body")[0].style.overflow = "hidden";
+}
+
+/** Consistantly update the window size to parent window */
+window.addEventListener("resize", postWindowHeight);
+
 onMounted(() => {
   if (route.query.docUrl) {
+    useLoadDoc();
+  } else if (route.query.docPath) {
+    console.warn(
+      "docPath param detected. Please update to docUrl. docPath param will be depreciated by Q3 2022."
+    );
     useLoadDoc();
   }
 });
 
 watch(
   () => route.query.docUrl,
+  () => useLoadDoc()
+);
+
+watch(
+  () => route.query.docPath,
   () => useLoadDoc()
 );
 

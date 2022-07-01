@@ -79,12 +79,13 @@
 
 <script setup>
 import { onMounted, ref, watch, computed } from "vue";
-import { copyToClipboard, useQuasar } from "quasar";
+import { copyToClipboard, useQuasar, date } from "quasar";
 
 import exportFromJSON from "export-from-json";
+import ObjectViewer from "src/components/Viewers/ObjectViewer.vue";
 
 import { isInIframe } from "src/services/appService";
-import ObjectViewer from "src/components/Viewers/ObjectViewer.vue";
+import { docTitle } from "src/services/docService";
 
 const $q = useQuasar();
 
@@ -136,9 +137,10 @@ const downloadRawRes = () => {
     // Alwayus make sure pass an object to exportFromJson()
     rawResObj = { "": rawResObj };
   }
+  const timeStemp = date.formatDate(Date.now(), "YYYY-MMM-DD HH-mm");
   const exportArgs = {
     data: rawResObj,
-    fileName: "Response",
+    fileName: `${docTitle.value} Response-${timeStemp}`,
     exportType: exportFromJSON.types.json,
   };
   exportFromJSON(exportArgs);
