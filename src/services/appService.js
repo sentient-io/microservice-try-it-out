@@ -5,8 +5,8 @@ const route = useRoute();
 /** Check if the page opened in iframe */
 const isInIframe = window.location !== window.parent.location;
 
-// const debugMode = ref(false);
-const debugMode = ref(true); // For testing
+const debugMode = ref(false);
+// const debugMode = ref(true); // For testing
 
 // Debug model will be enabled only when below value is true
 const listenToDebugMode = ref(false);

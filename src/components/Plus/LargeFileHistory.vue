@@ -180,7 +180,13 @@ const props = defineProps({
 const table_cols = [
   { name: "jId", label: "Job ID", field: "jId", align: "center" },
   { name: "file", label: "File Details", field: "file", align: "center" },
-  { name: "cost", label: "Cost", field: "cost", align: "center" },
+  {
+    name: "cost",
+    label: "Cost",
+    field: "cost",
+    align: "center",
+    sortable: true,
+  },
   {
     name: "configs",
     label: "Configurations",
@@ -190,16 +196,25 @@ const table_cols = [
   {
     name: "uploadOn",
     label: "Uploaded On",
+    sortable: true,
+    sortOrder: "da",
     field: "uploadOn",
     align: "center",
   },
   {
     name: "lastUpdated",
     label: "Last Updated",
+    sortable: true,
     field: "lastUpdated",
     align: "center",
   },
-  { name: "state", label: "State", field: "state", align: "center" },
+  {
+    name: "state",
+    label: "State",
+    field: "state",
+    align: "center",
+    sortable: true,
+  },
   {
     name: "outputUrl",
     label: "Output URL",
