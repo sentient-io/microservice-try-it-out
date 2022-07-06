@@ -6,7 +6,17 @@
       -->
   <q-resize-observer @resize="postWindowHeight" />
 
-  <h5 style="margin: 0; font-size: 20px; font-weight: 700">Try It Out</h5>
+  <div class="row items-center q-col-gutter-sm">
+    <h5 style="margin: 0; font-size: 20px; font-weight: 700">Try It Out</h5>
+    <q-icon name="help_outline" color="beige" size="xs">
+      <q-tooltip>
+        <p class="q-my-none" style="max-width: 400px">
+          Before you start, please make sure you have <b>subscribed</b> this
+          microservice, and authorize your api key from the field below.
+        </p>
+      </q-tooltip>
+    </q-icon>
+  </div>
   <p style="max-width: 800px">
     You can test the input / output of Sentient.io API with the tool we provided
     below. Simply input your subscribed API key, and you’ll be able to test the
@@ -14,18 +24,18 @@
   </p>
 
   <div class="column q-gutter-lg q-mb-md">
-    <BeforeYouStart />
-
     <DebugModeInfo v-if="debugMode" />
 
     <DocUrlField />
     <!-- TODO: To build a authorize component, which should be able to take multiple types of authentication -->
     <!-- {{ securitySchemes }} -->
     <ApiKeyField @setApiKey="(apiKey) => setApiKey(apiKey)" />
+
+    <EndpointOverrider v-if="debugMode" />
   </div>
 
   <div v-if="doc && sentientLargeFileMsDetails">
-    <div v-if="isSentientLargeFileMs">
+    <div v-if="isSentientLargeFileMs && debugMode">
       <LargeFileSwitcher
         :enabled="tryAsLargeFile"
         @toggle="
@@ -42,7 +52,7 @@
 
     <div v-else>
       <div class="column q-col-gutter-md">
-        <div class="column q-gutter-md q-my-xs q-px-lg">
+        <div class="row justify-between q-gutter-sm q-mt-xs q-px-lg">
           <ApiPathSelector
             :api-paths="apiPaths"
             :selected-path="apiPath"
@@ -56,12 +66,13 @@
             :default-value="method"
             @select="(val) => useSetMethod(val)"
           />
-          <ListSelector
+          <!-- Disabled at 2022 Jul 06, because this makes the try it out part too cluttered. But this feature is important if a microservice container multiple content type -->
+          <!-- <ListSelector
             label="Content Type"
             :options="contentTypes"
             :default-value="contentType"
             @select="(contType) => useSetContentType(contType)"
-          />
+          /> -->
         </div>
 
         <!-- !!Critical Component!! -->
@@ -121,7 +132,6 @@ import { setEndpoint } from "src/services/tryItOutService";
 import { debugMode, isInIframe } from "src/services/appService";
 
 import DocUrlField from "src/components/DocUrlField.vue";
-import BeforeYouStart from "src/components/BeforeYouStart.vue";
 import ApiKeyField from "src/components/ApiKeyFiled.vue";
 import ApiPathSelector from "src/components/ApiPathSelector.vue";
 import InlineError from "src/components/InlineError.vue";
@@ -130,7 +140,9 @@ import VersionNum from "src/components/UI/VersionNum.vue";
 
 import ListSelector from "src/modules/ListSelector/ListSelector.vue";
 
+// Debug components
 import DebugModeInfo from "src/components/Debug/DebugModeInfo.vue";
+import EndpointOverrider from "src/components/Debug/EndpointOverrider.vue";
 
 // Components for Large File Microservices
 import LargeFile from "src/components/Plus/LargeFile.vue";

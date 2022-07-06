@@ -1,21 +1,9 @@
 <template>
-  <div class="row items-center justify-between no-wrap q-gutter-row-md q-py-sm">
+  <div class="row items-center justify-between no-wrap">
     <div
-      class="bg-grey-2 q-pa-sm full-width"
-      style="
-        border-left: 6px solid;
-        border-right: 6px solid;
-        border-color: rgba(128, 128, 128, 0.5);
-        border-radius: 6px;
-      "
+      style="min-width: 150px"
+      class="row justify-end items-center q-col-gutter-sm no-wrap"
     >
-      <p class="q-ma-none" style="font-size: 0.8rem">
-        This microservice contains more than one endpoint, and they are supposed
-        to be called in a sequence. To test individual endpoint, please disable
-        the <b>Large File Mode</b>.
-      </p>
-    </div>
-    <div style="min-width: 150px" class="row justify-end">
       <q-checkbox
         size="2rem"
         :model-value="enabled"
@@ -23,6 +11,15 @@
         color="beige"
         @click="toggleLargeFileMode(!enabled)"
       />
+      <q-icon name="help" color="beige">
+        <q-tooltip>
+          <p class="q-ma-none" style="max-width: 400px">
+            This microservice contains more than one endpoint, and they are
+            supposed to be called in a sequence. To test individual endpoint,
+            please disable the <b>Large File Mode</b>.
+          </p>
+        </q-tooltip>
+      </q-icon>
     </div>
   </div>
 </template>

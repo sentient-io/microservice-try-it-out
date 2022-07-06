@@ -1,6 +1,6 @@
 import { ref } from "vue";
 import * as axios from "boot/axios";
-import { Loading } from "quasar";
+import { Loading, Notify } from "quasar";
 import { debugMode } from "./appService";
 
 const apiResponse = ref();
@@ -14,13 +14,42 @@ const initApiResponse = () => {
 
 const _catchErr = (err) => {
   if (err.response) {
-    setApiResponse(err.response);
     console.error(err.response);
+
+    if (!err.response?.["data"]?.["message"]) {
+      console.warn(
+        "Uncatched error message from api call error response: \n",
+        err,
+        "\nPlease check api response error message data structure. "
+      );
+    }
+
+    __nofityError(err.response?.["data"]?.["message"] || "API Call Error");
+
+    setApiResponse(err.response);
   } else {
     // Possible due to invalid endpoint string
     setApiResponse(String(err));
-    console.error(err);
+    __nofityError(String(err));
+    console.error(err, "\nThis is likely caused by bad endpoint.");
   }
+};
+
+const __nofityError = (err) => {
+  Notify.create({
+    type: "negative",
+    message: err.toString(),
+    timeout: 0,
+    actions: [
+      {
+        label: "Dismiss",
+        color: "white",
+        handler: () => {
+          /* ... */
+        },
+      },
+    ],
+  });
 };
 
 const _handelRes = (res) => {

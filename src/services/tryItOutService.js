@@ -6,6 +6,7 @@ import { securitySchemes } from "src/services/docService";
 
 import { postCall, getCall } from "./apiCallService";
 import { debugMode } from "./appService";
+import { debugState } from "./debugService";
 
 const endpoint = ref();
 
@@ -176,6 +177,9 @@ const setQueryParamObj = (newQueryParam) => {
 };
 
 const getEndpint = () => {
+  if (debugMode.value && debugState.overriddenEndpoint.value) {
+    return debugState.overriddenEndpoint.value;
+  }
   if (api.value?.["servers"]?.[0]) {
     try {
       let overrideServerUrl = api.value["servers"][0]["url"];

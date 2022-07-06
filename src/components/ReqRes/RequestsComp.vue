@@ -37,12 +37,13 @@
         <div><b>Method:</b> {{ method }}</div>
       </div>
 
-      <div v-if="isSentientLargeFileMs" class="q-mt-md bg-grey-1">
-        <!-- The file uploader for large file MS -->
-        <LargeFileUploader
-          @update-request-body="(k, v) => useSetReqBdyExample(k, v)"
-        />
-      </div>
+      <slot name="requests-helper">
+        <!-- 
+          Insert an element between requests detail and 
+          requests fields, suggested use -file uploader
+          json file uploader, url input etc.
+          -->
+      </slot>
 
       <div v-if="isJsonInput" style="max-width: 85vw:">
         <RawReq
@@ -110,11 +111,9 @@ import {
 import FieldsReq from "src/components/ReqRes/FieldsReq.vue";
 import RawReq from "src/components/ReqRes/RawReq.vue";
 import TryItOutBtn from "src/components/TryItOutBtn.vue";
-import LargeFileUploader from "src/components/Plus/LargeFileUploader.vue";
 
 const props = defineProps({
   showEndpointAndMethod: { default: false },
-  isSentientLargeFileMs: { default: false },
   requestBodyExampleObj: {},
   tryItOutBtnLabel: { type: String, default: "Try It Out" },
 });

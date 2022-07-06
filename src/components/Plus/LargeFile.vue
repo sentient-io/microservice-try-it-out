@@ -20,44 +20,45 @@
     <div style="border: 1px solid #efefef">
       <q-tab-panels v-model="tab">
         <q-tab-panel name="getUploadPolicy">
-          <!-- 
-            is-sentient-large-file-ms will enable a file
-            uploader,it allow user fill in the file then
-            read the file size.
-           -->
+          <!-- Response viwe (likely caused by error) -->
+          <LargeFileRawResViewer
+            v-if="apiResponse"
+            :response="apiResponse"
+            :status="apiResponse?.data?.status || ''"
+            :response-message="apiResponse?.data?.message || ''"
+            lable="Last API Call Response"
+          />
           <RequestsComp
             :show-endpoint-and-method="true"
             try-it-out-btn-label="Get Policy"
-            :is-sentient-large-file-ms="true"
-          />
+          >
+            <template #requests-helper>
+              <div class="q-mt-md bg-grey-1">
+                <LargeFileUploader />
+              </div>
+            </template>
+          </RequestsComp>
         </q-tab-panel>
 
         <!-- Upload File -->
         <q-tab-panel name="uploadFile">
           <!-- Preview Response -->
-          <div v-if="getUploadPolicyRes" class="q-mb-sm">
-            <q-expansion-item
-              dense
-              dense-toggle
-              :class="
-                isGetUploadPolicyResSuccess ? 'bg-green-1' : 'bg-yellow-1'
-              "
-              label="Resposne From Last Step"
-              style="border: 1px solid rgba(128, 128, 128, 0.25)"
-            >
-              <div class="q-pt-md q-px-sm">
-                <RawRes :response="getUploadPolicyRes" />
-              </div>
-            </q-expansion-item>
-
-            <small
-              class="q-pa-sm"
-              :class="
-                isGetUploadPolicyResSuccess ? 'text-green-6' : 'text-red-6'
-              "
-              >{{ getUploadPolicyResMsg }}</small
-            >
-          </div>
+          <!-- Show error response first -->
+          <LargeFileRawResViewer
+            v-if="apiResponse?.status?.toString()?.[0] !== '2'"
+            :response="apiResponse"
+            :status="apiResponse?.data?.status || 'failure'"
+            :response-message="apiResponse?.data?.message || apiResponse"
+            label="Resposne From Last API Call"
+          />
+          <!-- If last API call is success, show the previous Tab's response as data reference -->
+          <LargeFileRawResViewer
+            v-if="getUploadPolicyRes"
+            :response="getUploadPolicyRes"
+            :status="getUploadPolicyRes?.data?.status || ''"
+            :response-message="getUploadPolicyRes?.data?.message || ''"
+            label="Resposne From Last Step"
+          />
 
           <div>
             <!-- Append both file value and upload policy response -->
@@ -74,29 +75,14 @@
 
         <!-- Status Panel -->
         <q-tab-panel name="status">
-          <div v-if="uploadFileRes" class="q-mb-sm">
-            <q-expansion-item
-              dense
-              dense-toggle
-              :class="
-                isGetUploadPolicyResSuccess ? 'bg-green-1' : 'bg-yellow-1'
-              "
-              label="Resposne From Last Step"
-              style="border: 1px solid rgba(128, 128, 128, 0.25)"
-            >
-              <div class="q-pt-md q-px-sm">
-                <RawRes :response="uploadFileRes" />
-              </div>
-            </q-expansion-item>
+          <LargeFileRawResViewer
+            v-if="uploadFileRes"
+            :response="uploadFileRes"
+            :status="uploadFileRes?.data?.status || ''"
+            :response-message="uploadFileRes?.data?.message || ''"
+            label="Resposne From Last Step"
+          />
 
-            <small
-              class="q-pa-sm"
-              :class="
-                isGetUploadPolicyResSuccess ? 'text-green-6' : 'text-red-6'
-              "
-              >{{ uploadFileResMsg }}</small
-            >
-          </div>
           <div>
             <LargeFileHistory :doc-title="docTitle" class="q-mb-md" />
             <RequestsComp
@@ -165,6 +151,8 @@ import RawRes from "src/components/ReqRes/RawRes.vue";
 import PrettyRes from "src/components/ReqRes/PrettyRes.vue";
 import RequestsComp from "src/components/ReqRes/RequestsComp.vue";
 import LargeFileHistory from "src/components/Plus/LargeFileHistory.vue";
+import LargeFileUploader from "src/components/Plus/LargeFileUploader.vue";
+import LargeFileRawResViewer from "./LargeFileRawResViewer.vue";
 
 const $q = useQuasar();
 const emit = defineEmits(["setApiPath"]);
@@ -280,8 +268,18 @@ watch(tab, () => {
   handleUserSelectTab(tab.value);
 });
 
+/**
+ * !! Important !!
+ * Main flow of navigating user between large file tabs
+ */
 watch(apiResponse, () => {
-  // console.log("Watching apiResponse Change", apiResponse);
+  console.log("Watching apiResponse Change", apiResponse.value);
+  if (apiResponse.value?.status?.toString()?.[0] != "2") {
+    console.error(
+      apiResponse.value?.data?.["message"] || "Unsuccessful API call"
+    );
+    return;
+  }
   if (apiResponse.value) {
     const tabsArr = Object.keys(tabs);
     const currentTabIndex = tabsArr.findIndex((elem) => {
