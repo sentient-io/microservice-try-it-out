@@ -33,8 +33,16 @@
       <template #body-cell-file="props">
         <q-td :props="props">
           <div class="column items-center">
-            <b>{{ props.value["name"] }}</b>
-            <small class="text-grey-7">(size: {{ props.value["size"] }})</small>
+            <p
+              class="q-my-none"
+              style="white-space: pre-wrap; line-break: anywhere"
+            >
+              <b>{{ props.value["name"] }}</b>
+            </p>
+            <small class="text-grey-7"
+              >(size:
+              {{ (props.value["size"] / 1024 / 1024).toFixed(2) }} MB)</small
+            >
           </div>
         </q-td>
       </template>
@@ -89,6 +97,14 @@
             >
               <q-btn round flat icon="open_in_new" size="0.6rem" />
             </a>
+            <q-btn
+              round
+              flat
+              icon="preview"
+              color="green-6"
+              size="0.6rem"
+              @click="openLargeFileResPreview(props.value)"
+            />
           </div>
           <div v-else>No url available.</div>
         </q-td>
@@ -157,12 +173,39 @@
         </q-td>
       </template>
     </q-table>
+
+    <q-dialog v-model="showLargeFileResPreview" persistent full-width>
+      <q-card style="max-width: 1000px !important" class="q-pa-md">
+        <div class="row justify-between items-center">
+          <h5 class="q-my-none">Preview Lare File Response</h5>
+          <q-btn
+            flat
+            round
+            size="md"
+            icon="close"
+            @click="closeLargeFileResPreview()"
+          />
+        </div>
+        <div
+          class="q-pa-md"
+          style="
+            max-height: 500px;
+            overflow-y: scroll;
+            border: 1px solid rgba(100, 100, 100, 0.25);
+          "
+        >
+          <JsonUrlViewer :url="largeFileResUrl" />
+        </div>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { copyToClipboard, useQuasar } from "quasar";
+
+import JsonUrlViewer from "src/components/Viewers/JsonUrlViewer.vue";
 
 import {
   largeFileJobHistory,
@@ -263,6 +306,20 @@ const table_rows = computed(() => {
 
   return rows;
 });
+
+const showLargeFileResPreview = ref(false);
+const largeFileResUrl = ref("");
+
+const openLargeFileResPreview = (url) => {
+  console.log("usePreviewResUrl", url);
+  largeFileResUrl.value = url;
+  showLargeFileResPreview.value = true;
+};
+
+const closeLargeFileResPreview = () => {
+  largeFileResUrl.value = "";
+  showLargeFileResPreview.value = false;
+};
 
 const copy = (text) => {
   copyToClipboard(text)

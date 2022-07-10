@@ -215,7 +215,7 @@ const getArgs = () => {
         HARD_CODED_FILE = v;
       } else if (k == "content-type") {
         console.warn(
-          "IMPORTANT, Hard coded 'content-type' in to 'Content-Type' or prevent some google error. This is for TESTING only."
+          "IMPORTANT, hard coded 'content-type' in to 'Content-Type' to prevent some google error. This is for TESTING only."
         );
         const HARD_CODED_CONTENT_TYPE = "Content-Type";
         formData.append(HARD_CODED_CONTENT_TYPE, v);

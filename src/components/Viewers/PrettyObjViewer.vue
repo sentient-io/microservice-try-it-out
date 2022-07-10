@@ -19,6 +19,7 @@
             <PrettyObjViewer
               v-if="typeof val == 'object'"
               :object="val"
+              :parent-key="key"
               @guessed-media="
                 (guessedBase64) => emitGuessedMedia(guessedBase64)
               "
@@ -49,7 +50,21 @@
                     />
                   </div>
                 </div>
-                <ObjectViewer display-style="max-height:220px" :object="val" />
+                <div class="row no-wrap items-center">
+                  <ObjectViewer
+                    display-style="max-height:220px"
+                    :object="val"
+                  />
+                  <div
+                    v-if="isBase64(val)"
+                    class="fit q-pa-md"
+                    style="max-width: 200px"
+                  >
+                    <Base64Viewer
+                      :base64str="guessBase64UriByName(parentKey || key, val)"
+                    />
+                  </div>
+                </div>
 
                 <!-- Base64 Viewer -->
                 <q-dialog v-model="showBase64Viewer">
@@ -95,7 +110,7 @@ import Base64Viewer from "src/components/Viewers/Base64Viewer.vue";
 
 export default defineComponent({
   name: "PrettyObjViewer",
-  props: { object: {} },
+  props: { object: {}, parentKey: {} },
   enits: ["guessedMedia"],
   components: { ObjectViewer, Base64Viewer },
   setup(props, { emit }) {
@@ -156,6 +171,7 @@ export default defineComponent({
       countChildElem,
       showBase64Viewer,
       emitGuessedMedia,
+      guessBase64UriByName,
     };
   },
 });

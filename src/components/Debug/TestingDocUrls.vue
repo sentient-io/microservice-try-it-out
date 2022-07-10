@@ -27,16 +27,28 @@
         target="_blank"
         >Testing Doc Source</a
       >
+
+      <a :href="`https://editor.swagger.io/?url=${docUrl}`" target="_blank"
+        >Open In Swagger Editor</a
+      >
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
+
+import { useRoute } from "vue-router";
 
 import { api } from "boot/axios";
 
 import DocObjViewer from "./DocsObjViewer.vue";
+
+const route = useRoute();
+
+const docUrl = computed(() => {
+  return route.query?.docUrl || route.query?.docPath || "";
+});
 
 const docListSrc =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRQ8xbzHxNCmVlidFQ6O8CH6Twk5iHkBkK7uP5dV04VoZ7LQyz0nfxftDAw-oQrHPUxGD5NtqpyhpYo/pub?gid=0&single=true&output=csv";

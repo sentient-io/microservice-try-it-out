@@ -44,21 +44,36 @@
         <q-tab-panel name="uploadFile">
           <!-- Preview Response -->
           <!-- Show error response first -->
-          <LargeFileRawResViewer
-            v-if="apiResponse?.status?.toString()?.[0] !== '2'"
-            :response="apiResponse"
-            :status="apiResponse?.data?.status || 'failure'"
-            :response-message="apiResponse?.data?.message || apiResponse"
-            label="Resposne From Last API Call"
-          />
-          <!-- If last API call is success, show the previous Tab's response as data reference -->
-          <LargeFileRawResViewer
-            v-if="getUploadPolicyRes"
-            :response="getUploadPolicyRes"
-            :status="getUploadPolicyRes?.data?.status || ''"
-            :response-message="getUploadPolicyRes?.data?.message || ''"
-            label="Resposne From Last Step"
-          />
+          <!-- Particularly for large file, the error message is "Error: Network Error", this is likely caused by error in policy, or endpoints -->
+          <!-- {{ apiResponse }} -->
+          <div v-if="debugMode">
+            <LargeFileRawResViewer
+              v-if="apiResponse == 'Error: Network Error'"
+              :response="apiResponse"
+              status="failure"
+              :response-message="apiResponse"
+              label="Error: Network Error"
+            />
+            <!-- This is to log the standard error. Anything not started with "2" -->
+            <LargeFileRawResViewer
+              v-else-if="
+                apiResponse?.status &&
+                apiResponse?.status?.toString()?.[0] !== '2'
+              "
+              :response="apiResponse"
+              :status="apiResponse?.data?.status || 'failure'"
+              :response-message="apiResponse?.data?.message || apiResponse"
+              label="Response From Last API Call"
+            />
+            <!-- If last API call is success, show the previous Tab's response as data reference -->
+            <LargeFileRawResViewer
+              v-else-if="getUploadPolicyRes"
+              :response="getUploadPolicyRes"
+              :status="getUploadPolicyRes?.data?.status || ''"
+              :response-message="getUploadPolicyRes?.data?.message || ''"
+              label="Response From Last Step"
+            />
+          </div>
 
           <div>
             <!-- Append both file value and upload policy response -->
@@ -75,12 +90,18 @@
 
         <!-- Status Panel -->
         <q-tab-panel name="status">
+          <!-- {{ uploadFileRes }} -->
+          <!-- Because this response is from Google's server, so the structure is different from other response (status is not wrapped inside data) -->
           <LargeFileRawResViewer
             v-if="uploadFileRes"
             :response="uploadFileRes"
-            :status="uploadFileRes?.data?.status || ''"
+            :status="
+              uploadFileRes?.status?.toString()?.[0] == '2'
+                ? 'success'
+                : 'failure'
+            "
             :response-message="uploadFileRes?.data?.message || ''"
-            label="Resposne From Last Step"
+            label="Response From Last Step"
           />
 
           <div>
@@ -130,7 +151,7 @@ import { deepCopy } from "src/services/utils";
 
 import { apiResponse } from "src/services/apiCallService";
 
-import { prettyResExpandAll } from "src/services/appService";
+import { prettyResExpandAll, debugMode } from "src/services/appService";
 
 import { requestBody, setReqBdyExample } from "src/services/apiService";
 
@@ -273,8 +294,8 @@ watch(tab, () => {
  * Main flow of navigating user between large file tabs
  */
 watch(apiResponse, () => {
-  console.log("Watching apiResponse Change", apiResponse.value);
-  if (apiResponse.value?.status?.toString()?.[0] != "2") {
+  // console.log("Watching apiResponse Change", apiResponse.value);
+  if (apiResponse.value && apiResponse.value?.status?.toString()?.[0] != "2") {
     console.error(
       apiResponse.value?.data?.["message"] || "Unsuccessful API call"
     );

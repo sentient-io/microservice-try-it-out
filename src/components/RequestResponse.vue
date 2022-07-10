@@ -20,63 +20,6 @@
           -->
         <q-tab-panel name="request" style="max-width: 90vw" class="q-mx-auto">
           <RequestsComp />
-          <!-- <div class="row items-center justify-between">
-            <div>
-              <b>Input With Fields</b>
-              <q-toggle
-                size="2rem"
-                color="green-7"
-                class="state-toggle"
-                v-model="isJsonInput"
-                @click="handleInputMthdSwitch()"
-              />
-              <b>Input With Raw Data</b>
-            </div>
-
-            <div>
-              <q-btn
-                dense
-                no-caps
-                outline
-                size="0.7rem"
-                color="brown-4"
-                class="q-px-sm"
-                icon="restart_alt"
-                label="Reset All Inputs"
-                @click="handleResetInput()"
-              />
-            </div>
-          </div>
-          <div v-if="isJsonInput" style="max-width: 85vw:">
-            <RawReq
-              :req-bdy-examples="reqBdyExamples"
-              :query-params="queryParamObj"
-              :method="method"
-              :query-string="queryStr"
-              :content-type="contentType"
-              @update-request-body="
-                (rawReqBdyObj) => useSetReqBdyEgObj(rawReqBdyObj)
-              "
-              @update-query-params="
-                (newQueryParam) => {
-                  useSetQueryParamObj(newQueryParam);
-                }
-              "
-            />
-          </div>
-          <FieldsReq
-            v-else
-            :request-body="requestBody"
-            :content-type="contentType"
-            :parameters="parameters"
-            :method="method"
-            @update-parameters="(k, v) => useSetParamExample(k, v)"
-            @update-request-body="(k, v) => useSetReqBdyExample(k, v)"
-          /> -->
-
-          <!-- <div class="row justify-center q-py-md">
-            <TryItOutBtn />
-          </div> -->
         </q-tab-panel>
 
         <q-tab-panel name="response">
@@ -160,19 +103,6 @@ const init = () => {
 const useSetParamExample = (paramName, paramExam) => {
   setParamExample(paramName, paramExam);
 };
-
-// const useSetReqBdyExample = (bdyName, bdyExam) => {
-//   setReqBdyExample(bdyName, bdyExam);
-// };
-
-// const useSetReqBdyEgObj = (rawReqBdyObj) => {
-//   setReqBdyExamplesObj(rawReqBdyObj);
-// };
-
-// const useSetQueryParamObj = (newQueryParam) => {
-//   console.log("useSetQueryParamObj", newQueryParam);
-//   setQueryParamObj(newQueryParam);
-// };
 
 const handleInputMthdSwitch = () => {
   if (!isJsonInput.value) {

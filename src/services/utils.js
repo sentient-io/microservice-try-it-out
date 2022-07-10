@@ -15,10 +15,19 @@ const deepCopy = (obj) => {
 };
 
 const isBase64 = (str) => {
+  let strIsBase64 = false;
   if (str == null) return false;
   if (str.length === 0) return false;
   // console.log("isBase64", base64Re.test(str), str);
-  return base64Re.test(str);
+  if (base64Re.test(str) && str.length > 500) {
+    strIsBase64 = true;
+  }
+  if (base64Re.test(str) && str.length < 500) {
+    console.warn(
+      `Detected base64-alike string - ${str}, \n But length of string is sort, doesn't seems like base64 media string, will not parse it for pretty response.`
+    );
+  }
+  return strIsBase64;
 };
 
 const hasUriHeader = (str) => {
