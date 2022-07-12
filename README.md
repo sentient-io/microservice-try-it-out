@@ -142,4 +142,4 @@ CSV to JSON
 
 #### **recordrtc** (https://www.npmjs.com/package/recordrtc)
 
-For audio recording and return as base64 string
+For audio recording and return as base64 string.
