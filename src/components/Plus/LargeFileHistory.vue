@@ -177,7 +177,7 @@
     <q-dialog v-model="showLargeFileResPreview" persistent full-width>
       <q-card style="max-width: 1000px !important" class="q-pa-md">
         <div class="row justify-between items-center">
-          <h5 class="q-my-none">Preview Lare File Response</h5>
+          <h5 class="q-my-none">Preview Large File Response</h5>
           <q-btn
             flat
             round

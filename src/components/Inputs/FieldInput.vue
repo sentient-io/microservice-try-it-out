@@ -19,10 +19,10 @@
       <q-input
         dense
         outlined
-        dataType="number"
+        type="number"
         v-model="userInput"
         v-else-if="numTypes.includes(dataType)"
-        @update:model-value="useEmitInput()"
+        @update:model-value="useEmitInput({ type: 'number' })"
       />
       <q-file
         dense
@@ -137,10 +137,17 @@ const init = () => {
   userInput.value = props.example;
 };
 
-const useEmitInput = () => {
-  // console.log("emit input\n", userInput.value);
+const useEmitInput = (config = {}) => {
+  // console.log("emit input\n", typeof userInput.value);
 
-  emit("input", userInput.value);
+  switch (config?.type) {
+    case "number":
+      // console.log("emit number input\n", typeof Number(userInput.value));
+      emit("input", Number(userInput.value));
+      break;
+    default:
+      emit("input", userInput.value);
+  }
 };
 
 const updateInput = (newInputVal) => {

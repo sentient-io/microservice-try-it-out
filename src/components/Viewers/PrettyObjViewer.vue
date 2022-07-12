@@ -50,14 +50,16 @@
                     />
                   </div>
                 </div>
-                <div class="row no-wrap items-center">
+                <div class="row q-gutter-md items-center">
                   <ObjectViewer
-                    display-style="max-height:220px"
+                    :display-style="`${
+                      isBase64(val) ? 'max-width: 45vw; min-width: 200px;' : ''
+                    }max-height:220px; `"
                     :object="val"
                   />
                   <div
                     v-if="isBase64(val)"
-                    class="fit q-pa-md"
+                    class="q-pa-md"
                     style="max-width: 200px"
                   >
                     <Base64Viewer
